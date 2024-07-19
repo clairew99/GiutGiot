@@ -182,3 +182,13 @@
 2024/07/18
 
 테스트 셋팅 및 자료 조사
+
+
+2024/07/19
+
+음성 데이터를 대체할 방법 조사
+https://kdr0407.tistory.com/2 - ble 스캔
+http://journal.dcs.or.kr/xml/29377/29377.pdf - ble 기반 거리 측정
+https://android-developer.tistory.com/16 - workManager
+
+flutter 실행 테스트
