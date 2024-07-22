@@ -573,3 +573,242 @@
 ---
 ---
 ---
+
+# 240722
+---
+## 오전 설문조사
+##### 프론트 와이어프레임
+- 프론트적으로 보여지는게 너무 귀여움
+- 옷을 언제입어도 될지에 대한 여부는 음성으로만 진행이 되는것일까?
+    - 아니라면 어떻게 화면에 보여줘야할지 함께 고민해보자
+## FE 리스트업
+
+1. Home 화면 하단 부분 정보
+    1. 어떤걸 보여줘야 하는지?
+    2. 얼마나 보여줘야 할까?
+2. 캘린더 구현
+    1. 방법 : AI 활용하는 방법, 이미지 투명 배경 처리 + 색 입히기
+    2. 구현 : 사람 / 캐릭터 (눈사람, 유령 등 꾸밀 수 있는 요소들)
+
+---
+
+## 전체 리스트업
+
+1. **데이터 분석을 위한 기준 및 가설 설정**
+2. 기능 명세서
+3. ERD 작성
+4. 와이어 프레임 작성
+
+---
+
+## 데이터 분석을 위한 기준 및 가설
+
+1. 가중치를 어떻게 설정할 것인가? (근거 데이터)
+2. 설문조사 결과를 통한 가설 ?
+    1. 어떻게 얼마나 기억하는지? (대상에 대한 옷) → 주기가 중요하다.
+        1. 우리반에서만 일단 진행하기. : 팀장의 옷을 기억하시나요?
+        2. 범위 넓히기
+        3. 주기 기준 세우는 것이 중요하다.
+
+3. 반 사람들을 대상으로 주기별 설문조사(2팀씩, 1~4일까지)
+    - 무채색 vs 색상
+    - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3743993/
+    - 팀당 한명씩 정해서 사진찍어두기
+
+4. 전체 사람들을 대상으로 옷-기억 관련 설문조사 실행
+
+---
+
+## 음성 분석 코드
+
+### 코드 분석
+
+### `dirMp3toWavWrapper`
+
+폴더 내의 모든 MP3 파일을 WAV 파일로 변환합니다.
+
+### `dirWAVChangeFs`
+
+폴더 내의 모든 WAV 파일의 샘플레이트를 변경합니다.
+
+### `featureExtractionFileWrapper`
+
+단일 WAV 파일에서 중기 및 단기 특징을 추출하고 결과를 파일로 저장합니다.
+
+### `featureExtractionDirWrapper`
+
+폴더 내의 모든 WAV 파일에서 중기 및 단기 특징을 추출합니다.
+
+### `beatExtractionWrapper`
+
+WAV 파일에서 비트를 추출하고, 비트 분당 수(BPM)와 비트 비율을 출력합니다.
+
+### `featureVisualizationDirWrapper`
+
+폴더 내의 WAV 파일들의 특징을 PCA 또는 LDA를 사용하여 시각화합니다.
+
+### `fileSpectrogramWrapper`
+
+WAV 파일의 스펙트로그램을 생성합니다.
+
+### `fileChromagramWrapper`
+
+WAV 파일의 크로마그램을 생성합니다.
+
+### `trainClassifierWrapper`
+
+폴더에 저장된 데이터를 사용하여 분류기를 학습합니다.
+
+### `classifyFileWrapper`
+
+학습된 분류기를 사용하여 단일 파일을 분류하고, 결과를 출력합니다.
+
+### `classifyFolderWrapper`
+
+폴더 내의 모든 파일을 분류하고, 각 클래스의 분포를 출력합니다.
+
+### `trainRegressionWrapper`
+
+폴더에 저장된 데이터를 사용하여 회귀 모델을 학습합니다.
+
+### `regressionFileWrapper`
+
+학습된 회귀 모델을 사용하여 단일 파일을 예측하고, 결과를 출력합니다.
+
+### `regressionFolderWrapper`
+
+폴더 내의 모든 파일을 예측하고, 결과를 출력합니다.
+
+### `trainHMMsegmenter_fromfile`
+
+WAV 파일과 주석 데이터를 사용하여 HMM을 학습합니다.
+
+### `trainHMMsegmenter_fromdir`
+
+폴더 내의 WAV 파일과 주석 데이터를 사용하여 HMM을 학습합니다.
+
+### `segmentclassifyFileWrapper`
+
+학습된 HMM을 사용하여 파일을 세그먼트하고 분류합니다.
+
+### `segmentclassifyFileWrapperHMM`
+
+HMM을 사용하여 파일을 세그먼트하고 분류합니다.
+
+### `segmentationEvaluation`
+
+폴더 내의 파일을 사용하여 세그먼트 분류를 평가합니다.
+
+### `silenceRemovalWrapper`
+
+WAV 파일에서 무음 구간을 제거하고 결과를 별도의 WAV 파일로 저장합니다.
+
+### `speakerDiarizationWrapper`
+
+WAV 파일에서 발화자 분리를 수행하고, 발화자 수와 LDA 사용 여부를 설정할 수 있습니다.
+
+### `thumbnailWrapper`
+
+오디오 파일에서 썸네일을 생성하고, 썸네일 구간을 별도의 WAV 파일로 저장합니다.
+
+
+```python
+from pydub import AudioSegment
+import os
+import numpy as np
+from pyAudioAnalysis import audioSegmentation as aS
+from pyAudioAnalysis import audioTrainTest as aT
+from pyAudioAnalysis import audioBasicIO
+
+def convert_mp3_to_wav(input_file, output_file):
+    """MP3 파일을 WAV 파일로 변환"""
+    if not os.path.isfile(input_file):
+        raise Exception("Input MP3 file not found!")
+    audio = AudioSegment.from_mp3(input_file)
+    audio.export(output_file, format="wav")
+    print(f"Converted {input_file} to {output_file}")
+
+def speaker_diarization(input_file, num_speakers=2):
+    """음성 특징 추출 및 발화자 분리"""
+    if not os.path.isfile(input_file):
+        raise Exception("Input audio file not found!")
+    segments, classes, class_names = aS.speaker_diarization(input_file, num_speakers)
+    return segments, classes, class_names
+
+def train_my_voice_model(my_voice_data, model_name="my_voice_model"):
+    """내 음성 데이터를 사용하여 모델 학습"""
+    if not all(os.path.isdir(folder) for folder in my_voice_data):
+        raise Exception("One or more input directories not found!")
+    aT.extract_features_and_train(my_voice_data, 1.0, 1.0, aT.shortTermWindow, aT.shortTermStep, "svm", model_name)
+    print(f"Trained my voice model and saved as {model_name}")
+
+def classify_my_voice(input_file, model_name="my_voice_model"):
+    """학습된 모델을 사용하여 음성 데이터에서 나의 목소리 식별"""
+    if not os.path.isfile(model_name):
+        raise Exception("Model file not found!")
+    if not os.path.isfile(input_file):
+        raise Exception("Input audio file not found!")
+    results, classes = aT.file_classification(input_file, model_name, "svm")
+    return results, classes
+
+def analyze_speech(input_file, my_voice_class, segments, classes):
+    """나를 제외한 다른 발화자의 수와 대화 시간 분석"""
+    segment_times = np.diff(segments, axis=1).flatten()
+    other_speakers = [c for c in set(classes) if c != my_voice_class]
+    num_other_speakers = len(other_speakers)
+
+    total_time = sum(segment_times)
+    my_voice_time = sum([segment_times[i] for i in range(len(segment_times)) if classes[i] == my_voice_class])
+    other_voice_times = {speaker: sum([segment_times[i] for i in range(len(segment_times)) if classes[i] == speaker]) for speaker in other_speakers}
+
+    return num_other_speakers, my_voice_time, other_voice_times
+
+def main():
+    input_mp3 = "path/to/your/file.mp3"
+    wav_file = "path/to/your/file.wav"
+    my_voice_data = ["path/to/my_voice_data"]  # 여기에 내 음성 데이터 경로를 추가
+
+    # MP3 파일을 WAV 파일로 변환
+    convert_mp3_to_wav(input_mp3, wav_file)
+
+    # 음성 특징 추출 및 발화자 분리
+    segments, classes, class_names = speaker_diarization(wav_file, num_speakers=2)
+
+    # 내 음성 데이터를 사용하여 모델 학습
+    train_my_voice_model(my_voice_data)
+
+    # 학습된 모델을 사용하여 음성 데이터에서 나의 목소리 식별
+    results, classes = classify_my_voice(wav_file)
+
+    # 나의 목소리 클래스 식별
+    my_voice_class = class_names.index("my_voice")  # "my_voice"는 내 목소리 클래스 이름
+
+    # 나를 제외한 다른 발화자의 수와 대화 시간 분석
+    num_other_speakers, my_voice_time, other_voice_times = analyze_speech(wav_file, my_voice_class, segments, classes)
+
+    print(f"Number of other speakers: {num_other_speakers}")
+    print(f"My voice time: {my_voice_time:.2f} seconds")
+    for speaker, time in other_voice_times.items():
+        print(f"Speaker {speaker} time: {time:.2f} seconds")
+
+if __name__ == "__main__":
+    main()
+
+```
+- **`convert_mp3_to_wav`**: MP3 파일을 WAV 파일로 변환합니다.
+- **`speaker_diarization`**: 음성 파일에서 발화자 분리를 수행합니다.
+- **`train_my_voice_model`**: 내 음성 데이터를 사용하여 모델을 학습합니다.
+- **`classify_my_voice`**: 학습된 모델을 사용하여 음성 파일에서 나의 목소리를 식별합니다.
+- **`analyze_speech`**: 나를 제외한 다른 발화자의 수와 각 발화자의 대화 시간을 계산합니다.
+- **`main`**: 위의 모든 함수를 호출하여 전체 과정을 수행합니다.
+
+---
+## 자세 분석 코드
+- 걷는것을 판단하기 위한 모델 만들기
+- 음성 녹음의 기준을 판단하는것을 나의 움직임과 그 후 내 목소리를 기준으로 진행
+- 앉기, 걷기, 서기 정도의 자세 모델이 필요.
+- **걷기**가 가장 중요
+
+---
+---
+---
