@@ -1037,3 +1037,203 @@ if __name__ == "__main__":
 - 60분을 기준으로 시간별 시선분석
 ---
 
+---
+---
+---
+# 240726
+## 아이트래킹 코드
+```python
+import numpy as np
+import cv2
+
+
+name = "규림"
+# 얼굴 및 눈 검출을 위한 Haar Cascade 로드
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
+
+# 좌표 범위를 계산하는 함수
+def calculate_bounding_box(video_path):
+    cap = cv2.VideoCapture(video_path)
+    min_x, min_y = float('inf'), float('inf')
+    max_x, max_y = 0, 0
+
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+
+        for (x, y, w, h) in faces:
+            roi_gray = gray[y:y + h, x:x + w]
+            eyes = eye_cascade.detectMultiScale(roi_gray)
+            for (ex, ey, ew, eh) in eyes:
+                eye_gray = roi_gray[ey:ey + eh, ex:ex + ew]
+                _, thresholded = cv2.threshold(eye_gray, 70, 255, cv2.THRESH_BINARY_INV)
+                thresholded = cv2.medianBlur(thresholded, 5)
+                contours, _ = cv2.findContours(thresholded, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+                if contours:
+                    max_contour = max(contours, key=cv2.contourArea)
+                    if cv2.contourArea(max_contour) > 10:
+                        M = cv2.moments(max_contour)
+                        if M['m00'] != 0:
+                            cx = int(M['m10'] / M['m00'])
+                            cy = int(M['m01'] / M['m00'])
+                            min_x, min_y = min(min_x, cx), min(min_y, cy)
+                            max_x, max_y = max(max_x, cx), max(max_y, cy)
+
+    cap.release()
+    return (min_x, min_y, max_x, max_y)
+
+# 눈과 옷 영상을 분석하여 좌표 범위를 계산
+eye_bounding_box = calculate_bounding_box(f'C:/Users/SSAFY/Desktop/gugu/Proctoring-AI/Interview/눈/{name}.mp4')
+clothes_bounding_box = calculate_bounding_box(f'C:/Users/SSAFY/Desktop/gugu/Proctoring-AI/Interview/옷/{name}.mp4')
+
+# 대화 영상을 분석하여 동공이 눈 또는 옷 박스 안에 있는지 확인합니다.
+def analyze_gaze(video_path, eye_box, clothes_box):
+    print("눈------------------------------------------")
+    print(eye_box)
+    print("옷----------------------------------------")
+    print(clothes_box)
+    cap = cv2.VideoCapture(video_path)
+    eye_count, clothes_count, total_count = 0, 0, 0
+
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+
+        for (x, y, w, h) in faces:
+            roi_gray = gray[y:y + h, x:x + w]
+            roi_color = frame[y:y + h, x:x + w]  # 색상 영역 추가
+            eyes = eye_cascade.detectMultiScale(roi_gray)
+            for (ex, ey, ew, eh) in eyes:
+                eye_gray = roi_gray[ey:ey + eh, ex:ex + ew]
+                eye_color = roi_color[ey:ey + eh, ex:ex + ew]
+                _, thresholded = cv2.threshold(eye_gray, 70, 255, cv2.THRESH_BINARY_INV)
+                thresholded = cv2.medianBlur(thresholded, 5)
+                contours, _ = cv2.findContours(thresholded, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+                if contours:
+                    max_contour = max(contours, key=cv2.contourArea)
+                    if cv2.contourArea(max_contour) > 10:
+                        M = cv2.moments(max_contour)
+                        if M['m00'] != 0:
+                            cx = int(M['m10'] / M['m00'])
+                            cy = int(M['m01'] / M['m00'])
+                            total_count += 1
+                            if eye_box[0] <= cx <= eye_box[2] and eye_box[1] <= cy <= eye_box[3]:
+                                eye_count += 1
+                            elif clothes_box[0] <= cx <= clothes_box[2] and clothes_box[1] <= cy <= clothes_box[3]:
+                                clothes_count += 1
+                            # 동공 위치에 노란색 원 그리기
+                            # cv2.circle(eye_color, (cx, cy), 5, (0, 255, 255), -1)
+                            # print('위치',cx,cy)
+
+        # 결과를 표시
+        # cv2.imshow('frame', frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+    
+    eye_ratio = eye_count / total_count if total_count > 0 else 0
+    clothes_ratio = clothes_count / total_count if total_count > 0 else 0
+    return eye_ratio, clothes_ratio,eye_count,clothes_count,total_count
+
+# 대화 영상을 분석하여 눈과 옷을 얼마나 보는지 판단
+eye_ratio, clothes_ratio,eye_count,clothes_count,total_count = analyze_gaze(f'C:/Users/SSAFY/Desktop/gugu/Proctoring-AI/Interview/대화/{name}.MOV', eye_bounding_box, clothes_bounding_box)
+
+print(f"눈을 본 비율: {eye_ratio * 100}%")
+print(f"옷을 본 비율: {clothes_ratio * 100}%")
+print(f"눈을 본 횟수: {eye_count}번")
+print(f"옷을 본 횟수: {clothes_count}번")
+print(f"전체: {total_count}번")
+
+```
+## 결과
+| 이름 | 시간(분) | 눈 비율 | 옷 비율 |
+| --- | --- | --- | --- |
+| 이재성 | 5 | 91.16% | 8.80% |
+| 이재성 | 15 | 92.80% | 7.19% |
+| 이재성 | 30 | 75.00% | 24.86% |
+| 김규림 | 5 | 51.11% | 47.82% |
+| 김규림 | 10 | 37.73% | 54.94% |
+| 김규림 | 15 | 38.46% | 60.73% |
+| 정진영 | 5 | 94.66% | 5.15% |
+| 정진영 | 10 | 95.23% | 4.59% |
+
+---
+**질문 목록**
+
+Q. 옷이 사람들의 기억에 남아있는 것을 부정적으로 본다는건지? 기억에 남아있는것이 가지는 의미를 잘 모르겠습니다.
+
+Q. 어떠한 유저플로우로 서비스를 사용할 수 있는지 궁금합니다.
+
+Q. 가중치에 대한 근거를 어떻게 설정할 것인지 궁금합니다.
+
+Q. 옷을 단순히 입지 말라고 하는 것이 얼마나 필요한 기능인지 잘 와닿지 않습니다. 차라리 옷을 추천해주는 서비스인게 낫지 않을까요…?
+
+Q. 음성말고 다른 방법으로 등록할 때, 내 옷장에 있는 옷들을 미리 등록시켜놔야하는건가요
+
+---
+
+기옷기옷 중간 발표 Q&A
+
+- 옷이 사람들의 기억에 남으면 무엇이 좋은거냐 ? 서비스 목적?
+    
+    특징있는 옷을 언제 입어도 되는거냐 를 나타내는 것
+    
+- 실제로 사용한다면 어떻게 사용하게 될 지 설명 부탁
+    
+    음성활성화, 입을 옷 등록, 캘린더
+    
+- 자세, 시선 데이터 수집 부분 어디에서 사용되는지 ?
+    
+    일어섰을때 사람들의 옷 많이 볼 것이라고 생각
+    
+    실제 앱에서는 해당 데이터 사용 X
+    
+- 대화를 하는 상대방의 목소리 녹음은 문제가 되지 않나 ?
+    
+    전체음성을 텍스트화 X, 누구인지만 화자분석
+    
+- 기억에 잊혀졌는지, 안잊혀졌는지 판단 기준은 ?
+    
+    명도, 채도 강하면 사람들 기억에 오래 남을 것이라 생각
+    
+- 이 앱은 이용자가 오늘 뭐 입지에 대한 답을 찾기 위함인데 내가 답을 먼저 찾고 그걸 ai에게 확인하는 느낌아닌가 ?
+    
+    어떤 옷을 입지 말아야 할까가 우리 앱의 중점임
+    
+
+---
+
+컨설턴트님 피드백
+
+- 직장인들의 옷 결정 스트레스다 ! 앱 사용할 듯!
+- 과학적인 근거가 있다면 그 가중치를 보여주는게 재밌을 것 같음
+- ui/ux 아직 아쉬움 → 등록 화면 불편
+- 위젯에 내가 오늘 입고 있는 옷 간단하게 보여주기 ?
+
+---
+
+개인적인 피드백
+
+- 우리의 주 서비스가 옷에 대한 기억력인데 그 부분이 생각보다 어필이 덜 된 것 같아서 아쉬웠다ㅜ
+    - 페르소나를 매일매일 다른 옷을 입는 기분을 느끼길 원하는 직장인~ 같이 기억력 위주로 구체화 해야할 것 같다
+    - 가중치를 정하는 근거에 대해서도 좀 더 중점을 두고 발표하면 더 어필이 잘 될 것 같다! (ex : 활동량이 많을 수록 많은 사람을 만나서 더 많은 사람의 기억에 오래 남을것 같아서 활동량을 가중치 근거로 넣었다)
+- 최종 발표 준비 기간을 넉넉하게 잡아서 같이 발표 들어보고 발표내용 같이 완성해주기~
+
+
+
+---
+## 일정관리 간트차트 주소
+**https://docs.google.com/spreadsheets/d/1XHxqbATuQjaIxjweTUsKZiCwHGL0CrEJt4XBOCUo2Y0/edit?usp=sharing**
+
+---
