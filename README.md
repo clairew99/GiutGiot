@@ -1237,3 +1237,386 @@ Q. 음성말고 다른 방법으로 등록할 때, 내 옷장에 있는 옷들�
 **https://docs.google.com/spreadsheets/d/1XHxqbATuQjaIxjweTUsKZiCwHGL0CrEJt4XBOCUo2Y0/edit?usp=sharing**
 
 ---
+---
+---
+# 240729
+## 주말 프론트 회의
+### 프론트 메인화면 구상
+![1차](./240728메인.png)
+---
+
+## 사용자 앨범 접근 유무
+
+- 앨범에 접근하여 색만 가져온다?
+    - 접근하는데 아쉬움이 있음
+- 일정을 먼저 정해보자
+
+---
+---
+---
+---
+#### 0729 논의 내용
+
+- 대화형 기능을 위한 키워드 설정
+    - `colors = { '빨간색': (255, 0, 0), '파란색': (0, 0, 255), '노란색': (255, 255, 0), '초록색': (0, 255, 0), '검은색': (0, 0, 0), '흰색': (255, 255, 255), '핑크': (255, 192, 203)
+    }
+    types = ['니트', '셔츠', '반팔', '긴팔', '코트', '재킷']
+    patterns = ['스트라이프', '체크', '도트', '플라워']`
+
+---
+## 와이어프레임 피드백
+
+- 유저 플로우의 화면 흐름이 안보임
+- 등록은 왜 해?
+    - 등록 자체를 빼는게 좋아보임
+    - 사용자를 왜 괴롭히려고 하는 건지 이해가 불가능
+- 사용자가 내 옷을 등록하는 순간 망한다고 생각함
+- 둘 중 하나
+    - 컨텐츠 - 사용자가 정말 쓰고 싶게 해야 함
+    - 편함 - 사용자가 쓰기 편함
+- 음성 등록도 애매함
+- 옷의 정보가 없는 서비스는?
+- 모래시계 알고 보면 보이지만, 유저에게 바로 의미가 보일까?
+    - 재미있게 보여주기. 현재 직관적이지는 않음
+- 디자인 완성 X - 굳이 보라색 톤?
+- 라이트하게 “ 입지마라!“만을 표현했으면
+    - 기술적인 시도, 트렌디함 추구
+    - 왜 등록해야해 ????????
+- 인형 뽑기 메인 화면
+    - “입어도 되는 옷들 중에서 오늘 입을 옷 하나 골라줘” 정도의 느낌임
+    - 서브 기능으로는 괜찮지만 메인으로는 X
+- 우리가 왜 이걸 해야 하는지 ?
+- **모래시계**
+    - 흔들림이 필수
+- 내가 가지고 있는 옷을 보여준다면 최고
+- 내가 가지고 있는 옷에 대한 메타 데이터를 추가로 보여준다면 더 좋을 것 같음
+- 등록 화면
+    - 팔레트 나오는 방식
+        - 팔레트가 펼쳐지면서 사용자가 선택하는 액션 ?
+        - 지금은 너무 일하는 느낌. 사용자가 안 쓸 듯
+        - 간단한 터치 정도의 수준으로 수정
+        - 어떻게 그날 입은 옷을 캐치할 수 있을까? 등록말고ㅠ
+        - 편한 등록 방법을 찾아보자,,,,,
+
+---
+
+- 모래 시계 위가 잊혀지지 않은 옷이라는 걸 더 확실하게 어떻게 보여줄지 ?
+- 배경색 ?
+- 등록 방법 ?
+- 음성 등록과 팔레트에서 색 선택 ?
+- 홈화면 / 등록화면
+
+---
+---
+---
+---
+# 240730
+## 음성 분석
+- 화자 분석
+- 내 목소리 분석 정확도 향상 필요
+- 화자 분리 필요
+- 시간을 얼마나 투자해야할지 일정 정리
+```python
+import subprocess
+import os
+import numpy as np
+import librosa
+from pydub import AudioSegment
+from sklearn.mixture import GaussianMixture
+from sklearn.preprocessing import StandardScaler
+from scipy.spatial.distance import cosine
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+import matplotlib.pyplot as plt
+from scipy.spatial.distance import euclidean
+from fastdtw import fastdtw
+
+path = "C:/Users/SSAFY/Desktop/test/data/"
+
+# ffmpeg 경로 설정
+AudioSegment.converter = "C:/ffmpeg-master-latest-win64-gpl/bin/ffmpeg.exe"
+AudioSegment.ffprobe = "C:/ffmpeg-master-latest-win64-gpl/bin/ffprobe.exe"
+
+def convert_to_wav(input_path, output_path):
+    if os.path.exists(input_path):
+        command = f"C:/ffmpeg-master-latest-win64-gpl/bin/ffmpeg.exe -y -i {input_path} {output_path}"
+        subprocess.call(command, shell=True)
+    else:
+        print(f"Error: Input file {input_path} does not exist.")
+
+def clean_audio(y):
+    y = np.nan_to_num(y)  # NaN 값을 0으로 변환
+    y[np.isinf(y)] = 0  # 무한대 값을 0으로 변환
+    return y
+
+def extract_features(y, sr, n_mfcc=20, n_fft=2048):
+    y = clean_audio(y)  # NaN과 무한대 값 제거
+    if len(y) < 2048:  # 최소 신호 길이를 보장
+        y = np.pad(y, (0, 2048 - len(y)), 'constant')
+
+    n_fft = min(n_fft, len(y))  # n_fft 값을 신호 길이에 맞게 조정
+
+    mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=n_mfcc, n_fft=n_fft)
+    chroma = librosa.feature.chroma_stft(y=y, sr=sr, n_fft=n_fft)
+    mel = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=n_fft)
+    contrast = librosa.feature.spectral_contrast(y=y, sr=sr, n_fft=n_fft)
+    tonnetz = librosa.feature.tonnetz(y=librosa.effects.harmonic(y), sr=sr)
+    zcr = librosa.feature.zero_crossing_rate(y, frame_length=n_fft)
+    rms = librosa.feature.rms(y=y, frame_length=n_fft)
+
+    features = np.hstack([
+        np.mean(mfccs.T, axis=0),
+        np.std(mfccs.T, axis=0),
+        np.mean(chroma.T, axis=0),
+        np.std(chroma.T, axis=0),
+        np.mean(mel.T, axis=0),
+        np.std(mel.T, axis=0),
+        np.mean(contrast.T, axis=0),
+        np.std(contrast.T, axis=0),
+        np.mean(tonnetz.T, axis=0),
+        np.std(tonnetz.T, axis=0),
+        np.mean(zcr.T, axis=0),
+        np.std(zcr.T, axis=0),
+        np.mean(rms.T, axis=0),
+        np.std(rms.T, axis=0)
+    ])
+
+    return features.flatten()
+
+def extract_features_from_multiple_files(file_list):
+    all_features = []
+    for file in file_list:
+        y, sr = librosa.load(file)
+        y = clean_audio(y)
+        features = extract_features(y, sr)
+        all_features.append(features)
+
+    all_features = np.array(all_features)
+    mean_features = np.mean(all_features, axis=0)
+    return mean_features
+
+def segment_features(features, segment_size=50):  # 세그먼트 길이를 줄임
+    num_segments = features.shape[0] // segment_size
+    segments = np.array([features[i * segment_size: (i + 1) * segment_size] for i in range(num_segments)])
+    return segments
+
+def find_optimal_clusters(data, max_k):
+    iters = range(2, max_k + 1, 2)
+    sse = []
+    silhouettes = []
+
+    for k in iters:
+        kmeans = KMeans(n_clusters=k, random_state=42).fit(data)
+        sse.append(kmeans.inertia_)
+        score = silhouette_score(data, kmeans.labels_)
+        silhouettes.append(score)
+
+    f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
+    ax1.plot(iters, sse, '-o')
+    ax1.set_xlabel('Cluster Centers')
+    ax1.set_ylabel('SSE')
+    ax2.plot(iters, silhouettes, '-o')
+    ax2.set_xlabel('Cluster Centers')
+    ax2.set_ylabel('Silhouette Score')
+    plt.show()
+
+    best_k = iters[silhouettes.index(max(silhouettes))]
+    return best_k
+
+def cluster_segments(segments, num_clusters=2):
+    if len(segments) < num_clusters:
+        raise ValueError(f"n_samples={len(segments)} should be >= n_clusters={num_clusters}.")
+    
+    kmeans = KMeans(n_clusters=num_clusters)
+    segments_flattened = segments.reshape(segments.shape[0], -1)
+    labels = kmeans.fit_predict(segments_flattened)
+    return labels, kmeans.cluster_centers_
+
+def calculate_speaker_times(labels, segment_size, sr):
+    unique_labels = np.unique(labels)
+    speaker_times = {label: 0 for label in unique_labels}
+    for label in labels:
+        speaker_times[label] += segment_size / sr
+    return speaker_times
+
+def filter_non_speech_frames(y, sr, rms_threshold=0.03):
+    # RMS 값 계산
+    rms = librosa.feature.rms(y=y)[0]
+
+    # 각 RMS 프레임의 길이 계산
+    frame_length = int(len(y) / len(rms))
+
+    # RMS 값 배열을 원래 오디오 배열 길이에 맞게 확장
+    expanded_indices = np.repeat(rms < rms_threshold, frame_length)
+
+    # 확장된 인덱스가 원래 오디오 배열보다 길면 자르기
+    if len(expanded_indices) < len(y):
+        expanded_indices = np.append(expanded_indices, np.zeros(len(y) - len(expanded_indices), dtype=bool))
+    elif len(expanded_indices) > len(y):
+        expanded_indices = expanded_indices[:len(y)]
+
+    filtered_y = y[~expanded_indices]
+    return filtered_y
+
+def identify_speakers(audio_path, my_voice_features, threshold=30.0):
+    y, sr = librosa.load(audio_path)
+    y = clean_audio(y)  # NaN과 무한대 값 제거
+    y = filter_non_speech_frames(y, sr)  # 비음성 프레임 제거
+
+    intervals = librosa.effects.split(y, top_db=20)
+    speaker_features = []
+    speaker_times = []
+
+    for interval in intervals:
+        start, end = interval
+        segment = y[start:end]
+        features = extract_features(segment, sr)
+        speaker_features.append(features)
+        speaker_times.append((start, end))
+
+    if len(speaker_features) < 2:
+        print("Not enough segments to cluster.")
+        return 0, sum((end - start) / sr for start, end in speaker_times), 0
+
+    speaker_features = np.array(speaker_features)
+    scaler = StandardScaler()
+    speaker_features = scaler.fit_transform(speaker_features)
+
+    best_k = find_optimal_clusters(speaker_features, max_k=10)
+    print(f"Optimal number of clusters: {best_k}")
+
+    labels, centers = cluster_segments(speaker_features, num_clusters=best_k)
+
+    my_voice_time = 0
+    other_speaker_time = 0
+    speaker_durations = {i: 0 for i in range(best_k)}
+
+    for sf, (start, end), label in zip(speaker_features, speaker_times, labels):
+        duration = (end - start) / sr
+        sf_flat = sf.flatten()
+        my_voice_flat = my_voice_features.flatten()
+
+        distance, _ = fastdtw(sf_flat.reshape(-1, 1), my_voice_flat.reshape(-1, 1), dist=euclidean)
+        print(f"Segment distance: {distance}, Duration: {duration}, Label: {label}")
+        if distance < threshold:
+            my_voice_time += duration
+        else:
+            speaker_durations[label] += duration
+
+    other_speakers_time = sum(speaker_durations.values())
+
+    return my_voice_time, other_speakers_time, len(np.unique(labels)) - 1
+
+# GMM 모델 훈련
+def train_gmm_model(file_paths, n_components=16):
+    features = []
+    for file_path in file_paths:
+        y, sr = librosa.load(file_path, sr=None)
+        feature = extract_features(y, sr)
+        features.append(feature)
+    
+    features = np.array(features)
+    scaler = StandardScaler()
+    features = scaler.fit_transform(features)
+
+    n_components = min(len(features), n_components)  # 데이터 포인트 수 이하로 설정
+    
+    gmm = GaussianMixture(n_components=n_components, covariance_type='diag', n_init=3)
+    gmm.fit(features)
+    
+    return gmm, scaler, features
+
+def recognize_speaker(gmm, scaler, test_file):
+    y, sr = librosa.load(test_file, sr=None)
+    features = extract_features(y, sr)
+    features = scaler.transform([features])
+    score = gmm.score(features)
+    
+    return score
+
+def extract_i_vector(y, sr, gmm, ubm):
+    features = extract_features(y, sr).reshape(1, -1)  # features의 형태를 (1, n_features)로 변경
+    post = gmm.predict_proba(features)
+    N = np.sum(post, axis=0)
+    F = np.dot(post.T, features) - N[:, np.newaxis] * ubm.means_
+    T_inv = np.linalg.inv(np.dot(ubm.means_.T, ubm.means_))
+    i_vector = np.dot(T_inv, F.T)
+    return i_vector.flatten()
+
+def cosine_similarity(v1, v2):
+    return 1 - cosine(v1, v2)
+
+def main():
+    conversation_files = [
+        path + "conversation6.m4a"
+    ]
+    
+    my_voice_files = [
+        path + "js_01.m4a",
+        path + "js_02.m4a",
+        path + "js_03.m4a",
+        path + "js_04.m4a",
+        path + "js_05.m4a",
+        path + "js_06.m4a",
+    ]
+
+    # my_voice_files를 wav로 변환
+    my_voice_wavs = [file.replace('.m4a', '.wav') for file in my_voice_files]
+    for m4a, wav in zip(my_voice_files, my_voice_wavs):
+        convert_to_wav(m4a, wav)
+
+    # 여러 파일에서 특징 추출
+    my_voice_features = extract_features_from_multiple_files(my_voice_wavs)
+
+    # GMM 모델 훈련
+    gmm_model, scaler, features = train_gmm_model(my_voice_wavs)
+    
+    total_other_speakers = set()
+    total_conversation_time = 0
+
+    for conv_file in conversation_files:
+        wav_file = conv_file.replace('.m4a', '.wav')
+        convert_to_wav(conv_file, wav_file)
+
+        my_voice_time, other_time, other_speakers = identify_speakers(wav_file, my_voice_features)
+
+        total_other_speakers.update(range(other_speakers))
+        total_conversation_time += other_time
+
+        # GMM 모델을 사용하여 스피커 인식
+        score = recognize_speaker(gmm_model, scaler, wav_file)
+        print(f"Recognition score for {os.path.basename(conv_file)}: {score}")
+
+        # I-vector 추출 및 유사도 계산
+        test_i_vector = extract_i_vector(librosa.load(wav_file)[0], librosa.load(wav_file)[1], gmm_model, ubm)
+        similarities = [cosine_similarity(train_iv, test_i_vector) for train_iv in train_i_vectors]
+        print(f"Cosine similarities for {os.path.basename(conv_file)}: {similarities}")
+
+        print(f"File: {os.path.basename(conv_file)}")
+        print(f"My voice time: {my_voice_time:.2f} seconds")
+        print(f"Other speakers time: {other_time:.2f} seconds")
+        print(f"Number of other speakers: {other_speakers}")
+        print()
+
+    print(f"Total number of other speakers across all conversations: {len(total_other_speakers)}")
+    print(f"Total conversation time (excluding my voice): {total_conversation_time:.2f} seconds")
+
+if __name__ == "__main__":
+    main()
+
+```
+- 데이터 녹음
+    - 2인
+    - 3인
+    - 4인 이상
+
+
+---
+## 아이디어 회의
+### 등록 페이지
+- 사용자의 귀찮음을 줄일 페이지
+- 사용자 패션 주기 분석을 통한 코디 예측
+- 예측란에 없다면? - 추가
+---
+---
+---
