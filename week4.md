@@ -5,3 +5,9 @@
 # 240730 TUE
 1. Jenkins - Gitlab 연동 및 Pipeline 작업
 2. 등록 유저플로우 회의
+
+# 240731 WED
+1. Jenkins Pipeline 작업
+    [X] git clone
+    [X] build
+    [ ] deploy
