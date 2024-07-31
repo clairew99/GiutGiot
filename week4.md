@@ -8,6 +8,6 @@
 
 # 240731 WED
 1. Jenkins Pipeline 작업
-    [X] git clone
-    [X] build
-    [ ] deploy
+    - [X] git clone
+    - [X] build
+    - [ ] deploy
