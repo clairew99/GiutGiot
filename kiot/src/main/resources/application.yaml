@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: kiot
+
+  profiles:
+    active: ${PROFILE}
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+  jpa:
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+
+  web:
+    resources:
+      add-mappings: false
