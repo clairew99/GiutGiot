@@ -1658,3 +1658,14 @@ if __name__ == "__main__":
 ---
 ---
 ---
+# 240801
+## 자세 분석 모델 파일
+- 플러터로 이식
+---
+## 데이터 전송
+- FLutter > python으로
+- python Flask 사용
+- flutter > parse json in the background 활용
+---
+## 화자 인식 코드 재생성
+- UISRNN 활용
