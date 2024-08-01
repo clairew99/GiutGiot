@@ -11,3 +11,12 @@
     - [X] git clone
     - [X] build
     - [ ] deploy
+
+# 240801 THU
+1. Jenkins Pipeline 작업
+- jar build 후 docker hub에 업로드 후 ec2 container에 pull 받아서 배포하는 형식으로 변경
+    - [X] git clone
+    - [X] back_build (jar 파일로)
+    - [X] docker_build (docker 이미지로)
+    - [X] docker_push (docker hub에 업로드)
+    - [ ] docker_pull (docker hub -> ec2로 pull 후 배포)
