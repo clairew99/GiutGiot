@@ -7,7 +7,7 @@ import 'package:tflite_flutter/tflite_flutter.dart';
 import 'speech_recognition.dart';
 import 'sensor_management.dart';
 import 'ml_model.dart';
-
+// 메인 홈페이지
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
