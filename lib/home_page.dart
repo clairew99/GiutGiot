@@ -65,7 +65,7 @@ class _HomePageState extends State<HomePage> {
         latestUserAccelerometerValues = userAccelerometerValues;
       }
 
-      // 240802 SHJ: 센서 데이터가 업데이트될 때마다 로그 출력
+      // 240802 SHJ: 센서 데이터가 업데이트될 때 로그 출력 - 디버깅용
       //print('Accelerometer: $latestAccelerometerValues, Gyroscope: $latestGyroscopeValues, UserAccelerometer: $latestUserAccelerometerValues');
     });
   }
@@ -116,7 +116,7 @@ class _HomePageState extends State<HomePage> {
         latestUserAccelerometerValues![0], latestUserAccelerometerValues![1], latestUserAccelerometerValues![2]
       ]);
       setState(() {
-        // print('Array size: ${array.length}'); // 240802 SHJ: 배열 크기를 출력
+        // print('Array size: ${array.length}'); // 240802 SHJ: 배열 크기를 출력 - 디버깅용
       });
     }
   }
