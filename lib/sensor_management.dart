@@ -1,6 +1,7 @@
 import 'package:sensors/sensors.dart';
 import 'dart:async';
-// 240802 SHJ: 센서데이터 전처리
+// 240802 SHJ: 센서데이터 전처리 페이지
+
 void initializeSensors(List<StreamSubscription<dynamic>> streamSubscriptions, Function(List<double>?, List<double>?, List<double>?) onData) {
   streamSubscriptions.add(accelerometerEvents.listen((AccelerometerEvent event) {
     onData(<double>[event.x, event.y, event.z], null, null);

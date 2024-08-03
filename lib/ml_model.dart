@@ -1,4 +1,6 @@
 import 'package:tflite_flutter/tflite_flutter.dart';
+// 240802 SHJ: 자세모델 탑재 페이지"
+
 // 240802 SHJ: 센서데이터 모델에 입력
 Future<Interpreter> loadModel(String modelFile) async {
   try {
