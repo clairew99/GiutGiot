@@ -42,6 +42,13 @@ flutter:
 
   ## 20240802 SHJ
   ## 자세 모델
+
+  # 24.08.03 JJY
+  # 백그라운드 배경 화면 적용 완료
+  # 모든 파일에 접근할 수 있도록 활성화 (예정)
   assets:
     - assets/model/posture_analysis.tflite
+    - assets/background/bg_hourglass.gif
+    - assets/background/bg.gif
+    - assets/background/hourglass.png
   ## SHJ FIN
