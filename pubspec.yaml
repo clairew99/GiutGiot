@@ -1,0 +1,44 @@
+name: GIUTGIOT
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=2.12.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  ## stt,tts
+  ## 20240731 SHJ
+  speech_to_text: ^6.1.1
+  flutter_tts: ^3.6.3
+  permission_handler: ^10.2.0
+  sensors: ^2.0.0
+  shared_preferences: ^2.0.6
+  tflite_flutter: ^0.10.1
+  syncfusion_flutter_sliders: ^19.2.55
+  connectivity_plus: ^1.0.6
+  socket_io_client: ^2.0.0-beta.5
+  #  screen: ^0.0.5
+  ## SHJ FIN
+
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+
+  ## 20240802 SHJ
+  ## 자세 모델
+  assets:
+    - assets/model/posture_analysis.tflite
+  ## SHJ FIN
