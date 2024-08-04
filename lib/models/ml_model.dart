@@ -1,7 +1,6 @@
 import 'package:tflite_flutter/tflite_flutter.dart';
-// 240802 SHJ: 자세모델 탑재 페이지"
 
-// 240802 SHJ: 센서데이터 모델에 입력
+// 240802 SHJ: 자세모델 탑재 페이지
 Future<Interpreter> loadModel(String modelFile) async {
   try {
     Interpreter interpreter = await Interpreter.fromAsset(modelFile);
@@ -44,6 +43,7 @@ void predict(List<List<double>> array, Interpreter interpreter, int maxIndexCoun
     }
 
     onPrediction(maxIndex, maxIndexCount);
+    print('Predicted activity index: $maxIndex, maxIndexCount: $maxIndexCount'); // 예측된 활동 인덱스를 로그로 출력
   } catch (e) {
     print('Prediction failed: $e');
   }

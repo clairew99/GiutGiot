@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'screen/s_home.dart';
 import 'screen/s_setting.dart';
+import 'screen/s_voice_activation.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -14,10 +15,11 @@ class MyApp extends StatelessWidget {
       // theme: ThemeData(
       //   primarySwatch: Colors.white,
       // ),
-      home: const HomeScreen(),// home 화면 처음 실행 
+      home: const HomeScreen(), // home 화면 처음 실행
       // router 설정
       routes: {
         '/settings': (context) => const SettingScreen(),
+        '/voice_activation': (context) => VoiceActivationScreen(), // 여기를 수정
       },
     );
   }
