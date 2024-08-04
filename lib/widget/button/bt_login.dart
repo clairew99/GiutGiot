@@ -20,7 +20,7 @@ class ButtonWidget extends StatelessWidget {
           onPressed: () {
             // 구글 로그인 로직
           },
-          icon: Image.asset('assets/google_icon.png', width: 24, height: 24),
+          icon: Image.asset('assets/icon/google_icon.png', width: 24, height: 24),
           label: Text(
             button1Text,
             style: TextStyle(color: Colors.black), // 텍스트 색상 검정색으로 설정
@@ -35,7 +35,7 @@ class ButtonWidget extends StatelessWidget {
           onPressed: () {
             // 네이버 로그인 로직
           },
-          icon: Image.asset('assets/naver_icon.png', width: 24, height: 24),
+          icon: Image.asset('assets/icon/naver_icon.png', width: 24, height: 24),
           label: Text(
             button2Text,
             style: TextStyle(color: Colors.black), // 텍스트 색상 검정색으로 설정
@@ -50,7 +50,7 @@ class ButtonWidget extends StatelessWidget {
           onPressed: () {
             // 카카오 로그인 로직
           },
-          icon: Image.asset('assets/kakao_icon.png', width: 24, height: 24),
+          icon: Image.asset('assets/icon/kakao_icon.png', width: 24, height: 24),
           label: Text(
             button3Text,
             style: TextStyle(color: Colors.black), // 텍스트 색상 검정색으로 설정

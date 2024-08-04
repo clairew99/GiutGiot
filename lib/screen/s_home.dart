@@ -21,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Interpreter? _interpreter; // TFLite Interpreter
   String activity = 'Unknown'; // 활동 상태 변수
   int maxIndex = 0; // maxIndex 변수 추가
-  List<StreamSubscription<dynamic>> _streamSubscriptions = [];
+  final List<StreamSubscription<dynamic>> _streamSubscriptions = [];
 
   @override
   void initState() {
@@ -101,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
             left: 20.0,
             child: Text(
               'Current Activity: $activity',
-              style: TextStyle(fontSize: 20, color: Colors.white),
+              style: const TextStyle(fontSize: 20, color: Colors.white),
             ),
           ),
         ],
