@@ -19,7 +19,10 @@ class CalendarContent extends StatelessWidget {
         // 메인 콘텐츠
         Padding(
           padding: const EdgeInsets.all(16.0),
-          child: CalendarWidget(),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 100.0), // 여기서 상단 여백 추가
+            child: CalendarWidget(),
+          ),
         ),
         Positioned(
           bottom: 20,

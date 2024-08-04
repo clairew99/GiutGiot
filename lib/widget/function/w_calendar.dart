@@ -13,7 +13,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
 
   List<DateTime> _getDatesForTwoWeeks(DateTime baseDate) {
     List<DateTime> dates = [];
-    // 현재 주의 첫 번째 날로 설정하고 한 주를 뺍니다.
+    // 현재 주의 첫 번째 날로 설정하고 한 주 빼기
     DateTime startDate = baseDate.subtract(Duration(days: baseDate.weekday + 6));
     for (int i = 0; i < 14; i++) {
       dates.add(startDate.add(Duration(days: i)));
@@ -56,11 +56,14 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         });
       },
       child: Container(
+        // 날짜 원의 크기
+        width: isToday ? 50.0 : 50.0,
+        height: isToday ? 50.0 : 50.0,
         margin: EdgeInsets.all(4),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: isToday
-              ? Colors.purple[100]
+              ? Colors.purple[200]
               : isSelected
               ? Colors.purple[50]
               : Colors.transparent,
@@ -70,6 +73,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
           DateFormat.d().format(date),
           style: TextStyle(
             color: isToday ? Colors.white : Colors.black,
+            fontSize: 17,
           ),
         ),
       ),
@@ -120,7 +124,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                 ),
               ],
             ),
-            SizedBox(height: 20), // 요일과 첫 번째 주 사이의 간격
             Table(
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: [
@@ -131,7 +134,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                 ),
               ],
             ),
-            SizedBox(height: 70), // 첫 번째 주와 두 번째 주 사이의 간격
+            SizedBox(height: 50), // 첫 번째 주와 두 번째 주 사이의 간격
             Table(
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: [
