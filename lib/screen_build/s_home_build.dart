@@ -28,6 +28,8 @@ class PageViewItem extends StatelessWidget {
           child: child, // 자식 위젯 전달
         );
       },
+
+      // 화면 구현 내용
       child: Stack(
         children: [
           // 첫 번째 배경 이미지 (GIF)

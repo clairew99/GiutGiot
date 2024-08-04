@@ -57,7 +57,7 @@ flutter:
     - assets/background/bg.gif
     - assets/background/hourglass.png
     - assets/icon/google_icon.png
-    - assets/icon//naver_icon.png
+    - assets/icon/naver_icon.png
     - assets/icon/kakao_icon.png
     - assets/icon/sandhour.gif
   ## SHJ FIN
