@@ -30,6 +30,8 @@ def conversation():
         'brands': features[6],
     })
 
+
+# 화자분석
 @app.route('/pyannote', methods=['POST', 'GET'])
 def pyannote():
     print(request.files)
