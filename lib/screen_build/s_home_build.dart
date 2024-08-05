@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import '../screen/s_calendar.dart';
 
+import '../widget/function/w_cloth_marble.dart';
+
 class PageViewItem extends StatelessWidget {
   final PageController pageController; // PageController는 PageView의 스크롤 상태를 제어
   final int index; // 현재 페이지 인덱스를 나타내는 변수
@@ -48,8 +50,11 @@ class PageViewItem extends StatelessWidget {
           ),
           // 메인 콘텐츠
           index == 0
-              ? const Center(
-            child: Text('Home Screen Content'), // 홈 화면 콘텐츠
+              ? const  Center(
+            child: ClothMarble(
+              marbleImagePath: 'assets/icon/marble.png',
+              jsonFilePath: 'assets/test.json',
+            ), // 홈 화면 콘텐츠
           )
               : const CalendarScreen(), // 두 번째 페이지는 CalendarScreen
         ],

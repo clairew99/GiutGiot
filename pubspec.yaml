@@ -52,13 +52,11 @@ flutter:
   # 모든 파일에 접근할 수 있도록 활성화 (예정)
   assets:
     - assets/model/posture_analysis.tflite
-    - assets/background/bg_hourglass.gif
-    - assets/background/bg.gif
-    - assets/background/hourglass.png
-    - assets/icon/google_icon.png
-    - assets/icon/naver_icon.png
-    - assets/icon/kakao_icon.png
-    - assets/icon/sandhour.gif
+    # 아이콘 폴더 내 모든 이미지 접근 가능 - 정진영 (24.08.04)
+    - assets/background/
+    - assets/icon/
+    - assets/clothes/
+    - assets/test.json
   ## SHJ FIN
-    - assets/background/bg.gif
-    - assets/background/hourglass.png
+
+
