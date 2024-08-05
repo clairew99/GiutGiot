@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
-import 'dart:ui';
 import 'package:tflite_flutter/tflite_flutter.dart';
+
 import '../models/sensor_management.dart';
 import '../models/ml_model.dart';
+
 import '../widget/button/bt_setting.dart'; // SettingsIcon 임포트
 import '../widget/button/bt_voice.dart'; // VoiceIcon 임포트
-import '../widget/w_home_build.dart'; // PageViewItem 임포트
+import '../widget/button/bt_slide.dart'; // SlideButton 임포트
+
+
+import '../screen_build/s_home_build.dart'; // PageViewItem 임포트
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -22,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String activity = 'Unknown'; // 활동 상태 변수
   int maxIndex = 0; // maxIndex 변수 추가
   final List<StreamSubscription<dynamic>> _streamSubscriptions = [];
+
 
   @override
   void initState() {
@@ -58,7 +63,9 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       }
     });
+
   }
+
 
   @override
   void dispose() {
@@ -86,6 +93,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 index: index,
               );
             },
+          ),
+          // 슬라이드바 다시 구현 - 정진영(24.08.05)
+          Positioned(
+            right: 10,
+            top: MediaQuery.of(context).size.height / 2, // 앱 높이 / 2
+            child: SlideBar(
+              pageController: _pageController,
+              itemCount: 2,
+            ),
           ),
           // 오른쪽 상단에 설정 아이콘 고정
           SettingsIcon(

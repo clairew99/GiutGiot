@@ -1,0 +1,12 @@
+[
+  {
+    "clothes_id": 1,
+    "member_id": 101,
+    "is_top": true,
+    "color": "black",
+    "type": "shirts",
+    "category": "long",
+    "pattern": "solid",
+    "Field": 0.8
+  }
+]
