@@ -37,7 +37,6 @@ class _MyAppState extends State<MyApp> {
   Future<void> _requestPermissions() async {
     Map<Permission, PermissionStatus> statuses = await [
       Permission.microphone,
-      Permission.storage,
       Permission.sensors,
       Permission.activityRecognition,
     ].request();
@@ -78,3 +77,4 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
+
