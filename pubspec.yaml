@@ -30,7 +30,7 @@ dependencies:
   ## python Flast
   http:
   cupertino_icons: ^1.0.6
-  flutter_sound: ^9.2.13
+  flutter_sound: ^9.9.5
   path_provider: ^2.0.9
   ## SHJ FIN
 
