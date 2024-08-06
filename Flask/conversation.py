@@ -22,7 +22,7 @@ class ClothingFeatureExtractor:
             "후드티": ["후드티", "후드", "후드 스웨터", "후디"],
             "맨투맨": ["맨투맨", "맨투맨 티셔츠", "맨투맨 티"],
             "블라우스": ["블라우스", "셔츠 블라우스"],
-            "면티": ["면티","면 티셔츠", "면"],
+            "면티": ["면티","면 티셔츠", "면","티"],
             "원피스": ["원피스", "드레스", "롱원피스", "짧은 원피스"]
         }
 
@@ -50,12 +50,6 @@ class ClothingFeatureExtractor:
                 return colors[color]
         return None
 
-    def find_closest_brand(self, word):
-        for brand, synonyms in self.brand_synonyms.items():
-            if word == brand or word in synonyms:
-                return brand
-        return None
-
     def extract_clothing_features(self, sentence):
         tokens = self.okt.pos(sentence, norm=True, stem=True)
         
@@ -65,16 +59,13 @@ class ClothingFeatureExtractor:
         extracted_top_types = []
         extracted_bottom_types = []
         extracted_patterns = []
-        extracted_brands = []
         
         for word, pos in tokens:
             if pos == 'Noun':
                 closest_color = self.find_closest_color(word)
                 if closest_color:
                     extracted_colors.append(closest_color)
-                closest_brand = self.find_closest_brand(word)
-                if closest_brand:
-                    extracted_brands.append(closest_brand)
+                
                 for sleeve_type, synonyms in self.sleeve_types.items():
                     if word in synonyms:
                         extracted_sleeve_types.append(sleeve_type)
