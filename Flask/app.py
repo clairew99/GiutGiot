@@ -27,7 +27,6 @@ def conversation():
         'top_types': features[3],
         'bottom_types': features[4],
         'patterns': features[5],
-        'brands': features[6],
     })
 
 
