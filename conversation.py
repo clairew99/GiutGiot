@@ -4,11 +4,6 @@ from colors import colors, color_synonyms
 class ClothingFeatureExtractor:
     def __init__(self):
         self.okt = Okt()
-        self.brand_synonyms = {
-            "나이키": ["나이키", "nike"],
-            "아디다스": ["아디다스", "adidas"],
-            # 더 많은 브랜드를 여기에 추가
-        }
 
         self.sleeve_types = {
             "긴팔": ["긴팔", "긴소매", "롱슬리브", "긴팔 티셔츠", "긴팔티"],
@@ -42,11 +37,7 @@ class ClothingFeatureExtractor:
 
         self.patterns = {
             "단색": ["단색", "무지", "솔리드"],
-            "드로잉": ["드로잉", "그림", "일러스트"],
-            "로고/그래픽": ["로고", "그래픽", "프린트"],
-            "타이다이": ["타이다이", "타이다이 패턴"],
-            "그라데이션": ["그라데이션", "색상 변환"],
-            "컬러블록": ["컬러블록", "색상블록", "컬러 블록"],
+            "프린팅": ["드로잉", "그림", "일러스트","로고", "그래픽", "프린트"],
             "스트라이프": ["스트라이프", "줄무늬", "세로줄", "가로줄"],
             "도트": ["도트", "물방울", "땡땡이", "점무늬"],
             "체크": ["체크", "격자", "체크무늬", "체크 패턴"],
@@ -101,4 +92,4 @@ class ClothingFeatureExtractor:
                         extracted_patterns.append(pattern)
         
         return (extracted_colors, extracted_sleeve_types, extracted_pants_types,
-                extracted_top_types, extracted_bottom_types, extracted_patterns, extracted_brands)
+                extracted_top_types, extracted_bottom_types, extracted_patterns)
