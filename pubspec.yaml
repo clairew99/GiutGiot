@@ -57,6 +57,37 @@ flutter:
     - assets/icon/
     - assets/clothes/
     - assets/test.json
+
+    - assets/test_icon/upclothes.png
+    - assets/test_icon/downclothes.png
+    - assets/test_icon/long_upclothes.png
+    - assets/test_icon/short_downclothes.png
+
+
+    # top
+    - assets/test_icon/top/knit.webp
+    - assets/test_icon/top/muji.webp
+    - assets/test_icon/top/shirt.webp
+    - assets/test_icon/top/shirt2.webp
+    - assets/test_icon/top/mujiTshirt.webp
+
+    # bottom
+    - assets/test_icon/bottom/p_jean.png
+    - assets/test_icon/bottom/p_cotton.png
+    - assets/test_icon/bottom/p_slacks.png
+    - assets/test_icon/bottom/skirt.png
+    - assets/test_icon/bottom/p_cargo.png
+    - assets/test_icon/bottom/p_training.png
+
+    # pattern
+    - assets/test_icon/pattern/dot.webp
+    - assets/test_icon/pattern/flower.webp
+    - assets/test_icon/pattern/muji.webp
+    - assets/test_icon/pattern/stripe.webp
+    - assets/test_icon/pattern/check.webp
+
+
+
   ## SHJ FIN
 
 
