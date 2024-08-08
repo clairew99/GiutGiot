@@ -4,9 +4,99 @@
     "member_id": 101,
     "is_top": true,
     "color": "black",
-    "type": "shirts",
+    "type": "shirt",
     "category": "long",
     "pattern": "solid",
-    "Field": 0.8
+    "field": 0.8
+  },
+  {
+    "clothes_id": 2,
+    "member_id": 102,
+    "is_top": false,
+    "color": "blue",
+    "type": "jeans",
+    "category": "long",
+    "pattern": "solid",
+    "field": 0.9
+  },
+  {
+    "clothes_id": 3,
+    "member_id": 103,
+    "is_top": true,
+    "color": "red",
+    "type": "cotton",
+    "category": "short",
+    "pattern": "striped",
+    "field": 0.7
+  },
+  {
+    "clothes_id": 4,
+    "member_id": 104,
+    "is_top": true,
+    "color": "white",
+    "type": "blouse",
+    "category": "short",
+    "pattern": "floral",
+    "field": 0
+  },
+  {
+    "clothes_id": 5,
+    "member_id": 105,
+    "is_top": false,
+    "color": "grey",
+    "type": "skirt",
+    "category": "short",
+    "pattern": "dot",
+    "field": 0.6
+  },
+  {
+    "clothes_id": 6,
+    "member_id": 106,
+    "is_top": false,
+    "color": "grey",
+    "type": "pants",
+    "category": "slacks",
+    "pattern": "solid",
+    "field": 0
+  },
+  {
+    "clothes_id": 7,
+    "member_id": 107,
+    "is_top": true,
+    "color": "yellow",
+    "type": "dress",
+    "category": "long",
+    "pattern": "solid",
+    "field": 0.8
+  },
+  {
+    "clothes_id": 8,
+    "member_id": 108,
+    "is_top": false,
+    "color": "purple",
+    "type": "shorts",
+    "category": "cotton",
+    "pattern": "solid",
+    "field": 0.9
+  },
+  {
+    "clothes_id": 9,
+    "member_id": 109,
+    "is_top": true,
+    "color": "pink",
+    "type": "collar",
+    "category": "short",
+    "pattern": "solid",
+    "field": 0
+  },
+  {
+    "clothes_id": 10,
+    "member_id": 110,
+    "is_top": false,
+    "color": "brown",
+    "type": "cargo",
+    "category": "short",
+    "pattern": "solid",
+    "field": 0.5
   }
 ]

@@ -1,8 +1,11 @@
 // page_view_item.dart
 import 'package:flutter/material.dart';
 import '../screen/s_calendar.dart';
+import 's_home_cloth_build.dart'; // 옷 리스트 조회 후 홈 화면 출력 widget import
 
-import '../widget/function/w_cloth_marble.dart';
+
+// 옷 구슬 구현 test
+
 
 class PageViewItem extends StatelessWidget {
   final PageController pageController; // PageController는 PageView의 스크롤 상태를 제어
@@ -50,12 +53,13 @@ class PageViewItem extends StatelessWidget {
           ),
           // 메인 콘텐츠
           index == 0
-              ? const  Center(
-            child: ClothMarble(
-              marbleImagePath: 'assets/icon/marble.png',
-              jsonFilePath: 'assets/test.json',
-            ), // 홈 화면 콘텐츠
-          )
+              // 옷 아이콘을 일렬로 세울 수 있도록 구현 - 정진영 (24.08.06)
+              ? Center(
+                  child: ClothMarblesGrid(
+                    jsonFilePath: 'assets/test.json',
+                    // test.json 파일 읽기로 구현 -> jsonFilePath 로 작성되어잇음 - 정진영(24.08.05)
+                    ),
+                  )
               : const CalendarScreen(), // 두 번째 페이지는 CalendarScreen
         ],
       ),

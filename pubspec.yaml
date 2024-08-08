@@ -32,6 +32,9 @@ dependencies:
   cupertino_icons: ^1.0.6
   flutter_sound: ^9.9.5
   path_provider: ^2.0.9
+  flame: ^1.18.0
+  forge2d: ^0.13.0
+  flame_forge2d: ^0.18.1
   ## SHJ FIN
   ## wave
   siri_wave: ^2.0.0+1
