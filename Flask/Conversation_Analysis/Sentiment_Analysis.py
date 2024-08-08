@@ -3,7 +3,7 @@ from konlpy.tag import Okt
 from nltk.classify import NaiveBayesClassifier
 from nltk.classify.util import accuracy
 import random
-from data.Sentiment_data import *
+from Conversation_Analysis.data.Sentiment_data import *
 
 # 형태소 분석기 설정
 okt = Okt()

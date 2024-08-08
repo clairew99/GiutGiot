@@ -49,7 +49,7 @@ class QuestionStatementClassifier:
         self.vectorizer = joblib.load(vectorizer_path)
 
 # 데이터 로드 및 모델 학습
-df = pd.read_csv("./data/Interrogative_Plain_data.csv", encoding='euc-kr')
+df = pd.read_csv(r"Flask\Conversation_Analysis\data\Interrogative_Plain_data.csv", encoding='euc-kr')
 X = df['reviews']
 y = df['label']
 
