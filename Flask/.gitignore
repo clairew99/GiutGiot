@@ -1,0 +1,26 @@
+# IDE 설정 파일
+.vscode/
+.idea/
+
+# 운영 체제별 임시 파일
+.DS_Store
+Thumbs.db
+
+# Node.js 패키지
+node_modules/
+
+# Python 가상 환경
+venv/
+__pycache__/
+
+# 로그 파일
+*.log
+
+# 이미지 파일
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# env
+.env
