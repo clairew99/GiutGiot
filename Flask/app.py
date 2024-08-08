@@ -96,7 +96,7 @@ def conversation():
         pattern = features[4]
 
         # spring url 수정 필요
-        spring_url = "http://localhost:8080/check"
+        spring_url = "http://localhost:8080/clothes/check"
         spring_headers = {
             'Content-Type': 'application/json',
             'Authorization': access_token,
