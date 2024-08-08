@@ -1,12 +1,15 @@
-// cloth_loader.dart
+// w_cloth_loader.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'w_cloth_item.dart';
 
+// 캐싱 메커니즘 구현 - 정진영 (24.08.05)
+
+
 class ClothLoader extends StatefulWidget {
   final String jsonFilePath;
-  final Widget Function(BuildContext, ClothItem) builder;
+  final Widget Function(BuildContext, List<ClothItem>) builder;
 
   const ClothLoader({
     Key? key,
@@ -19,35 +22,43 @@ class ClothLoader extends StatefulWidget {
 }
 
 class _ClothLoaderState extends State<ClothLoader> {
-  late Future<ClothItem> _clothItem;
+  static Map<String, List<ClothItem>> _cachedData = {}; // 캐시된 데이터를 저장할 정적 변수
+  late Future<List<ClothItem>> _clothItems;
 
   @override
   void initState() {
     super.initState();
-    _clothItem = _loadClothItem();
+    if (_cachedData.containsKey(widget.jsonFilePath)) {
+      // 캐시에 데이터가 있는 경우 캐시된 데이터를 사용
+      _clothItems = Future.value(_cachedData[widget.jsonFilePath]);
+    } else {
+      // 캐시에 데이터가 없는 경우 새로 로드
+      _clothItems = _loadClothItems();
+    }
   }
 
-  Future<ClothItem> _loadClothItem() async {
+  Future<List<ClothItem>> _loadClothItems() async {
     final jsonString = await rootBundle.loadString(widget.jsonFilePath);
     final List<dynamic> jsonList = json.decode(jsonString);
-    final Map<String, dynamic> data = jsonList.first;
-    return ClothItem.fromJson(data);
+    final List<ClothItem> items = jsonList.map((data) => ClothItem.fromJson(data)).toList();
+    _cachedData[widget.jsonFilePath] = items; // 캐시에 데이터 저장
+    return items;
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<ClothItem>(
-      future: _clothItem,
+    return FutureBuilder<List<ClothItem>>(
+      future: _clothItems,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
+          return CircularProgressIndicator(); // 데이터를 로드 중일 때 로딩 표시
         } else if (snapshot.hasError) {
           print('Error loading cloth data: ${snapshot.error}');
-          return Text('Error loading cloth data');
+          return Text('Error loading cloth data'); // 데이터 로드 중 오류 발생 시 메시지 표시
         } else if (snapshot.hasData) {
-          return widget.builder(context, snapshot.data!);
+          return widget.builder(context, snapshot.data!); // 데이터 로드 완료 시 builder 호출
         } else {
-          return Text('No data found');
+          return Text('No data found'); // 데이터가 없을 때 메시지 표시
         }
       },
     );
