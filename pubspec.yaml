@@ -34,9 +34,11 @@ dependencies:
   path_provider: ^2.0.9
   ## SHJ FIN
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_svg: ^0.22.0
 
   flutter_lints: ^3.0.0
 
@@ -86,6 +88,12 @@ flutter:
     - assets/test_icon/pattern/stripe.webp
     - assets/test_icon/pattern/check.webp
 
+    - assets/today_clothes.json
+
+    # custom
+    - assets/svgfile/head.svg
+    - assets/svgfile/run_bottom.svg
+    - assets/svgfile/run_top.svg
 
 
   ## SHJ FIN

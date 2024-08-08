@@ -1,0 +1,57 @@
+[
+  {
+    "date": "2024-07-29",
+    "topColor": "BLACK",
+    "bottomColor": "WHITE"
+  },
+  {
+    "date": "2024-07-30",
+    "topColor": "RED",
+    "bottomColor": "BLUE"
+  },
+  {
+    "date": "2024-07-31",
+    "topColor": "BLUE",
+    "bottomColor": "GREEN"
+  },
+  {
+    "date": "2024-08-01",
+    "topColor": "RED",
+    "bottomColor": "RED"
+  },
+  {
+    "date": "2024-08-02",
+    "topColor": "BLUE",
+    "bottomColor": "BLACK"
+  },
+  {
+    "date": "2024-08-03",
+    "topColor": "GREEN",
+    "bottomColor": "WHITE"
+  },
+  {
+    "date": "2024-08-04",
+    "topColor": "YELLOW",
+    "bottomColor": "GRAY"
+  },
+  {
+    "date": "2024-08-05",
+    "topColor": "BLACK",
+    "bottomColor": "BLUE"
+  },
+  {
+    "date": "2024-08-06",
+    "topColor": "WHITE",
+    "bottomColor": "GREEN"
+  },
+  {
+    "date": "2024-08-07",
+    "topColor": "PINK",
+    "bottomColor": "YELLOW"
+  },
+  {
+    "date": "2024-08-08",
+    "topColor": "ORANGE",
+    "bottomColor": "RED"
+  }
+]
