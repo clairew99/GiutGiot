@@ -115,12 +115,7 @@ class _SettingContentState extends State<SettingContent> {
                 Divider(),
                 // 화면 이동 router 설정 아직 안함 (24.08.04) -정진영
                 ListTile(
-                  title: Text('음성 재등록', style: TextStyle(fontWeight: FontWeight.w500)),
-                  onTap: () {},
-                ),
-                Divider(),
-                ListTile(
-                  title: Text('튜토리얼', style: TextStyle(fontWeight: FontWeight.w500)),
+                  title: Text('서비스 설명', style: TextStyle(fontWeight: FontWeight.w500)),
                   onTap: () {},
                 ),
                 Divider(),

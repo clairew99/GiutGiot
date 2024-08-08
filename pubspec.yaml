@@ -33,6 +33,19 @@ dependencies:
   flutter_sound: ^9.9.5
   path_provider: ^2.0.9
   ## SHJ FIN
+  ## wave
+  siri_wave: ^2.0.0+1
+  ##bluetooth
+  flutter_blue: ^0.8.0
+  flutter_blue_plus: ^1.32.11
+
+  ## splash
+#  flutter_native_splash: ^2.4.1
+#
+#flutter_native_splash:
+#  color: "#42a5f5"
+#  android_12: true
+
 
 
 dev_dependencies:
@@ -97,5 +110,4 @@ flutter:
 
 
   ## SHJ FIN
-
 

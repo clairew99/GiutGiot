@@ -5,24 +5,30 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'bluetooth_scan.dart';
 
 class AudioRecorder {
   FlutterSoundRecorder? _audioRecorder;
   String? _audioFilePath;
   bool _isRecorderInitialized = false;
-  bool _isRecording = false;
+  static bool _isRecording = false;
   DateTime? lastVoiceDetectedTime;
   StreamSubscription? _recorderSubscription;
   Timer? inactivityTimer;
 
-  double? _lastDecibels; // 마지막 데시벨 값을 저장할 변수
+  double? _lastDecibels;
 
+  // 블루투스 스캐너 인스턴스 생성
+  static final BluetoothScanner bluetoothScanner = BluetoothScanner();
+
+  // 레코더 초기화
   Future<void> initRecorder() async {
     _audioRecorder = FlutterSoundRecorder();
     await _audioRecorder!.openRecorder();
     _isRecorderInitialized = true;
   }
 
+  // 레코더 해제
   Future<void> disposeRecorder() async {
     if (_isRecorderInitialized) {
       await _audioRecorder!.closeRecorder();
@@ -32,6 +38,7 @@ class AudioRecorder {
     _recorderSubscription?.cancel();
   }
 
+  // 녹음 시작
   Future<void> startRecording() async {
     if (!_isRecorderInitialized) {
       throw RecordingPermissionException('Recorder is not initialized');
@@ -45,16 +52,19 @@ class AudioRecorder {
     try {
       print('Starting recording process...');
 
+      // 마이크 권한 요청
       bool hasPermissions = await Permission.microphone.request().isGranted;
       if (!hasPermissions) {
         throw RecordingPermissionException('Microphone permission not granted');
       }
 
+      // 오디오 파일 경로 설정
       io.Directory appDocDir = await getApplicationDocumentsDirectory();
       _audioFilePath = '${appDocDir.path}/audio_record.wav';
 
       print('Attempting to record to: $_audioFilePath');
 
+      // 녹음 시작
       await _audioRecorder!.startRecorder(
         toFile: _audioFilePath,
         codec: Codec.pcm16WAV,
@@ -63,7 +73,7 @@ class AudioRecorder {
       _isRecording = true;
       lastVoiceDetectedTime = DateTime.now();
 
-      // 오디오 스트림 구독
+      // 오디오 데이터 스트림 구독
       _recorderSubscription = _audioRecorder!.onProgress!.listen((event) {
         if (event.decibels != null) {
           print('Decibels received: ${event.decibels}');
@@ -73,7 +83,10 @@ class AudioRecorder {
         }
       });
 
-      print('Recording started at ${DateTime.now()}');
+      // 블루투스 스캔 시작
+      bluetoothScanner.startScanning();
+
+      print('Recording and Bluetooth scanning started at ${DateTime.now()}');
       print('Audio file path: $_audioFilePath');
     } catch (e) {
       print('Error starting recording: $e');
@@ -83,9 +96,11 @@ class AudioRecorder {
     }
   }
 
+  // 오디오 데이터 처리 (데시벨 레벨 체크)
   void _processAudioData(double decibels) {
     _lastDecibels = decibels;
-    print('Current decibel level: ${decibels.toStringAsFixed(2)} dB'); // 터미널에 데시벨 정보 출력
+    print('-----------------------------------------------------------------');
+    print('데시벨 측정중: ${decibels.toStringAsFixed(2)} dB');
 
     if (decibels > 60) {  // 예시 임계값, 필요에 따라 조정
       lastVoiceDetectedTime = DateTime.now();
@@ -95,6 +110,7 @@ class AudioRecorder {
     }
   }
 
+  // 녹음 중지
   Future<void> stopRecording() async {
     if (!_isRecorderInitialized || !_isRecording) {
       print('Recorder is not initialized or not recording');
@@ -107,7 +123,11 @@ class AudioRecorder {
         await _audioRecorder!.stopRecorder();
         _isRecording = false;
         _recorderSubscription?.cancel();
-        print('Recorder stopped at ${DateTime.now()}');
+
+        // 블루투스 스캔 중지
+        bluetoothScanner.stopScanning();
+
+        print('Recording and Bluetooth scanning stopped at ${DateTime.now()}');
         print('Recording file path: $_audioFilePath');
 
         if (_audioFilePath != null && _audioFilePath!.isNotEmpty) {
@@ -115,7 +135,12 @@ class AudioRecorder {
           if (await audioFile.exists()) {
             print('Audio file exists at: $_audioFilePath');
             print('File size: ${await audioFile.length()} bytes');
-            await sendAudioFileToServer(audioFile);
+
+            // 감지된 블루투스 기기 ID 가져오기
+            List<String> devices = bluetoothScanner.getPhoneDeviceIds();
+            print('디바이스 기기 : $devices');
+            // 서버로 오디오 파일 및 기기 ID 전송
+            await sendAudioFileToServer(audioFile, devices);
           } else {
             print('Error: Audio file not found at $_audioFilePath');
           }
@@ -128,17 +153,21 @@ class AudioRecorder {
     }
   }
 
-  Future<void> sendAudioFileToServer(io.File file) async {
+  // 서버로 오디오 파일 전송
+  Future<void> sendAudioFileToServer(io.File file, List<String> devices) async {
     try {
       if (await file.exists()) {
         print('Attempting to send file: ${file.path}');
 
+        // 멀티파트 요청 생성
         final request = http.MultipartRequest('POST', Uri.parse('http://127.0.0.1:5000/pyannote'));
         request.files.add(await http.MultipartFile.fromPath(
           'audio',
           file.path,
           filename: 'audio_record.wav',
         ));
+        // 기기 ID 목록을 JSON으로 인코딩하여 전송
+        request.fields['devices'] = jsonEncode(devices);
         final response = await request.send();
 
         if (response.statusCode == 200) {
@@ -149,6 +178,7 @@ class AudioRecorder {
           print('Failed to upload audio file. Status code: ${response.statusCode}');
         }
 
+        // 임시 오디오 파일 삭제
         await file.delete();
         print('Temporary audio file deleted');
       } else {
@@ -162,13 +192,13 @@ class AudioRecorder {
     }
   }
 
-  // 1분 동안 음성이 감지되지 않았는지 확인하는 메서드
+  // 비활성 상태 체크 (1분 이상 음성 미감지)
   bool isInactive() {
     if (lastVoiceDetectedTime == null) return false;
     return DateTime.now().difference(lastVoiceDetectedTime!) >= Duration(minutes: 1);
   }
 
-  // 주기적으로 호출하여 비활성 상태 확인
+  // 비활성 상태 확인 및 녹음 중지
   void checkInactivity() {
     if (_isRecording && isInactive()) {
       print('No voice detected for 1 minute. Stopping recording.');
@@ -176,16 +206,16 @@ class AudioRecorder {
     }
   }
 
-  // 음성 비활성 타이머 시작
+  // 비활성 타이머 시작
   void startInactivityTimer() {
     inactivityTimer?.cancel();
     inactivityTimer = Timer.periodic(Duration(seconds: 10), (timer) {
       checkInactivity();
-      printCurrentDecibels(); // 데시벨 정보 출력
+      printCurrentDecibels();
     });
   }
 
-  // 현재 데시벨 정보를 터미널에 출력
+  // 현재 데시벨 레벨 출력
   void printCurrentDecibels() {
     double? lastDecibels = _lastDecibels;
     if (lastDecibels != null) {
@@ -193,5 +223,11 @@ class AudioRecorder {
     }
   }
 
+  // 녹음 상태 확인
   bool get isRecording => _isRecording;
+
+  // 정적 메서드: 녹음 중인지 확인
+  static bool isAnyRecording() {
+    return _isRecording;
+  }
 }

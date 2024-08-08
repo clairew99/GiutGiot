@@ -39,6 +39,7 @@ class _MyAppState extends State<MyApp> {
       Permission.microphone,
       Permission.sensors,
       Permission.activityRecognition,
+      Permission.bluetooth,
     ].request();
 
     statuses.forEach((permission, status) {

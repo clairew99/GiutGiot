@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'voice_recorder.dart';
+import 'bluetooth_scan.dart';
 
 List<List<double>> sensorData = []; // 센서 데이터 저장용 리스트
 int maxIndexCount = 0; // 최대 인덱스 카운트
@@ -12,6 +13,9 @@ List<double>? userAccelerometerValues;
 
 late AudioRecorder recorder; // 녹음기 객체
 DateTime? lastVoiceDetectedTime; // 전역 변수로 선언
+
+BluetoothScanner bluetoothScanner = BluetoothScanner();
+
 
 // 초기화 함수
 Future<void> initialize() async {
@@ -66,6 +70,7 @@ void addToSensorData() {
 // 움직임 감지 및 녹음 시작
 void startMovementDetection(Interpreter interpreter, Function(List<List<double>>, Interpreter, int, Function(int, int)) predict, Function(int) onPrediction, Function onUpdate) {
   List<int> predictionHistory = [];
+  // BluetoothScanner scanner = BluetoothScanner(); // 이 줄을 제거
 
   Timer.periodic(Duration(milliseconds: 20), (Timer timer) async {
     if (sensorData.length < 128) {
@@ -89,9 +94,10 @@ void startMovementDetection(Interpreter interpreter, Function(List<List<double>>
           if (!recorder.isRecording) {
             try {
               await recorder.startRecording();
+              await bluetoothScanner.startScanning(); // await 추가 및 전역 변수 사용
               predictionHistory.clear();
               print('Recording started');
-              recorder.startInactivityTimer(); // 녹음 중 비활성 타이머 시작
+              recorder.startInactivityTimer();
             } catch (e) {
               print('Error starting recording: $e');
             }
