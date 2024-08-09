@@ -13,12 +13,21 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
   Color? _selectedColor;
   String? _selectedClothingTypeName;
   String? _selectedPatternName;
+  String? _firstSelectedItem;
+  String? _firstSelectedColorName;
+  Color? _firstSelectedColor;
+  String? _firstSelectedClothingTypeName;
+  String? _firstSelectedPatternName;
+  bool _isFirstChoiceComplete = false;
   late AnimationController _controller;
   late Animation<Offset> _animation;
   bool _isSelectingColor = false; // 색상 선택 단계
   bool _isSelectingType = false; // 타입 선택 단계
   bool _isSelectingPattern = false; // 패턴 선택 단계
   bool _isSelectionComplete = false; // 선택 완료 상태
+
+  String? _selectedTopColor;    // 선택된 상의 색상
+  String? _selectedBottomColor;   // 선택된 하의 색상
 
   List<Map<String, dynamic>> _colors = [
     {"name": "Yellow", "color": Color(0xFFFFFF00)},
@@ -32,7 +41,7 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
     {"name": "Brown", "color": Color(0xFFA52A2A)},
     {"name": "Black", "color": Color(0xFF000000)},
     {"name": "White", "color": Color(0xFFFFFFFF)},
-    {"name": "Gray", "color": Color(0xFF808080)},
+    {"name": "Grey", "color": Color(0xFF808080)},
     {"name": "Red", "color": Color(0xFFF23D55)},
     {"name": "Pink", "color": Color(0xFFFFC0CB)},
     {"name": "Orange", "color": Color(0xFFFFA500)},
@@ -49,7 +58,7 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
     "상의": [
       {"name": "니트", "icon": 'assets/test_icon/top/knit.webp'},
       {"name": "셔츠", "icon": 'assets/test_icon/top/shirt.webp'},
-      {"name": "반팔티", "icon": 'assets/test_icon/top/muji.webp'},
+      {"name": "면티", "icon": 'assets/test_icon/top/muji.webp'},
       {"name": "맨투맨", "icon": 'assets/test_icon/top/mujiTshirt.webp'},
       {"name": "카라셔츠", "icon": 'assets/test_icon/top/shirt2.webp'},
     ],
@@ -86,6 +95,7 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
       });
   }
 
+
   @override
   void dispose() {
     _controller.dispose();
@@ -118,10 +128,9 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
         final angle = 2 * pi / _colors.length * i;
         final x = cos(angle);
         final y = sin(angle);
-        if ((_buttonPosition - Offset(x, y)).distance < 0.2) {
+        if ((_buttonPosition - Offset(x, y)).distance < 0.3) {
           _selectedColor = _colors[i]["color"];
           _selectedColorName = _colors[i]["name"];
-          print("선택한 색상: $_selectedColorName");
           colorSelected = true;
           break;
         }
@@ -146,9 +155,8 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
         final angle = 2 * pi / (_selectedItem == "반팔" || _selectedItem == "긴팔" ? _clothingTypes["상의"] : _clothingTypes["하의"])!.length * i;
         final x = cos(angle);
         final y = sin(angle);
-        if ((_buttonPosition - Offset(x, y)).distance < 0.2) {
+        if ((_buttonPosition - Offset(x, y)).distance < 0.3) {
           _selectedClothingTypeName = (_selectedItem == "반팔" || _selectedItem == "긴팔" ? _clothingTypes["상의"] : _clothingTypes["하의"])![i]["name"];
-          print("선택한 타입: $_selectedClothingTypeName");
           typeSelected = true;
           break;
         }
@@ -173,9 +181,8 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
         final angle = 2 * pi / _patterns.length * i;
         final x = cos(angle);
         final y = sin(angle);
-        if ((_buttonPosition - Offset(x, y)).distance < 0.2) {
+        if ((_buttonPosition - Offset(x, y)).distance < 0.3) {
           _selectedPatternName = _patterns[i]["name"];
-          print("선택한 패턴: $_selectedPatternName");
           patternSelected = true;
           break;
         }
@@ -192,7 +199,28 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
       setState(() {
         _isSelectingPattern = false;
         _isSelectionComplete = true;
-        _resetButtonPosition();
+        if (_isFirstChoiceComplete) {
+          _resetButtonPosition();
+
+        } else {
+          // 첫 번째 선택 완료 후 두 번째 선택으로 전환
+          _isFirstChoiceComplete = true;
+          _firstSelectedItem = _selectedItem;
+          _firstSelectedColorName = _selectedColorName;
+          _firstSelectedColor = _selectedColor;
+          _firstSelectedClothingTypeName = _selectedClothingTypeName;
+          _firstSelectedPatternName = _selectedPatternName;
+          _selectedItem = null;
+          _selectedColorName = null;
+          _selectedColor = null;
+          _selectedClothingTypeName = null;
+          _selectedPatternName = null;
+          _isSelectingColor = false;
+          _isSelectingType = false;
+          _isSelectingPattern = false;
+          _isSelectionComplete = false;
+          _resetButtonPosition();
+        }
       });
     } else if (!_isSelectionComplete) {
       bool itemSelected = false;
@@ -219,8 +247,6 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
         return;
       }
 
-      print("선택한 종류: $_selectedItem");
-
       setState(() {
         _isSelectingColor = true;
         _resetButtonPosition();
@@ -242,19 +268,11 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             Text(
-              '종류: $_selectedItem',
+              '상의: $_firstSelectedItem $_firstSelectedColorName $_firstSelectedClothingTypeName $_firstSelectedPatternName',
               style: TextStyle(fontSize: 18),
             ),
             Text(
-              '색상: $_selectedColorName',
-              style: TextStyle(fontSize: 18),
-            ),
-            Text(
-              '타입: $_selectedClothingTypeName',
-              style: TextStyle(fontSize: 18),
-            ),
-            Text(
-              '패턴: $_selectedPatternName',
+              '하의: $_selectedItem $_selectedColorName $_selectedClothingTypeName $_selectedPatternName',
               style: TextStyle(fontSize: 18),
             ),
           ],
@@ -263,6 +281,8 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
     );
   }
 
+
+  // 모션 버튼
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -284,7 +304,7 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
           ..._buildTypeButtons(),
         if (_isSelectingPattern)
           ..._buildPatternButtons(),
-        if (_isSelectionComplete)
+        if (_isSelectionComplete && _isFirstChoiceComplete)
           _buildSelectionResult(),
         if (!_isSelectionComplete)
           GestureDetector(
@@ -334,17 +354,22 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
       Positioned(
         top: 20,
         child: GestureDetector(
-          onTap: () {
-            setState(() {
-              _selectedItem = "반팔";
-              _isSelectingColor = true;
-              _resetButtonPosition();
-            });
+          onPanEnd: (DragEndDetails details) {
+            if (!_isFirstChoiceComplete || (_firstSelectedItem != "반팔" && _firstSelectedItem != "긴팔")) {
+              setState(() {
+                _selectedItem = "반팔";
+                _isSelectingColor = true;
+                _resetButtonPosition();
+              });
+            }
           },
           child: Image.asset(
             'assets/test_icon/upclothes.png',
             width: 80,
             height: 80,
+            // color: _isFirstChoiceComplete && (_firstSelectedItem == "반팔" || _firstSelectedItem == "긴팔") ? Colors.grey.withOpacity(0.7) : null,
+            // colorBlendMode: BlendMode.modulate, // 색상 블렌딩 모드 설정
+
           ),
         ),
       ),
@@ -352,50 +377,63 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
         right: 20,
         child: GestureDetector(
           onTap: () {
-            setState(() {
-              _selectedItem = "반바지";
-              _isSelectingColor = true;
-              _resetButtonPosition();
-            });
+            if (!_isFirstChoiceComplete || (_firstSelectedItem != "반바지" && _firstSelectedItem != "긴바지")) {
+              setState(() {
+                _selectedItem = "반바지";
+                _isSelectingColor = true;
+                _resetButtonPosition();
+              });
+            }
           },
           child: Image.asset(
             'assets/test_icon/short_downclothes.png',
             width: 80,
             height: 80,
+            // color: _isFirstChoiceComplete && (_firstSelectedItem == "반바지" || _firstSelectedItem == "긴바지") ? Colors.grey.withOpacity(0.7) : null,
+            // colorBlendMode: BlendMode.modulate, // 색상 블렌딩 모드 설정
           ),
         ),
       ),
       Positioned(
         bottom: 20,
         child: GestureDetector(
-          onTap: () {
-            setState(() {
-              _selectedItem = "긴바지";
-              _isSelectingColor = true;
-              _resetButtonPosition();
-            });
+          onPanEnd: (DragEndDetails details) {
+            if (!_isFirstChoiceComplete || (_firstSelectedItem != "반바지" && _firstSelectedItem != "긴바지")) {
+              setState(() {
+                _selectedItem = "긴바지";
+                _isSelectingColor = true;
+                _resetButtonPosition();
+              });
+            }
           },
           child: Image.asset(
             'assets/test_icon/downclothes.png',
             width: 80,
             height: 80,
+            // color: _isFirstChoiceComplete && (_firstSelectedItem == "반바지" || _firstSelectedItem == "긴바지") ? Colors.grey.withOpacity(0.7) : null,
+            // colorBlendMode: BlendMode.modulate, // 색상 블렌딩 모드 설정
+
           ),
         ),
       ),
       Positioned(
         left: 20,
         child: GestureDetector(
-          onTap: () {
-            setState(() {
-              _selectedItem = "긴팔";
-              _isSelectingColor = true;
-              _resetButtonPosition();
-            });
+          onPanEnd: (DragEndDetails details) {
+            if (!_isFirstChoiceComplete || (_firstSelectedItem != "반팔" && _firstSelectedItem != "긴팔")) {
+              setState(() {
+                _selectedItem = "긴팔";
+                _isSelectingColor = true;
+                _resetButtonPosition();
+              });
+            }
           },
           child: Image.asset(
             'assets/test_icon/long_upclothes.png',
             width: 80,
             height: 80,
+            // color: _isFirstChoiceComplete && (_firstSelectedItem == "반팔" || _firstSelectedItem == "긴팔") ? Colors.grey.withOpacity(0.7) : null,
+            // colorBlendMode: BlendMode.modulate, // 색상 블렌딩 모드 설정
           ),
         ),
       ),
@@ -416,7 +454,7 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
         left: x + 160 - 15,
         top: y + 160 - 15,
         child: GestureDetector(
-          onTap: () {
+          onPanEnd: (DragEndDetails details) {
             setState(() {
               _selectedColor = _colors[index]["color"];
               _selectedColorName = _colors[index]["name"];
@@ -453,7 +491,7 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
         left: x + 160 - 35,
         top: y + 160 - 35,
         child: GestureDetector(
-          onTap: () {
+          onPanUpdate: (details) {
             setState(() {
               _selectedClothingTypeName = types[index]["name"];
               _isSelectingType = false;
@@ -489,12 +527,35 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
         left: x + 160 - 35,
         top: y + 160 - 35,
         child: GestureDetector(
-          onTap: () {
+          onPanUpdate: (details) {
             setState(() {
               _selectedPatternName = _patterns[index]["name"];
               _isSelectingPattern = false;
               _isSelectionComplete = true;
-              _resetButtonPosition();
+              if (_isFirstChoiceComplete) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('상의: $_firstSelectedItem $_firstSelectedColorName $_firstSelectedClothingTypeName $_firstSelectedPatternName, 하의: $_selectedItem $_selectedColorName $_selectedClothingTypeName $_selectedPatternName')),
+                );
+                _resetButtonPosition();
+                // 선택 항목을 모두 초기화하거나 필요한 후처리를 추가
+              } else {
+                _isFirstChoiceComplete = true;
+                _firstSelectedItem = _selectedItem;
+                _firstSelectedColorName = _selectedColorName;
+                _firstSelectedColor = _selectedColor;
+                _firstSelectedClothingTypeName = _selectedClothingTypeName;
+                _firstSelectedPatternName = _selectedPatternName;
+                _selectedItem = null;
+                _selectedColorName = null;
+                _selectedColor = null;
+                _selectedClothingTypeName = null;
+                _selectedPatternName = null;
+                _isSelectingColor = false;
+                _isSelectingType = false;
+                _isSelectingPattern = false;
+                _isSelectionComplete = false;
+                _resetButtonPosition();
+              }
             });
           },
           child: Image.asset(
@@ -507,3 +568,6 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
     });
   }
 }
+
+
+

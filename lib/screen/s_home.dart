@@ -6,6 +6,7 @@ import 'package:tflite_flutter/tflite_flutter.dart';
 import '../models/sensor_management.dart';
 import '../models/ml_model.dart';
 
+import '../widget/button/bt_motion.dart';
 import '../widget/button/bt_setting.dart'; // SettingsIcon 임포트
 import '../widget/button/bt_voice.dart'; // VoiceIcon 임포트
 import '../widget/button/bt_slide.dart'; // SlideButton 임포트
@@ -25,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Interpreter? _interpreter; // TFLite Interpreter
   String activity = 'Unknown'; // 활동 상태 변수
   int maxIndex = 0; // maxIndex 변수 추가
+  int currentPageIndex = 0; //
   final List<StreamSubscription<dynamic>> _streamSubscriptions = [];
 
 
@@ -84,6 +86,11 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Stack(
         children: [
           PageView.builder(
+            onPageChanged: (index){
+              setState(() {
+                currentPageIndex = index;
+              });
+            },
             controller: _pageController, // PageController를 통한 스크롤 상태 제어
             scrollDirection: Axis.vertical, // 수직 스크롤러 설정
             itemCount: 2, // 페이지 수 설정
@@ -120,6 +127,12 @@ class _HomeScreenState extends State<HomeScreen> {
               style: const TextStyle(fontSize: 20, color: Colors.white),
             ),
           ),
+          currentPageIndex==1 ? Positioned( // 20, -40
+            bottom: 20,
+            right: -40,
+            child: MotionButton(),
+          ):
+              SizedBox.shrink()
         ],
       ),
     );

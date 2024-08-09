@@ -1,6 +1,7 @@
 // page_view_item.dart
 import 'package:flutter/material.dart';
 import '../screen/s_calendar.dart';
+import '../widget/button/bt_motion.dart';
 import 's_home_cloth_build.dart'; // 옷 리스트 조회 후 홈 화면 출력 widget import
 
 
@@ -60,7 +61,8 @@ class PageViewItem extends StatelessWidget {
                     // test.json 파일 읽기로 구현 -> jsonFilePath 로 작성되어잇음 - 정진영(24.08.05)
                     ),
                   )
-              : const CalendarScreen(), // 두 번째 페이지는 CalendarScreen
+              : const CalendarScreen(),
+         // 두 번째 페이지는 CalendarScreen
         ],
       ),
     );

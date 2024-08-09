@@ -24,11 +24,7 @@ class CalendarContent extends StatelessWidget {
             child: CalendarWidget(),
           ),
         ),
-        Positioned(
-          bottom: 20,
-          right: -40,
-          child: MotionButton(),
-        ),
+
       ],
     );
   }

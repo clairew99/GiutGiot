@@ -1,57 +1,68 @@
 [
   {
     "date": "2024-07-29",
-    "topColor": "BLACK",
-    "bottomColor": "WHITE"
+    "topColor": "NAVY",
+    "bottomColor": "WHITE",
+    "walkingTime": 150
   },
   {
     "date": "2024-07-30",
-    "topColor": "RED",
-    "bottomColor": "BLUE"
+    "topColor": "GRAY",
+    "bottomColor": "BLUE",
+    "walkingTime": 20
   },
   {
     "date": "2024-07-31",
-    "topColor": "BLUE",
-    "bottomColor": "GREEN"
+    "topColor": "WHITE",
+    "bottomColor": "KHAKI",
+    "walkingTime": 20
   },
   {
     "date": "2024-08-01",
-    "topColor": "RED",
-    "bottomColor": "RED"
+    "topColor": "Lavender",
+    "bottomColor": "Sky Blue",
+    "walkingTime": 60
   },
   {
     "date": "2024-08-02",
-    "topColor": "BLUE",
-    "bottomColor": "BLACK"
+    "topColor": "Red",
+    "bottomColor": "Grey",
+    "walkingTime": 10
   },
   {
     "date": "2024-08-03",
-    "topColor": "GREEN",
-    "bottomColor": "WHITE"
+    "topColor": "Khaki",
+    "bottomColor": "IYORY",
+    "walkingTime": 150
   },
   {
     "date": "2024-08-04",
     "topColor": "YELLOW",
-    "bottomColor": "GRAY"
+    "bottomColor": "BROWN",
+    "walkingTime": 60
   },
   {
     "date": "2024-08-05",
     "topColor": "BLACK",
-    "bottomColor": "BLUE"
+    "bottomColor": "ORANGE",
+    "walkingTime": 20
   },
   {
     "date": "2024-08-06",
     "topColor": "WHITE",
-    "bottomColor": "GREEN"
+    "bottomColor": "Khaki",
+    "walkingTime": 20
   },
   {
     "date": "2024-08-07",
-    "topColor": "PINK",
-    "bottomColor": "YELLOW"
+    "topColor": "BROWN",
+    "bottomColor": "YELLOW",
+    "walkingTime": 40
   },
   {
     "date": "2024-08-08",
-    "topColor": "ORANGE",
-    "bottomColor": "RED"
+    "topColor": "PINK",
+    "bottomColor": "NAVY",
+    "walkingTime": 80
   }
 ]
