@@ -1,5 +1,5 @@
 from konlpy.tag import Okt
-from Conversation_Analysis.data.Keyword_data import *
+from data.Keyword_data import *
 
 class ClothingFeatureExtractor:
     def __init__(self):
@@ -80,13 +80,9 @@ class ClothingFeatureExtractor:
                 is_top = self.is_top(word)
                 color = self.find_closest_color(word)
                 
+                
                 if color:
                     current_color = color
-                
-                # Pattern recognition
-                for pattern, synonyms in patterns.items():
-                    if word in synonyms:
-                        current_pattern = pattern
                 
                 if is_top is not None:
                     if current_color:
@@ -95,12 +91,6 @@ class ClothingFeatureExtractor:
                         else:
                             bottom_features['color'] = current_color
                         current_color = None
-                    if current_pattern:
-                        if is_top:
-                            top_features['pattern'] = current_pattern
-                        else:
-                            bottom_features['pattern'] = current_pattern
-                        current_pattern = None
                     current_part = 'top' if is_top else 'bottom'
                 
                 if current_part == 'top' or (current_part is None and is_top is None):
@@ -113,42 +103,33 @@ class ClothingFeatureExtractor:
                             if current_color:
                                 top_features['color'] = current_color
                                 current_color = None
-                            if current_pattern:
-                                top_features['pattern'] = current_pattern
-                                current_pattern = None
                 
                 if current_part == 'bottom' or (current_part is None and is_top is None):
                     for pants_type, synonyms in pants_types.items():
-                        if word in synonyms or '팬츠' in word or '바지' in word:
+                        if word in synonyms:
                             bottom_features['pants_type'] = pants_type
                             if current_color:
                                 bottom_features['color'] = current_color
                                 current_color = None
-                            if current_pattern:
-                                bottom_features['pattern'] = current_pattern
-                                current_pattern = None
                     for bottom_type, synonyms in bottom_types.items():
                         if word in synonyms:
                             bottom_features['bottom_type'] = bottom_type
                             if current_color:
                                 bottom_features['color'] = current_color
                                 current_color = None
-                            if current_pattern:
-                                bottom_features['pattern'] = current_pattern
-                                current_pattern = None
+                
+                for pattern, synonyms in patterns.items():
+                    if word in synonyms:
+                        if current_part == 'top':
+                            top_features['pattern'] = pattern
+                        elif current_part == 'bottom':
+                            bottom_features['pattern'] = pattern
         
-        # If there's a remaining color or pattern, assign it to the last known part
-        if current_color or current_pattern:
-            if current_part == 'top' or (current_part is None and bottom_features['pants_type'] is None):
-                if current_color:
-                    top_features['color'] = current_color
-                if current_pattern:
-                    top_features['pattern'] = current_pattern
-            elif current_part == 'bottom' or (current_part is None and bottom_features['pants_type'] is not None):
-                if current_color:
-                    bottom_features['color'] = current_color
-                if current_pattern:
-                    bottom_features['pattern'] = current_pattern
+        # If there's a remaining color, assign it to the last known part
+        if current_color:
+            if current_part == 'top':
+                top_features['color'] = current_color
+            elif current_part == 'bottom':
+                bottom_features['color'] = current_color
 
         return {'top': top_features, 'bottom': bottom_features}
-
