@@ -5,6 +5,7 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 import joblib
+import os
 
 class QuestionStatementClassifier:
     def __init__(self):
@@ -48,8 +49,13 @@ class QuestionStatementClassifier:
         self.model = joblib.load(model_path)
         self.vectorizer = joblib.load(vectorizer_path)
 
+project_root = os.path.dirname(os.path.abspath(__file__))
+data_root = 'data'
+file_name = 'Interrogative_Plain_data.csv'
+full_path = os.path.join(project_root, data_root, file_name)
+
 # 데이터 로드 및 모델 학습
-df = pd.read_csv(r"S11P12A409\Flask\Conversation_Analysis\data\Interrogative_Plain_data.csv", encoding='euc-kr')
+df = pd.read_csv(full_path, encoding='euc-kr')
 X = df['reviews']
 y = df['label']
 
