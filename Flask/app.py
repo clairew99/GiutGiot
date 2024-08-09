@@ -10,6 +10,7 @@ import requests
 
 app = Flask(__name__)
 app.secret_key = Config.SECRETKEY
+app.access_token = Config.access_token
 
 # ClothingFeatureExtractor 클래스의 인스턴스를 생성합니다.
 extractor = ClothingFeatureExtractor()
@@ -31,7 +32,7 @@ def conversation():
     # access_token을 request headers에서 가져옴
     access_token = request.headers.get('Authorization')
     if not access_token:
-        access_token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzIzMTY4NjQ3LCJleHAiOjE3NTQ3MDQ2NDd9.O4P9-t4xBLA4_gxp1rb4XJh79yfr9jA_3sY-miTYyss"
+        access_token = app.access_token
     
     print(f"Authorization header: {access_token}")
     print(text_type)
