@@ -12,7 +12,7 @@ import '../widget/button/bt_voice.dart'; // VoiceIcon 임포트
 import '../widget/button/bt_slide.dart'; // SlideButton 임포트
 
 
-import '../screen_build/s_home_build.dart'; // PageViewItem 임포트
+import '../screen_build/s_home_build(before).dart'; // PageViewItem 임포트
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -79,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  // app 실행 내용 - 정진영 (24.08.08)
   @override
   Widget build(BuildContext context) {
     return Scaffold(

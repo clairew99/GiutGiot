@@ -20,7 +20,7 @@ class SplashScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
-            Image.asset('assets/sandhour.gif'), // GIF 이미지 추가
+            Image.asset('assets/icon/sandhour.gif'), // GIF 이미지 추가
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {

@@ -1,7 +1,3 @@
-import 'package:flame/components.dart';
-import 'package:forge2d/forge2d.dart';
-import 'package:flame_forge2d/flame_forge2d.dart';
-
 import 'package:flutter/material.dart';
 
 import 'w_cloth_item.dart';

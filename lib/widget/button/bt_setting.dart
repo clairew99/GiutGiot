@@ -18,13 +18,13 @@ class SettingsIcon extends StatelessWidget {
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0), // 블러 효과
             child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.4), // 반투명 배경색
-                borderRadius: BorderRadius.circular(20.0),
-                border: Border.all(
-                  color: Colors.white.withOpacity(1.0),
-                ),
-              ),
+              // decoration: BoxDecoration(
+              //   color: Colors.white.withOpacity(0.4), // 반투명 배경색
+              //   borderRadius: BorderRadius.circular(20.0),
+              //   border: Border.all(
+              //     color: Colors.white.withOpacity(1.0),
+              //   ),
+              // ),
               child: const Padding(
                 padding: EdgeInsets.all(8), // 아이콘 주변 여백
                 child: Icon(

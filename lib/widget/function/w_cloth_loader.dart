@@ -1,66 +1,56 @@
-// w_cloth_loader.dart
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'w_cloth_item.dart';
+import '../../storage.dart'; // storage.dart 파일 import
 
-// 캐싱 메커니즘 구현 - 정진영 (24.08.05)
-
-
-class ClothLoader extends StatefulWidget {
+class ClothLoader {
   final String jsonFilePath;
-  final Widget Function(BuildContext, List<ClothItem>) builder;
 
-  const ClothLoader({
-    Key? key,
-    required this.jsonFilePath,
-    required this.builder,
-  }) : super(key: key);
+  ClothLoader(this.jsonFilePath);
 
-  @override
-  _ClothLoaderState createState() => _ClothLoaderState();
-}
+  static final Map<String, List<ClothItem>> _cachedData = {}; // 캐시된 데이터를 저장할 정적 변수
 
-class _ClothLoaderState extends State<ClothLoader> {
-  static Map<String, List<ClothItem>> _cachedData = {}; // 캐시된 데이터를 저장할 정적 변수
-  late Future<List<ClothItem>> _clothItems;
+  Future<void> loadClothItems() async {
+    try {
+      if (_cachedData.containsKey(jsonFilePath)) {
+        _storeClothPaths(_cachedData[jsonFilePath]!); // 캐시된 데이터를 전역 변수에 저장
+      } else {
+        final jsonString = await rootBundle.loadString(jsonFilePath);
 
-  @override
-  void initState() {
-    super.initState();
-    if (_cachedData.containsKey(widget.jsonFilePath)) {
-      // 캐시에 데이터가 있는 경우 캐시된 데이터를 사용
-      _clothItems = Future.value(_cachedData[widget.jsonFilePath]);
-    } else {
-      // 캐시에 데이터가 없는 경우 새로 로드
-      _clothItems = _loadClothItems();
+        // 주석 처리 완료 - 정진영 (24.08.09)
+        // print('JSON String Loaded: $jsonString'); // JSON 파일 로드 확인
+        final List<dynamic> jsonList = json.decode(jsonString);
+        // print('JSON Decoded: $jsonList'); // JSON 디코드 확인
+        final List<ClothItem> items = jsonList.map((data) => ClothItem.fromJson(data)).toList();
+        _cachedData[jsonFilePath] = items; // 캐시에 데이터 저장
+        _storeClothPaths(items); // 전역 변수에 저장
+      }
+      // print('Cloth Items Loaded: ${clothPaths.toString()}'); // 최종 로드된 clothPaths 확인
+    } catch (e) {
+      print('Error loading cloth items: $e');
     }
   }
+  void _storeClothPaths(List<ClothItem> items) {
+    // HomeClothPaths를 초기화합니다.
+    HomeClothPaths = {
+      'remembered': [],
+      'forgotten': []
+    };
 
-  Future<List<ClothItem>> _loadClothItems() async {
-    final jsonString = await rootBundle.loadString(widget.jsonFilePath);
-    final List<dynamic> jsonList = json.decode(jsonString);
-    final List<ClothItem> items = jsonList.map((data) => ClothItem.fromJson(data)).toList();
-    _cachedData[widget.jsonFilePath] = items; // 캐시에 데이터 저장
-    return items;
-  }
+    // field 값 기준으로 오름차순 정렬
+    // 기억 가중치로 분류하기 ( 20% 이하를 떨어 트릴 수 있도록 조정 )
+    // 정진영 (24.08.09)
 
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<List<ClothItem>>(
-      future: _clothItems,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator(); // 데이터를 로드 중일 때 로딩 표시
-        } else if (snapshot.hasError) {
-          print('Error loading cloth data: ${snapshot.error}');
-          return Text('Error loading cloth data'); // 데이터 로드 중 오류 발생 시 메시지 표시
-        } else if (snapshot.hasData) {
-          return widget.builder(context, snapshot.data!); // 데이터 로드 완료 시 builder 호출
-        } else {
-          return Text('No data found'); // 데이터가 없을 때 메시지 표시
-        }
-      },
-    );
+
+    for (var item in items) {
+      if (item.field <= 0.2) {
+        HomeClothPaths['forgotten']?.add(item.clothPath);
+        HomeClothPaths['forgotten']?.add(item.field);
+      } else {
+        HomeClothPaths['remembered']?.add(item.clothPath);
+        HomeClothPaths['remembered']?.add(item.field);
+      }
+    }
   }
 }
+

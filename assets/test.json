@@ -87,7 +87,7 @@
     "type": "collar",
     "category": "short",
     "pattern": "solid",
-    "field": 0
+    "field": 0.4
   },
   {
     "clothes_id": 10,
