@@ -107,9 +107,7 @@ flutter:
     - assets/today_clothes.json
 
     # custom
-    - assets/svgfile/head.svg
-    - assets/svgfile/run_bottom.svg
-    - assets/svgfile/run_top.svg
+    - assets/svgfile/
 
 
   ## SHJ FIN
