@@ -14,8 +14,8 @@ COPY requirements.txt /app/
 RUN pip install -r requirements.txt
 
 # Flask 애플리케이션 실행을 위한 환경변수 설정
-ENV FLASK_APP=app.py
-ENV FLASK_RUN_HOST=0.0.0.0
+# ENV FLASK_APP=app.py
+# ENV FLASK_RUN_HOST=0.0.0.0
 
 # 애플리케이션을 실행하기 위한 포트 설정 (Flask 기본 포트: 5000)
 EXPOSE 5000
