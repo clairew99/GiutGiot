@@ -111,7 +111,7 @@ def conversation():
                 "color": color,
                 "type": clothing_type,
                 "category": category,
-                "pattern": "SOLID"
+                "pattern": pattern
             }
             print("spring_data_top", spring_data_top)
             try:
