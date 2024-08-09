@@ -1,5 +1,5 @@
 from konlpy.tag import Okt
-from data.Keyword_data import *
+from Conversation_Analysis.data.Keyword_data import *
 
 class ClothingFeatureExtractor:
     def __init__(self):

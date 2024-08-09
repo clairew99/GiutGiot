@@ -31,7 +31,7 @@ def conversation():
     # access_token을 request headers에서 가져옴
     access_token = request.headers.get('Authorization')
     if not access_token:
-        access_token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzIzMTI3MDUxLCJleHAiOjE3NTQ2NjMwNTF9.e7MaRJJNPit1evlkbmdwxWW9PFC7Vq4v_BK5zle8Rr0"
+        access_token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzIzMTY4NjQ3LCJleHAiOjE3NTQ3MDQ2NDd9.O4P9-t4xBLA4_gxp1rb4XJh79yfr9jA_3sY-miTYyss"
     
     print(f"Authorization header: {access_token}")
     print(text_type)
@@ -111,18 +111,18 @@ def conversation():
                 "color": color,
                 "type": clothing_type,
                 "category": category,
-                "pattern": pattern
+                "pattern": "SOLID"
             }
             print("spring_data_top", spring_data_top)
             try:
-                print("여기구나;;")
                 response = requests.post(spring_url, headers=spring_headers, json=spring_data_top)
+                print("response: ",response)
                 response.raise_for_status()
                 responses.append(response.json())
             except requests.exceptions.RequestException as e:
                 return jsonify({"error": str(e)}), 500
 
-        if features.get('bottom', {}):
+        elif features.get('bottom', {}):
             bottom_features = features.get('bottom', {})
             print("bottom_features: ",bottom_features)
             spring_data_bottom = {
@@ -150,10 +150,19 @@ def conversation():
     return jsonify({"error": "잘못된 요청입니다."}), 400
 
 def create_message_from_response(response_data):
-    if response_data.get('isAvailable', False):
-        return "입어도 됩니다. 입으시겠어요?"
-    else:
+    if isinstance(response_data, list):
+        for item in response_data:
+            if item.get('isAvailable', False):
+                return "입어도 됩니다. 입으시겠어요?"
         return "다른 걸 입는 걸 추천드려요. 그래도 입으시겠어요?"
+    else:
+        if response_data.get('isAvailable', False):
+            return "입어도 됩니다. 입으시겠어요?"
+        else:
+            return "다른 걸 입는 걸 추천드려요. 그래도 입으시겠어요?"
+
+
+
 
 @app.route('/response', methods=['POST'])
 def handle_response():
@@ -172,6 +181,9 @@ def handle_response():
         return jsonify({'message': '데이터가 저장되었습니다.'})
     else:
         return jsonify({'message': '다른 옷을 추천합니다.'})
+
+
+
 
 @app.route('/pyannote', methods=['POST'])
 def pyannote():
