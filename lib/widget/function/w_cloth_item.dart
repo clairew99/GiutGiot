@@ -30,4 +30,9 @@ class ClothItem {
       // field가 null인 경우 기본값 0.0 (에러 처리를 위함) - 정진영(24.08.05)
     );
   }
+  
+  // 이미지 url 작성 후 저장
+  String get clothPath {
+    return 'clothes/${isTop ? "top" : "bottom"}_${category}_${type}_${pattern}_${color}.png';
+  }
 }

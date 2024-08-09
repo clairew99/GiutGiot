@@ -1,23 +1,23 @@
 name: GIUTGIOT
 description: "A new Flutter project."
-publish_to: 'none'
+publish_to: "none"
 
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
   intl: ^0.17.0
 
-
   ## 20240731 SHJ
-    ## stt,tts
+  ## stt,tts
   speech_to_text: ^6.1.1
   flutter_tts: ^3.6.3
-  permission_handler: ^10.2.0
+  permission_handler:
+    ^10.2.0
     ## postural analysis
   sensors: ^2.0.0
   shared_preferences: ^2.0.6
@@ -49,8 +49,6 @@ dependencies:
 #  color: "#42a5f5"
 #  android_12: true
 
-
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -61,7 +59,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-
   ## 20240802 SHJ
   ## 자세 모델
 
@@ -71,16 +68,18 @@ flutter:
   assets:
     - assets/model/posture_analysis.tflite
     # 아이콘 폴더 내 모든 이미지 접근 가능 - 정진영 (24.08.04)
-    - assets/background/
+    - assets/images/clothes/
+    - assets/images/background/
+    - assets/images/bg_frames/
+    - assets/images/
     - assets/icon/
-    - assets/clothes/
     - assets/test.json
+    - assets/background/
 
     - assets/test_icon/upclothes.png
     - assets/test_icon/downclothes.png
     - assets/test_icon/long_upclothes.png
     - assets/test_icon/short_downclothes.png
-
 
     # top
     - assets/test_icon/top/knit.webp
@@ -109,6 +108,4 @@ flutter:
     # custom
     - assets/svgfile/
 
-
   ## SHJ FIN
-

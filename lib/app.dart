@@ -1,9 +1,14 @@
+import 'package:GIUTGIOT/screen/s_PageSlide.dart';
+import 'package:GIUTGIOT/screen/s_splash.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../models/sensor_management.dart';
-import 'screen/s_home.dart';
 import 'screen/s_setting.dart';
 import 'screen/s_voice_activation.dart';
+
+import 'dart:async';
+import 'package:tflite_flutter/tflite_flutter.dart';
+import '../models/ml_model.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -14,6 +19,13 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool _isInitialized = false;
+  Interpreter? _interpreter;
+  bool _isLoading = true;
+  int maxIndex = 0;
+  // 이전 maxIndex를 저장하기 위한 변수 추가 - 정진영 (24.08.09)
+  int prevMaxIndex = -1;
+  String activity = 'Unknown';
+  final List<StreamSubscription<dynamic>> _streamSubscriptions = [];
 
   @override
   void initState() {
@@ -25,12 +37,61 @@ class _MyAppState extends State<MyApp> {
     try {
       await _requestPermissions();
       await setupSensorManagement();
+      await _initializeModelAndSensors();
       setState(() {
         _isInitialized = true;
       });
     } catch (e) {
       print('Error initializing app: $e');
-      // 에러 처리 로직 추가
+    }
+  }
+
+  Future<void> _initializeModelAndSensors() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      print("Loading model...");
+      Interpreter interpreter = await loadModel('assets/model/posture_analysis.tflite');
+      setState(() {
+        _interpreter = interpreter;
+        _isLoading = false;
+      });
+
+      print("Initializing sensors...");
+      initializeSensors(_streamSubscriptions, (accelerometerValues, gyroscopeValues, userAccelerometerValues) {
+        // 상태 갱신이 필요하지 않으므로 setState 호출 생략
+        // - 정진영 (24.08.08)
+      });
+
+      if (_interpreter != null) {
+        print("Starting movement detection...");
+        startMovementDetection(
+          _interpreter!,
+          predict,
+              (int predictedMaxIndex) {
+            if (predictedMaxIndex != prevMaxIndex) {
+              // maxIndex가 변경될 때만 setState 호출
+              // 정진영 (24.08.08)
+              setState(() {
+                maxIndex = predictedMaxIndex;
+                activity = getActivityText(maxIndex);
+                prevMaxIndex = predictedMaxIndex; // prevMaxIndex 업데이트
+              });
+            }
+          },
+              () {
+            // 상태 갱신이 필요하지 않으므로 setState 호출 생략
+          },
+        );
+      }
+    } catch (e) {
+      print("Error loading model or initializing sensors: $e");
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -58,7 +119,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_isInitialized) {
+    if (!_isInitialized || _isLoading) {
       return MaterialApp(
         home: Scaffold(
           body: Center(
@@ -69,8 +130,9 @@ class _MyAppState extends State<MyApp> {
     }
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'GIUT_GIOT',
-      home: const HomeScreen(),
+      home: PageSlide(),
       routes: {
         '/settings': (context) => const SettingScreen(),
         '/voice_activation': (context) => VoiceActivationScreen(),
@@ -78,4 +140,3 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-
