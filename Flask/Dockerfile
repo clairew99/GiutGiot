@@ -11,6 +11,7 @@ COPY . /app
 COPY requirements.txt /app/
 
 # requirements.txt에 명시된 필요한 패키지들을 설치
+RUN apt-get update && apt-get install -y gcc build-essential
 RUN pip install --no-deps -r requirements.txt
 
 # Flask 애플리케이션 실행을 위한 환경변수 설정
