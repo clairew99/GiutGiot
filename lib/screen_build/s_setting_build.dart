@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import '../widget/box/b_content_opacity.dart';
 import '../widget/modal/w_nickname_modal.dart';
 import '../widget/function/w_slider_work_hour.dart';
+import '../screen/s_servicedescription.dart';
 
 // 화면 이동 구현 아직 안함 - 정진영 (24.08.04)
-
 
 class SettingContent extends StatefulWidget {
   const SettingContent({Key? key}) : super(key: key);
@@ -39,7 +39,7 @@ class _SettingContentState extends State<SettingContent> {
 
 
   // 출퇴근 시간 초기값 설정
-  RangeValues _workHours = RangeValues(9, 18); 
+  RangeValues _workHours = RangeValues(9, 18);
   // 출퇴근 시간 변경시 할당됨
   void _onWorkHoursChanged(RangeValues newWorkHours) {
     setState(() {
@@ -102,7 +102,7 @@ class _SettingContentState extends State<SettingContent> {
                   ),
                 ),
                 Divider(),
-                
+
                 ListTile(
                   title: Text('출퇴근 시간 조정',style: TextStyle(fontWeight: FontWeight.w500)),
                   subtitle:// 출퇴근 시간 조정 설정
@@ -113,16 +113,21 @@ class _SettingContentState extends State<SettingContent> {
                 ),
                 SizedBox(height: 20),
                 Divider(),
-                // 화면 이동 router 설정 아직 안함 (24.08.04) -정진영
+                // 서비스 설명 페이지 이동
                 ListTile(
                   title: Text('서비스 설명', style: TextStyle(fontWeight: FontWeight.w500)),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => DescriptionService()),
+                    );
+                  },
                 ),
-                Divider(),
-                ListTile(
-                  title: Text('로그아웃', style: TextStyle(fontWeight: FontWeight.w500)),
-                  onTap: () {},
-                ),
+                // Divider(),
+                // ListTile(
+                //   title: Text('로그아웃', style: TextStyle(fontWeight: FontWeight.w500)),
+                //   onTap: () {},
+                // ),
               ],
             ),
           ),
