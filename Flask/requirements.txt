@@ -7,6 +7,7 @@ asteroid-filterbanks==0.4.0
 async-timeout==4.0.3
 attrs==24.2.0
 audioread==3.0.1
+blinker==1.8.2
 certifi==2024.7.4
 cffi==1.17.0
 charset-normalizer==3.3.2
@@ -19,6 +20,7 @@ decorator==5.1.1
 docopt==0.6.2
 einops==0.8.0
 filelock==3.15.4
+flask==3.0.3
 fonttools==4.53.1
 frozenlist==1.4.1
 fsspec==2024.6.1
@@ -26,14 +28,16 @@ greenlet==3.0.3
 huggingface-hub==0.24.5
 HyperPyYAML==1.2.2
 idna==3.7
-importlib_resources==6.4.0
-Jinja2==3.1.4
+importlib-metadata==8.2.0
+importlib-resources==6.4.0
+itsdangerous==2.2.0
+jinja2==3.1.4
 joblib==1.4.2
 JPype1==1.5.0
 julius==0.2.7
 kiwisolver==1.4.5
 konlpy==0.6.0
-lazy_loader==0.4
+lazy-loader==0.4
 librosa==0.10.2.post1
 lightning==2.4.0
 lightning-utilities==0.11.6
@@ -44,6 +48,7 @@ markdown-it-py==3.0.0
 MarkupSafe==2.1.5
 matplotlib==3.9.1.post1
 mdurl==0.1.2
+more-itertools==10.4.0
 mpmath==1.3.0
 msgpack==1.0.8
 multidict==6.0.5
@@ -52,6 +57,7 @@ nltk==3.8.1
 numba==0.60.0
 numpy==1.26.4
 omegaconf==2.3.0
+openai-whisper==20231117
 optuna==3.6.1
 packaging==24.1
 pandas==2.2.2
@@ -67,7 +73,7 @@ pyannote.metrics==3.2.1
 pyannote.pipeline==3.0.1
 pycparser==2.22
 pydub==0.25.1
-Pygments==2.18.0
+pygments==2.18.0
 pyparsing==3.1.2
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
@@ -95,6 +101,7 @@ sympy==1.13.1
 tabulate==0.9.0
 tensorboardX==2.6.2.2
 threadpoolctl==3.5.0
+tiktoken==0.7.0
 torch==2.4.0
 torch-audiomentations==0.11.1
 torch-pitch-shift==1.2.4
@@ -102,9 +109,10 @@ torchaudio==2.4.0
 torchmetrics==1.4.1
 tqdm==4.66.5
 typer==0.12.3
-typing_extensions==4.12.2
+typing-extensions==4.12.2
 tzdata==2024.1
 urllib3==2.2.2
+werkzeug==3.0.3
 whisper==1.1.10
 yarl==1.9.4
 zipp==3.19.2
