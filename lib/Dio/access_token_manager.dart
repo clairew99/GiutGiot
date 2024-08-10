@@ -40,19 +40,27 @@ class AccessTokenManager {
   static Future<bool> fetchAndSaveToken() async {
     try {
       final dio = Dio();
-      final response = await dio.post(Config.getAuthUri().toString());
+      final response = await dio.post('${Config.baseUrl}/auth/login?memberId=1'); // 임시 로그인
       print('Login response: ${response.statusCode}'); // 디버깅용 로그
 
       if (response.statusCode == 200) {
         final responseData = response.data;
         print('Login response data: $responseData'); // 디버깅용 로그
-        if (responseData.containsKey('accessToken') && responseData.containsKey('refreshToken')) {
-          await setAccessToken(responseData['accessToken']);
-          await setRefreshToken(responseData['refreshToken']);
+
+        // 응답 데이터에서 accessToken과 refreshToken 추출
+        final accessToken = responseData['accessToken'];
+        final refreshToken = responseData['refreshToken'];
+
+        if (accessToken != null && refreshToken != null) {
+          print('Access token and refresh token found in response');
+          await setAccessToken(accessToken);
+          await setRefreshToken(refreshToken);
           return true;
         } else {
           print('Token keys not found in response data'); // 디버깅용 로그
         }
+      } else {
+        print('Failed to login, status code: ${response.statusCode}');
       }
     } catch (e) {
       print('Error fetching token: $e'); // 오류 로그
@@ -69,3 +77,4 @@ class AccessTokenManager {
     print('Tokens cleared'); // 디버깅용 로그
   }
 }
+

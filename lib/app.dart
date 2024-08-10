@@ -10,6 +10,8 @@ import 'dart:async';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import '../models/ml_model.dart';
 
+import '../Dio/access_token_manager.dart';
+
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -38,6 +40,9 @@ class _MyAppState extends State<MyApp> {
       await _requestPermissions();
       await setupSensorManagement();
       await _initializeModelAndSensors();
+      // 토큰 가져오기 호출
+      await _fetchToken();
+
       setState(() {
         _isInitialized = true;
       });
@@ -45,6 +50,18 @@ class _MyAppState extends State<MyApp> {
       print('Error initializing app: $e');
     }
   }
+
+  // 토큰 가져오는 메서드 추가
+  Future<void> _fetchToken() async {
+    print('토큰 가져오는 중...'); // 로그 출력
+    bool success = await AccessTokenManager.fetchAndSaveToken();
+    if (success) {
+      print('토큰 가져오기 성공'); // 토큰 가져오기 성공 로그
+    } else {
+      print('토큰 가져오기 실패'); // 토큰 가져오기 실패 로그
+    }
+  }
+
 
   Future<void> _initializeModelAndSensors() async {
     try {
