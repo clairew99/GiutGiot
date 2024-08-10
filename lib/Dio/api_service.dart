@@ -122,6 +122,8 @@ class ApiService {
   // 7. 코디 등록 API - POST
   Future<Map<String, dynamic>?> registerCoordinate(Map<String, dynamic> coordinateData, String token) async {
     final uri = Uri.parse('${Config.baseUrl}${Config.coordinateEndpoint}');
+    print('Sending request to: $uri');
+    print('Request body: ${jsonEncode(coordinateData)}');
     final response = await http.post(
       uri,
       headers: {

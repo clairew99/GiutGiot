@@ -34,10 +34,9 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
   }
 
   void _initializeTts() {
-    // TTS 완료 핸들러 설정
     _flutterTts.setCompletionHandler(() {
       if (_isListeningForResponse && mounted) {
-        if (!_speech.isListening) { // 음성 인식이 진행 중이 아닐 때만 시작
+        if (!_speech.isListening) {
           _listen();
         }
       }
@@ -52,73 +51,68 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
   }
 
   Future<void> _listen() async {
-    // 마이크 권한 요청
     PermissionStatus status = await Permission.microphone.request();
     if (status != PermissionStatus.granted) {
-      print('Microphone permission denied'); // 권한 거부 시 로그 출력
-      return; // 권한이 거부된 경우 함수를 종료
+      print('Microphone permission denied');
+      return;
     }
 
-    // 음성 인식 초기화
     bool available = await _speech.initialize();
-    print('Speech recognition available: $available'); // 디버깅용 로그
+    print('Speech recognition available: $available');
     if (available) {
-      // 음성 인식 시작
       _speech.listen(
         onResult: (val) {
           if (mounted) {
             setState(() {
-              _text = val.recognizedWords; // 인식된 단어를 저장
-              _waveController.amplitude = (val.confidence ?? 1.0) * 0.5; // 자신감 값을 파형의 진폭으로 설정
-              print('Recognized words: $_text'); // 디버깅용 로그
+              _text = val.recognizedWords;
+              _waveController.amplitude = (val.confidence ?? 1.0) * 0.5;
+              print('Recognized words: $_text');
             });
             if (val.finalResult) {
-              _sendTextToServer(_text); // 최종 결과가 나오면 서버로 전송
+              _sendTextToServer(_text);
             }
           }
         },
       );
       if (mounted) {
         setState(() {
-          _isRecording = true; // 녹음 중으로 상태 설정
+          _isRecording = true;
         });
       }
     } else {
       if (mounted) {
         setState(() {
-          _isRecording = false; // 녹음 중지로 상태 설정
+          _isRecording = false;
         });
       }
     }
   }
 
   Future<void> _stopListening() async {
-    // 음성 인식 중지
     await _speech.stop();
     if (mounted) {
       setState(() {
-        _isRecording = false; // 녹음 중지로 상태 설정
+        _isRecording = false;
       });
     }
   }
 
   Future<void> _sendTextToServer(String text) async {
-    // 서버로 텍스트 전송
     try {
       String? accessToken = await AccessTokenManager.getAccessToken();
       if (accessToken == null) {
-        print('Access token is missing'); // 액세스 토큰이 없을 때 로그 출력
+        print('Access token is missing');
         return;
       }
 
       final dio = Dio();
-      print('Sending text to server: $text'); // 디버깅용 로그
+      print('Sending text to server: $text');
       final response = await dio.post(
-        Config.getConversationUri().toString(), // 설정 파일의 메서드를 통해 URI 생성
+        Config.getConversationUri().toString(),
         options: Options(
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',
-            'Authorization': 'Bearer $accessToken', // 액세스 토큰 추가
+            'Authorization': 'Bearer $accessToken',
           },
         ),
         data: jsonEncode(<String, String>{'text': text}),
@@ -144,7 +138,7 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
         print('Failed to send text: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error sending text: $e'); // 오류 로그
+      print('Error sending text: $e');
     }
   }
 
@@ -182,11 +176,10 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
 
   @override
   void dispose() {
-    // 리소스 해제
     _speech.cancel();
     _flutterTts.stop();
     super.dispose();
-    print('Disposed VoiceActivationScreen'); // 디버깅용 로그
+    print('Disposed VoiceActivationScreen');
   }
 
   @override
@@ -210,21 +203,19 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
                 await _speech.cancel();
                 await _flutterTts.stop();
                 Navigator.pop(context);
-                print('Back button pressed'); // 디버깅용 로그
+                print('Back button pressed');
               },
             ),
           ),
-          // 중앙 컨텐츠
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // 의상 이미지 표시
                 if (_clothingImageUrl != null)
                   Image.network(
                     _clothingImageUrl!,
-                    height: 200, // 이미지 높이 설정
-                    width: 200, // 이미지 너비 설정
+                    height: 200,
+                    width: 200,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return Text('Failed to load image', style: TextStyle(color: Colors.red));
@@ -247,15 +238,14 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
                   ),
                 ),
                 SizedBox(height: 20),
-                // 녹음 시작/중지 버튼
                 ElevatedButton(
                   onPressed: () async {
                     if (_isRecording) {
                       await _stopListening();
-                      print('Stopped recording'); // 디버깅용 로그
+                      print('Stopped recording');
                     } else {
                       await _listen();
-                      print('Started recording'); // 디버깅용 로그
+                      print('Started recording');
                     }
                   },
                   child: Text(_isRecording ? 'Stop Recording' : 'Start Recording'),
