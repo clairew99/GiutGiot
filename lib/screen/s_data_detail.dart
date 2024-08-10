@@ -118,7 +118,7 @@ class _ApiTestPageState extends State<ApiTestPage> {
                   _executeApiCall((token) => apiService.updateCoordinate(coordinateData, token));
                 }),
                 _buildApiTestTile('9. 코디 일별 조회', () {
-                  _executeApiCall((token) => apiService.fetchDailyCoordinate('2024', '08', '10', token));
+                  _executeApiCall((token) => apiService.fetchDailyCoordinate('2024', '08', '06', token));
                 }),
               ],
             ),

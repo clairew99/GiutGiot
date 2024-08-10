@@ -40,6 +40,7 @@ class AccessTokenManager {
   static Future<bool> fetchAndSaveToken() async {
     try {
       final dio = Dio();
+      //final response = await dio.post(Config.getAuthUri().toString());
       final response = await dio.post('${Config.baseUrl}/auth/login?memberId=1'); // 임시 로그인
       print('Login response: ${response.statusCode}'); // 디버깅용 로그
 
