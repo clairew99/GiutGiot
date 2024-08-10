@@ -4,6 +4,8 @@ import '../widget/box/b_content_opacity.dart';
 import '../widget/modal/w_nickname_modal.dart';
 import '../widget/function/w_slider_work_hour.dart';
 import '../screen/s_servicedescription.dart';
+// 임시
+import '../screen/s_data_detail.dart'; // 옷 상세 조회 페이지 임포트
 
 // 화면 이동 구현 아직 안함 - 정진영 (24.08.04)
 
@@ -128,6 +130,19 @@ class _SettingContentState extends State<SettingContent> {
                 //   title: Text('로그아웃', style: TextStyle(fontWeight: FontWeight.w500)),
                 //   onTap: () {},
                 // ),
+
+                Divider(),
+                ListTile(
+                  title: Text('API 테스트', style: TextStyle(fontWeight: FontWeight.w500)), // API 테스트 페이지로 이동
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ApiTestPage()),
+                    );
+                  },
+                ),
+
+
               ],
             ),
           ),

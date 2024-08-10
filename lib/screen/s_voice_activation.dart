@@ -21,6 +21,7 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
   late FlutterTts _flutterTts; // TTS 객체
   bool _isListeningForResponse = false; // 응답을 듣고 있는지 여부를 나타내는 플래그
   String? _clothingImageUrl; // 받아온 의상 이미지 URL을 저장하는 변수
+  Map<String, dynamic>? _clothesDetail; // 옷의 세부 정보를 저장하는 변수
 
   @override
   void initState() {
@@ -122,39 +123,61 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
         ),
         data: jsonEncode(<String, String>{'text': text}),
       );
-      print('Server response status: ${response.statusCode}'); // 디버깅용 로그
+      print('Server response status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final responseData = response.data;
-        print('Server response data: $responseData'); // 디버깅용 로그
+        print('Server response data: $responseData');
+
         if (responseData['type'] == 'Question') {
           String message = responseData['message'];
-          await _speak(message); // 서버의 응답 메시지를 읽음
+          await _speak(message);
 
           if (responseData.containsKey('clothesId')) {
-            if (mounted) {
-              setState(() {
-                _clothingImageUrl = Config.getClothesUri(responseData['clothesId']).toString(); // 의상 이미지 URL을 업데이트
-                print('Clothing image URL: $_clothingImageUrl'); // 디버깅용 로그
-              });
-            }
+            String clothesId = responseData['clothesId'].toString();
+            _fetchClothesDetail(clothesId, accessToken); // 옷 세부 정보 조회
           }
         } else {
-          _isListeningForResponse = false; // 응답 듣기 중지
+          _isListeningForResponse = false;
         }
       } else {
-        print('Failed to send text: ${response.statusCode}'); // 실패 로그
+        print('Failed to send text: ${response.statusCode}');
       }
     } catch (e) {
       print('Error sending text: $e'); // 오류 로그
     }
   }
 
+  Future<void> _fetchClothesDetail(String clothesId, String token) async {
+    try {
+      final dio = Dio();
+      final response = await dio.get(
+        Config.getClothesUri(clothesId).toString(),
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _clothesDetail = response.data; // 옷 세부 정보를 저장
+          print('Clothes detail fetched: $_clothesDetail'); // 디버깅용 로그
+        });
+      } else {
+        print('Failed to fetch clothes detail: ${response.statusCode}'); // 실패 로그
+      }
+    } catch (e) {
+      print('Error fetching clothes detail: $e'); // 오류 로그
+    }
+  }
+
   Future<void> _speak(String text) async {
-    // TTS로 텍스트 읽기
-    print('Speaking text: $text'); // 디버깅용 로그
+    print('Speaking text: $text');
     await _flutterTts.speak(text);
-    _isListeningForResponse = true; // 응답 듣기 시작
+    _isListeningForResponse = true;
   }
 
   @override
@@ -171,14 +194,12 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // 배경 이미지
           Positioned.fill(
             child: Image.asset(
               'assets/background/bg.gif',
               fit: BoxFit.cover,
             ),
           ),
-          // 뒤로가기 버튼
           Positioned(
             top: 40,
             left: 10,
@@ -209,13 +230,19 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
                       return Text('Failed to load image', style: TextStyle(color: Colors.red));
                     },
                   ),
+                if (_clothesDetail != null) ...[
+                  Text('Clothes ID: ${_clothesDetail!['clothesId']}'),
+                  Text('Color: ${_clothesDetail!['color']}'),
+                  Text('Category: ${_clothesDetail!['category']}'),
+                  Text('Type: ${_clothesDetail!['type']}'),
+                  Text('Pattern: ${_clothesDetail!['pattern']}'),
+                ],
                 SizedBox(height: 20),
-                // Siri 파형
                 SiriWaveform.ios9(
                   controller: _waveController,
                   options: IOS9SiriWaveformOptions(
-                    height: 150, // 파형 높이 설정
-                    width: 300, // 파형 너비 설정
+                    height: 150,
+                    width: 300,
                     showSupportBar: true,
                   ),
                 ),
