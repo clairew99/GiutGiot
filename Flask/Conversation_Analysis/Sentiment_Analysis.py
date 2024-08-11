@@ -3,7 +3,15 @@ from konlpy.tag import Okt
 from nltk.classify import NaiveBayesClassifier
 from nltk.classify.util import accuracy
 import random
+import sys
+import os
+# 프로젝트의 루트 디렉터리를 경로에 추가
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 from Conversation_Analysis.data.Sentiment_data import *
+import sys
+import os
+
+
 
 # 형태소 분석기 설정
 okt = Okt()

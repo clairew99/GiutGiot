@@ -11,7 +11,11 @@ COPY . /app
 COPY requirements.txt /app/
 
 # requirements.txt에 명시된 필요한 패키지들을 설치
-RUN pip install -r requirements.txt
+RUN apt-get update && apt-get install -y gcc build-essential
+RUN pip install --no-deps -r requirements.txt
+
+# PyTorch의 CPU 전용 버전 설치
+RUN pip install torch==2.4.0+cpu torchaudio==2.4.0+cpu --extra-index-url https://download.pytorch.org/whl/cpu
 
 # Flask 애플리케이션 실행을 위한 환경변수 설정
 # ENV FLASK_APP=app.py

@@ -14,7 +14,7 @@ class ClothingFeatureExtractor:
             "맨투맨": ["맨", "투", "맨"]
         }
         self.top_items = set(sum([synonyms for synonyms in top_types.values()], []) + 
-                             sum([synonyms for synonyms in sleeve_types.values()], []))
+                            sum([synonyms for synonyms in sleeve_types.values()], []))
         self.bottom_items = set(sum([synonyms for synonyms in bottom_types.values()], []) + 
                                 sum([synonyms for synonyms in pants_types.values()], []))
 
@@ -132,4 +132,10 @@ class ClothingFeatureExtractor:
             elif current_part == 'bottom':
                 bottom_features['color'] = current_color
 
-        return {'top': top_features, 'bottom': bottom_features}
+        # 상의, 하의에 따라 다르게 return
+        if any(top_features.values()):
+            return {'top': top_features}
+        elif any(bottom_features.values()):
+            return {'bottom': bottom_features}
+        else:
+            return {}

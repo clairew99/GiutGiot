@@ -57,8 +57,8 @@ nltk==3.8.1
 numba==0.60.0
 numpy==1.26.4
 omegaconf==2.3.0
-openai-whisper==20231117
 optuna==3.6.1
+openai-whisper==20231117
 packaging==24.1
 pandas==2.2.2
 pillow==10.4.0
