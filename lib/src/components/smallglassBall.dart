@@ -8,7 +8,6 @@ import 'dart:ui'; // Canvas를 사용하기 위해 dart:ui를 임포트
 class SmallBall extends BodyComponent with HasGameRef<Forge2DGame> {
   final String marbleURL;
   final Vector2 position;
-  final double radius;
   final double collisionMargin; // 충돌 마진 추가
 
 
@@ -16,9 +15,7 @@ class SmallBall extends BodyComponent with HasGameRef<Forge2DGame> {
   SmallBall({
     required this.marbleURL,
     required this.position,
-    required this.radius,
     this.collisionMargin = 10, // 기본 충돌 마진 설정
-
 
   });
 
@@ -31,6 +28,8 @@ class SmallBall extends BodyComponent with HasGameRef<Forge2DGame> {
     sprite = await gameRef.loadSprite(marbleURL) ;
 
   }
+
+  double radius = 10 ;
   @override
   void render(Canvas canvas) {
     // 원을 그리는 대신 스프라이트를 그립니다.
@@ -73,12 +72,12 @@ class SmallBall extends BodyComponent with HasGameRef<Forge2DGame> {
     );
     final shape = CircleShape()..radius =  radius  - collisionMargin; // 충돌 마진 적용; // 충돌 감지 경계
     final fixtureDef = FixtureDef(shape)
-      ..density = 10// 밀도 (값이 높을 수록 무겁다)
-      ..friction = 0.2 // 마찰력
-      ..restitution = 0.3; // 반발력
+      ..density = 1// 밀도 (값이 높을 수록 무겁다)
+      ..friction = 0.1 // 마찰력
+      ..restitution = 0.5; // 반발력
     return world.createBody(bodyDef)
-      ..createFixture(fixtureDef)
-      ..angularVelocity = radians(5);
+      ..createFixture(fixtureDef);
+      // ..angularVelocity = radians(5);
   }
 }
 

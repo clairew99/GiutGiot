@@ -33,22 +33,23 @@ class ClothLoader {
   void _storeClothPaths(List<ClothItem> items) {
     // HomeClothPaths를 초기화합니다.
     HomeClothPaths = {
+      'forgotten': [],
       'remembered': [],
-      'forgotten': []
     };
 
     // field 값 기준으로 오름차순 정렬
     // 기억 가중치로 분류하기 ( 20% 이하를 떨어 트릴 수 있도록 조정 )
     // 정진영 (24.08.09)
 
-
     for (var item in items) {
+      final temp_list = [] ;
+      temp_list.add(item.clothPath);
+      temp_list.add(item.field);
       if (item.field <= 0.2) {
-        HomeClothPaths['forgotten']?.add(item.clothPath);
-        HomeClothPaths['forgotten']?.add(item.field);
+
+        HomeClothPaths['forgotten']?.add(temp_list);
       } else {
-        HomeClothPaths['remembered']?.add(item.clothPath);
-        HomeClothPaths['remembered']?.add(item.field);
+        HomeClothPaths['remembered']?.add(temp_list);
       }
     }
   }

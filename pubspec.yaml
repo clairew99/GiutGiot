@@ -18,7 +18,7 @@ dependencies:
   flutter_tts: ^3.6.3
   permission_handler:
     ^10.2.0
-    ## postural analysis
+  ## postural analysis
   sensors: ^2.0.0
   shared_preferences: ^2.0.6
   tflite_flutter: ^0.10.1
