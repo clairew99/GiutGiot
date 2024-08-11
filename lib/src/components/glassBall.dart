@@ -1,25 +1,30 @@
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
 import 'package:flame/sprite.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
-import 'dart:ui'; // Canvas를 사용하기 위해 dart:ui를 임포트
 
-class GlassBall extends BodyComponent with HasGameRef<Forge2DGame> {
+import 'dart:ui'; // Canvas를 사용하기 위해 dart:ui를 임포트
+import 'package:flutter/material.dart'; // 모달 팝업을 사용하기 위해 임포트
+import '../utils/clothDetail.dart';
+
+class GlassBall extends BodyComponent with HasGameRef<Forge2DGame>, TapCallbacks {
   final String marbleURL;
+  final double clothID;
   final String clothURL;
   final Vector2 position;
   final double radius;
   final double collisionMargin; // 충돌 마진 추가
+  late Sprite marbleSprite;
+  late Sprite clothSprite;
 
   GlassBall({
     required this.marbleURL,
+    required this.clothID,
     required this.clothURL,
     required this.position,
     required this.radius,
     this.collisionMargin = 15, // 기본 충돌 마진 설정
   });
-
-  late Sprite marbleSprite;
-  late Sprite clothSprite;
 
   @override
   Future<void> onLoad() async {
@@ -34,19 +39,37 @@ class GlassBall extends BodyComponent with HasGameRef<Forge2DGame> {
     marbleSprite.render(
       canvas,
       size: Vector2.all(radius * 2),
-      position: Vector2(-radius, -radius), // 스프라이트의 위치를 중심
-      // anchor: Anchor.center
+      position: Vector2(-radius, -radius), // 스프라이트의 위치를 중심으로 설정
     );
 
-    // 옷 사이즈를 위한 factor - 정진영 (24.08.09)
-    double clothSizeFactor = 1.3 ;
+    // 옷 사이즈를 위한 factor
+    double clothSizeFactor = 1.3;
     // clothSprite를 렌더링합니다.
     clothSprite.render(
       canvas,
       size: Vector2.all(radius * clothSizeFactor),
-      position: Vector2.all(-radius * clothSizeFactor / 2), // 스프라이트의 위치를 중심에 맞춥니다.
-      // anchor: Anchor.center
+      position: Vector2.all(-radius * clothSizeFactor / 2), // 스프라이트의 위치를 중심에 맞춤
     );
+  }
+
+    // 상세 모달 팝업
+  @override
+  void onTapUp(TapUpEvent event) {
+    final context = gameRef.buildContext;
+    if (context != null) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return ClothDetail(
+              clothId : clothID.toInt(),
+              clothUrl : clothURL
+          ); // CustomDialog 대신 ClothDetail 사용
+        },
+      );
+
+    } else {
+      print('BuildContext가 null입니다.');
+    }
   }
 
   @override
@@ -79,9 +102,7 @@ class GlassBall extends BodyComponent with HasGameRef<Forge2DGame> {
     final bodyDef = BodyDef(
       position: position,
       type: BodyType.dynamic,
-    )
-      ..linearDamping = 0.0; // Reduce damping to speed up falling
-        ;
+    );
     final shape = CircleShape()..radius = radius - collisionMargin; // 충돌 마진 적용
     final fixtureDef = FixtureDef(shape)
       ..density = 2.0 // 밀도 (값이 높을 수록 무겁다)

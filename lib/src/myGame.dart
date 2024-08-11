@@ -120,16 +120,15 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
 
       for (var i = 0; i < paths.length ; i++) {
         if (!isDropping) break; // isDropping이 false이면 루프 중단
-
-
-        String clothURL = paths[i][0] as String;
-        double field = paths[i][1] as double;
+        int clothID = paths[i][0] ;
+        double memory = paths[i][1] ;
+        String clothURL = paths[i][2] ;
 
         int initialPosition_X = Random().nextInt(screenSize.x.toInt());
 
         // 메모리 field 값 기준으로 사이즈 조정
-        if (field >= 0.2) {
-          InitialRadius_L += radiusIncrement * ((field - 0.2) / 0.8);
+        if (memory >= 0.2) {
+          InitialRadius_L += radiusIncrement * ((memory - 0.2) / 0.8);
         } else {
           // InitailRadius_S +=  ((0.2 - field) / 0.2);
         }
@@ -139,12 +138,14 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
         final ball = key == 'remembered'
             ? GlassBall(
           marbleURL: 'marble.png',
+          clothID : clothID.toDouble(),
           clothURL: clothURL,
           position: Vector2( screenSize.x/2, 0),
           radius: InitialRadius_L,
         )
             : GlassBall(
           marbleURL: 'marble.png',
+          clothID : clothID.toDouble(),
           clothURL: clothURL,
           position : Vector2( screenSize.x/2, 0),
           // position: i%2 == 0
@@ -155,8 +156,9 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
 
         await add(ball);
 
-        await ASYNC.Future.delayed(const Duration(milliseconds: 900)); // 공 생성 후 1초 지연
+        await ASYNC.Future.delayed(const Duration(milliseconds: 600)); // 공 생성 후 0.6초 지연
       }
+        await ASYNC.Future.delayed(const Duration(milliseconds: 1000)); // 공 생성 후 1초 지연
     }
 
     isDropping = false; // 모든 공이 생성된 후 중단
