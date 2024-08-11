@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y gcc build-essential
 RUN pip install --no-deps -r requirements.txt
 
 # PyTorch의 CPU 전용 버전 설치
-RUN pip install torch==2.4.0+cpu torchaudio==2.4.0+cpu --extra-index-url https://download.pytorch.org/whl/cpu
+RUN pip install torch==2.4.0+cpu torchaudio==2.4.0+cpu
 
 # Flask 애플리케이션 실행을 위한 환경변수 설정
 # ENV FLASK_APP=app.py
