@@ -1,5 +1,7 @@
+import 'package:GIUTGIOT/Dio/api_service.dart';
 import 'package:GIUTGIOT/screen/s_PageSlide.dart';
 import 'package:GIUTGIOT/screen/s_splash.dart';
+import 'package:GIUTGIOT/src/utils/clothLoad.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../models/sensor_management.dart';
@@ -56,6 +58,9 @@ class _MyAppState extends State<MyApp> {
     print('토큰 가져오는 중...'); // 로그 출력
     bool success = await AccessTokenManager.fetchAndSaveToken();
     if (success) {
+      // 홈 화면 기억도 관련 옷 전체 가져오기
+      ClothLoad().testFetchClothesByMemory();
+
       print('토큰 가져오기 성공'); // 토큰 가져오기 성공 로그
     } else {
       print('토큰 가져오기 실패'); // 토큰 가져오기 실패 로그
