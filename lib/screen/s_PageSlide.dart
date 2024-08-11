@@ -26,15 +26,6 @@ class _PageSlideState extends State<PageSlide> {
     return Scaffold(
     body: Stack(
       children: [
-        // PageView(
-        // controller: _pageController, // 페이지 컨트롤러 설정
-        //     scrollDirection : Axis.vertical,
-        //     children: [
-        // // 페이지를 이동할 위젯들 정의
-        //   HomeHourglassPage(),
-        //   CalendarScreen()
-        // ],
-        // ),
         PageView(
           controller: _pageController, // 페이지 컨트롤러 설정
           scrollDirection: Axis.vertical,
@@ -69,8 +60,6 @@ class _PageSlideState extends State<PageSlide> {
           child: MotionButton(),
         ):
         SizedBox.shrink()
-
-
       ]
       )
       );

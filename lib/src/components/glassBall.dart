@@ -15,7 +15,7 @@ class GlassBall extends BodyComponent with HasGameRef<Forge2DGame> {
     required this.clothURL,
     required this.position,
     required this.radius,
-    this.collisionMargin = 19, // 기본 충돌 마진 설정
+    this.collisionMargin = 15, // 기본 충돌 마진 설정
   });
 
   late Sprite marbleSprite;
@@ -39,7 +39,7 @@ class GlassBall extends BodyComponent with HasGameRef<Forge2DGame> {
     );
 
     // 옷 사이즈를 위한 factor - 정진영 (24.08.09)
-    double clothSizeFactor = 1.0 ;
+    double clothSizeFactor = 1.3 ;
     // clothSprite를 렌더링합니다.
     clothSprite.render(
       canvas,
@@ -79,14 +79,17 @@ class GlassBall extends BodyComponent with HasGameRef<Forge2DGame> {
     final bodyDef = BodyDef(
       position: position,
       type: BodyType.dynamic,
-    );
+    )
+      ..linearDamping = 0.0; // Reduce damping to speed up falling
+        ;
     final shape = CircleShape()..radius = radius - collisionMargin; // 충돌 마진 적용
     final fixtureDef = FixtureDef(shape)
-      ..density = 10 // 밀도 (값이 높을 수록 무겁다)
-      ..friction = 0.5 // 마찰력
-      ..restitution = 0.3; // 반발력
+      ..density = 2.0 // 밀도 (값이 높을 수록 무겁다)
+      ..friction = 1.0 // 마찰력
+      ..restitution = 0.8; // 반발력
+
     return world.createBody(bodyDef)
       ..createFixture(fixtureDef)
-      ..angularVelocity = radians(10);
+      ..angularVelocity = radians(0); // 회전 각속도
   }
 }

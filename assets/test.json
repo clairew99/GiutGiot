@@ -17,7 +17,7 @@
     "type": "jeans",
     "category": "long",
     "pattern": "solid",
-    "field": 0.9
+    "field": 0.2
   },
   {
     "clothes_id": 3,
@@ -27,7 +27,7 @@
     "type": "cotton",
     "category": "short",
     "pattern": "striped",
-    "field": 0.7
+    "field": 0.2
   },
   {
     "clothes_id": 4,
@@ -37,7 +37,7 @@
     "type": "blouse",
     "category": "short",
     "pattern": "floral",
-    "field": 0
+    "field": 0.12
   },
   {
     "clothes_id": 5,
@@ -47,7 +47,7 @@
     "type": "skirt",
     "category": "short",
     "pattern": "dot",
-    "field": 0.6
+    "field": 0.1
   },
   {
     "clothes_id": 6,
@@ -57,7 +57,7 @@
     "type": "pants",
     "category": "slacks",
     "pattern": "solid",
-    "field": 0
+    "field": 0.2
   },
   {
     "clothes_id": 7,
@@ -77,7 +77,7 @@
     "type": "shorts",
     "category": "cotton",
     "pattern": "solid",
-    "field": 0.9
+    "field": 0.4
   },
   {
     "clothes_id": 9,
@@ -87,7 +87,7 @@
     "type": "collar",
     "category": "short",
     "pattern": "solid",
-    "field": 0.4
+    "field": 0.2
   },
   {
     "clothes_id": 10,
@@ -97,6 +97,6 @@
     "type": "cargo",
     "category": "short",
     "pattern": "solid",
-    "field": 0.5
+    "field": 0.3
   }
 ]
