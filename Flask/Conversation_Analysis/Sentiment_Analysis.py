@@ -13,8 +13,8 @@ def extract_features(words):
     return dict([(word, True) for word in words])
 
 # 리뷰 데이터를 특징으로 변환
-positive_features = [(extract_features(okt.morphs(review)), '입겠다') for review in positive_responses]
-negative_features = [(extract_features(okt.morphs(review)), '안입겠다') for review in negative_responses]
+positive_features = [(extract_features(okt.morphs(review)), '긍정') for review in positive_responses]
+negative_features = [(extract_features(okt.morphs(review)), '부정') for review in negative_responses]
 
 # 데이터셋 결합 및 셔플
 dataset = positive_features + negative_features
@@ -38,3 +38,6 @@ def predict_sentiment(text):
     words = okt.morphs(text)
     features = extract_features(words)
     return classifier.classify(features)
+
+
+print(predict_sentiment('응 입을게'))
