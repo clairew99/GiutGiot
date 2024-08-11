@@ -3,7 +3,15 @@ from konlpy.tag import Okt
 from nltk.classify import NaiveBayesClassifier
 from nltk.classify.util import accuracy
 import random
+import sys
+import os
+# 프로젝트의 루트 디렉터리를 경로에 추가
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 from Conversation_Analysis.data.Sentiment_data import *
+import sys
+import os
+
+
 
 # 형태소 분석기 설정
 okt = Okt()
@@ -13,8 +21,8 @@ def extract_features(words):
     return dict([(word, True) for word in words])
 
 # 리뷰 데이터를 특징으로 변환
-positive_features = [(extract_features(okt.morphs(review)), '입겠다') for review in positive_responses]
-negative_features = [(extract_features(okt.morphs(review)), '안입겠다') for review in negative_responses]
+positive_features = [(extract_features(okt.morphs(review)), '긍정') for review in positive_responses]
+negative_features = [(extract_features(okt.morphs(review)), '부정') for review in negative_responses]
 
 # 데이터셋 결합 및 셔플
 dataset = positive_features + negative_features
