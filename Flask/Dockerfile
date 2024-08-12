@@ -1,6 +1,13 @@
 # Python 공식 이미지를 베이스 이미지로 사용
 FROM python:3.9-slim
 
+# JDK 설치 (OpenJDK 17)
+RUN apt-get update && apt-get install -y openjdk-17-jdk
+
+# JAVA_HOME 설정
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
+
 # 작업 디렉토리 설정
 WORKDIR /app
 
