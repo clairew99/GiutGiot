@@ -26,11 +26,21 @@ class GlassBall extends BodyComponent with HasGameRef<Forge2DGame>, TapCallbacks
     this.collisionMargin = 15, // 기본 충돌 마진 설정
   });
 
+  // 디버깅 : 저장되는 값의 이미지가 없을 경우
+  // 정진영 (24.08.12)
   @override
   Future<void> onLoad() async {
     super.onLoad();
     marbleSprite = await gameRef.loadSprite(marbleURL);
-    clothSprite = await gameRef.loadSprite(clothURL);
+    // clothSprite를 안전하게 로드
+    try {
+      // clothURL 이미지 로드 시도
+      clothSprite = await gameRef.loadSprite(clothURL);
+    } catch (e) {
+      // 이미지 로드 실패 시 기본 이미지 로드
+      clothSprite = await gameRef.loadSprite('clothes/default.png');
+      print('Cloth image not found at path: $clothURL, loaded default image instead. Error: $e');
+    }
   }
 
   @override
