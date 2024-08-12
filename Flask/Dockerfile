@@ -32,4 +32,5 @@ RUN pip install torch==2.4.0 torchaudio==2.4.0
 EXPOSE 5000
 
 # Flask 애플리케이션 실행 명령어
-CMD ["flask", "run"]
+# CMD ["flask", "run"]
+CMD ["python", "app.py"]
