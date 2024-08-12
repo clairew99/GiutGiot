@@ -2,6 +2,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/game.dart';
 import 'package:flame/components.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
+import 'package:flame/effects.dart';
 
 import 'package:flutter/material.dart';
 import 'package:vector_math/vector_math_64.dart';
@@ -18,6 +19,9 @@ import 'components/boundary.dart';
 import 'dart:async' as ASYNC;
 import '../models/sensor_management.dart';
 import 'dart:math';
+
+// 작은 구슬 개수 고민중
+// 정진영(24.08.12)
 
 import 'package:GIUTGIOT/storage.dart';
 
@@ -90,25 +94,32 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
     await add(Boundary(path1));
     await add(Boundary(path2));
 
+    // 작은 구슬 생성
+    spawnSmallBalls();
 
-    for (var i = 0 ; i < 80 ; i++){
-      int initialPosition_x = Random().nextInt(screenSize.x.toInt());
-      int initialPosition_y = Random().nextInt((screenSize.y * 0.34).toInt());
-
-      final smallball = SmallBall(
-          marbleURL: 'small_marble.png',
-          position: Vector2(initialPosition_x.toDouble() , initialPosition_y.toDouble()));
-      add(smallball);
-    };
     // 구슬을 생성하는 비동기 작업을 시작
     startDroppingBalls();
   }
+
+  Future<void> spawnSmallBalls() async {
+    // 상단 넓은 부분에서 중간 좁은 부분으로 퍼져서 배치
+    for (var i = 0; i < 30; i++) {
+      double initialPosition_x =  Random().nextInt(screenSize.x.toInt()).toDouble();
+      final smallball = SmallBall(
+        marbleURL: 'marble.png',
+        position: Vector2(initialPosition_x, 0),
+      );
+
+      await add(smallball);
+      await ASYNC.Future.delayed(const Duration(milliseconds: 1000)); // 공 생성 후 0.6초 지연
+    }
+  }
+
 
   Future<void> dropBalls() async {
     double InitialRadius_L = 80;
     double InitailRadius_S = 60;
     double radiusIncrement = 10;
-
     for (var key in HomeClothPaths.keys) {
       if (!isDropping) break; // isDropping이 false이면 루프 중단
 
@@ -124,8 +135,8 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
         double memory = paths[i][1] ;
         String clothURL = paths[i][2] ;
 
-        int initialPosition_X = Random().nextInt(screenSize.x.toInt());
-
+        // int initialPosition_X = Random().nextInt(screenSize.x.toInt());
+        int initialPosition_X = (screenSize.x / 2).toInt() -30+ Random().nextInt(50);
         // 메모리 field 값 기준으로 사이즈 조정
         if (memory >= 0.2) {
           InitialRadius_L += radiusIncrement * ((memory - 0.2) / 0.8);
@@ -134,6 +145,13 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
         }
 
         // i++; // field 값을 읽은 후 인덱스 증가
+
+        // GlowEffect를 정의합니다.
+        final effect = GlowEffect(
+          10.0, // Glow intensity
+          EffectController(duration: 3), // 효과의 지속 시간
+        );
+
 
         final ball = key == 'remembered'
             ? GlassBall(
@@ -147,7 +165,7 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
           marbleURL: 'marble.png',
           clothID : clothID.toDouble(),
           clothURL: clothURL,
-          position : Vector2( screenSize.x/2, 0),
+          position : Vector2(initialPosition_X.toDouble(), 0),
           // position: i%2 == 0
           //     ? Vector2(-100, screenSize.y * 0.34)
           //     : Vector2(screenSize.x + 100, screenSize.y * 0.34),

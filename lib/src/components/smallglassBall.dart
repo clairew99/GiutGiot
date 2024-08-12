@@ -29,7 +29,9 @@ class SmallBall extends BodyComponent with HasGameRef<Forge2DGame> {
 
   }
 
-  double radius = 10 ;
+  double radius = 20 ;
+
+
   @override
   void render(Canvas canvas) {
     // 원을 그리는 대신 스프라이트를 그립니다.
@@ -72,9 +74,9 @@ class SmallBall extends BodyComponent with HasGameRef<Forge2DGame> {
     );
     final shape = CircleShape()..radius =  radius  - collisionMargin; // 충돌 마진 적용; // 충돌 감지 경계
     final fixtureDef = FixtureDef(shape)
-      ..density = 1// 밀도 (값이 높을 수록 무겁다)
-      ..friction = 0.1 // 마찰력
-      ..restitution = 0.5; // 반발력
+      ..density = 10.0// 밀도 (값이 높을 수록 무겁다)
+      ..friction = 0.2 // 마찰력
+      ..restitution = 0.1; // 반발력
     return world.createBody(bodyDef)
       ..createFixture(fixtureDef);
       // ..angularVelocity = radians(5);
