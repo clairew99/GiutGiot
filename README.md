@@ -40,18 +40,18 @@ API 명세서
 # 👕개발 멤버 및 일정
 <table>
     <tr>
-        <td height="140px" align="center"> <a href="https://github.com/heon118">
+        <td height="140px" align="center"> 
             <br> 👑 이재성<br></td>
-        <td height="140px" align="center"> <a href="https://github.com/hyojin030">
+        <td height="140px" align="center">
             <br> ⛑ 신희진<br></td>
-        <td height="140px" align="center"> <a href="https://github.com/olrlobt">
+        <td height="140px" align="center">
             <br> ⛑ 류인환<br></td>
-        <td height="140px" align="center"> <a href="https://github.com/youngkimi">
-            <br> ⛑ 이은우 <br></td>
-        <td height="140px" align="center"> <a href="https://github.com/lainlnya">
+        <td height="140px" align="center">
+            <br> ⛑ 이은우<br></td>
+        <td height="140px" align="center"> 
             <br> ⛑ 정진영<br></td>
-        <td height="140px" align="center"> <a href="https://github.com/NamjunKim12">
-            ><br> ⛑ 김규림 <br></td>
+        <td height="140px" align="center"> 
+            <br> ⛑ 김규림<br></td>
     </tr>
     <tr>
         <td align="center">AI/ML<br>Backend</td>
