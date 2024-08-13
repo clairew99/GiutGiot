@@ -125,6 +125,7 @@ def conversation():
                 "pattern": top_features.get('pattern', '')
             }
 
+            print("spring_data_top",spring_data_top)
             try:
                 response = requests.post(spring_url, headers=spring_headers, json=spring_data_top)
                 response.raise_for_status()
