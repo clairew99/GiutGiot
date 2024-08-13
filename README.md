@@ -38,8 +38,28 @@ ERD
 API 명세서
 
 # 👕개발 멤버 및 일정
-| 이재성 | 신희진 | 류인환 | 이은우 | 정진영 | 김규림 |
-| --- | --- | --- | --- | --- | --- |
-| AI/ML  Backend | AI/ML  Frontend | Backend | Infra CI/CD  Backend | Frontend | Frontend |
-
+<table>
+    <tr>
+        <td height="140px" align="center"> <a href="https://github.com/heon118">
+            <br> 👑 이재성<br></td>
+        <td height="140px" align="center"> <a href="https://github.com/hyojin030">
+            <br> ⛑ 신희진<br></td>
+        <td height="140px" align="center"> <a href="https://github.com/olrlobt">
+            <br> ⛑ 류인환<br></td>
+        <td height="140px" align="center"> <a href="https://github.com/youngkimi">
+            <br> ⛑ 이은우 <br></td>
+        <td height="140px" align="center"> <a href="https://github.com/lainlnya">
+            <br> ⛑ 정진영<br></td>
+        <td height="140px" align="center"> <a href="https://github.com/NamjunKim12">
+            ><br> ⛑ 김규림 <br></td>
+    </tr>
+    <tr>
+        <td align="center">AI/ML<br>Backend</td>
+        <td align="center">AI/ML<br>Frontend</td>
+        <td align="center">Backend</td>
+        <td align="center">Infra CI/CD<br>Backend</td>
+        <td align="center">Frontend</td>
+        <td align="center">Frontend</td>
+    </tr>
+</table>
 # 👕회고
