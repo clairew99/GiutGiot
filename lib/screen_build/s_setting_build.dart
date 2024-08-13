@@ -39,7 +39,6 @@ class _SettingContentState extends State<SettingContent> {
     );
   }
 
-
   // 출퇴근 시간 초기값 설정
   RangeValues _workHours = RangeValues(9, 18);
   // 출퇴근 시간 변경시 할당됨
@@ -72,7 +71,7 @@ class _SettingContentState extends State<SettingContent> {
                 icon: Icon(Icons.arrow_back_ios_new_rounded),
                 onPressed: () => Navigator.pop(context),
               ),
-              //Spacer는 왼쪽의 IconButton과 가운데 Text 사이의 간격을 벌림
+              // Spacer는 왼쪽의 IconButton과 가운데 Text 사이의 간격을 벌림
               Spacer(flex: 2),
               // 중앙의 'Settings' 텍스트
               Text(
@@ -89,61 +88,61 @@ class _SettingContentState extends State<SettingContent> {
           ),
         ),
         Center(
-          child: OpaqueBox(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 30),
-                ListTile(
-                  title: Text(_currentNickname, style: TextStyle(fontWeight: FontWeight.w500)),
-                  trailing: IconButton(
-                    icon: Icon(Icons.edit, size: 20.0,),
-                    color: Colors.grey,
-                    onPressed: _openNicknameChangeDialog,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 30.0), // Settings 텍스트와 OpaqueBox 사이의 간격 조정
+            child: OpaqueBox(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 30),
+                  ListTile(
+                    title: Text(_currentNickname, style: TextStyle(fontWeight: FontWeight.w500)),
+                    trailing: IconButton(
+                      icon: Icon(Icons.edit, size: 20.0,),
+                      color: Colors.grey,
+                      onPressed: _openNicknameChangeDialog,
+                    ),
                   ),
-                ),
-                Divider(),
-
-                ListTile(
-                  title: Text('출퇴근 시간 조정',style: TextStyle(fontWeight: FontWeight.w500)),
-                  subtitle:// 출퇴근 시간 조정 설정
-                  WorkHourSlider(
-                    initialWorkHours: _workHours,
-                    onWorkHoursChanged: _onWorkHoursChanged,
+                  Divider(),
+                  ListTile(
+                    title: Text('출퇴근 시간 조정',style: TextStyle(fontWeight: FontWeight.w500)),
+                    subtitle: WorkHourSlider(
+                      initialWorkHours: _workHours,
+                      onWorkHoursChanged: _onWorkHoursChanged,
+                    ),
                   ),
-                ),
-                SizedBox(height: 20),
-                Divider(),
-                // 서비스 설명 페이지 이동
-                ListTile(
-                  title: Text('서비스 설명', style: TextStyle(fontWeight: FontWeight.w500)),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => DescriptionService()),
-                    );
-                  },
-                ),
-                // Divider(),
-                // ListTile(
-                //   title: Text('로그아웃', style: TextStyle(fontWeight: FontWeight.w500)),
-                //   onTap: () {},
-                // ),
+                  SizedBox(height: 20),
+                  Divider(),
+                  // 서비스 설명 페이지 이동
+                  ListTile(
+                    title: Text('서비스 설명', style: TextStyle(fontWeight: FontWeight.w500)),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => DescriptionService()),
+                      );
+                    },
+                  ),
 
-                Divider(),
-                ListTile(
-                  title: Text('API 테스트', style: TextStyle(fontWeight: FontWeight.w500)), // API 테스트 페이지로 이동
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ApiTestPage()),
-                    );
-                  },
-                ),
+                  // Divider(),
+                  // ListTile(
+                  //   title: Text('로그아웃', style: TextStyle(fontWeight: FontWeight.w500)),
+                  //   onTap: () {},
+                  // ),
 
-
-              ],
+                  Divider(),
+                  ListTile(
+                    title: Text('API 테스트', style: TextStyle(fontWeight: FontWeight.w500)), // API 테스트 페이지로 이동
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ApiTestPage()),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),

@@ -6,9 +6,9 @@ class CustomClothesWidget extends StatelessWidget {
   final String topColor;
   final String bottomColor;
   final String dateText;
-  final int walkingTime;
+  final String pose;
 
-  CustomClothesWidget({required this.topColor, required this.bottomColor, required this.dateText, required this.walkingTime});
+  CustomClothesWidget({required this.topColor, required this.bottomColor, required this.dateText, required this.pose});
 
   // Sit
   final String sitTopSvg = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 115.48 128.96">
@@ -29,21 +29,43 @@ class CustomClothesWidget extends StatelessWidget {
 ''';
 
   // Run
-  final String runHeadSvg = '''<svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120.59 140.96">
+  final String standHeadSvg = '''<svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120.59 140.96">
     <circle cx="55.95" cy="10.91" r="10.91" stroke="#231815" stroke-width="2"/>
 </svg>''';
 
-  final String runBottomSvg ='''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 106.59 128.96">
+  final String standBottomSvg ='''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 106.59 128.96">
     <path fill="none" stroke="#000000" stroke-miterlimit="10" stroke-width="13px" d="M39.46,102.43c-1.19-1.1-14.81-14.12-11.75-32.13,2.64-15.52,16.68-28.89,24.22-26.62,7.46,2.25,12.34,20.97,5.52,84.65"/>
 </svg>''';
 
-  final String runTopSvg ='''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 106.59 128.96">
+  final String standTopSvg ='''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 106.59 128.96">
     <path fill="none" stroke="#000000" stroke-miterlimit="10" stroke-width="13px" d="M3.73,42.21c4.41-2.78,13.85-9.09,22.78-8.87,13.99,.33,19.85,9.57,33.09,10.55,8.87,.66,25.26,2.41,43.41-8.39"/>
 </svg>''';
 
   @override
   Widget build(BuildContext context) {
-    bool isRunning = walkingTime >= 50;
+    String topSvg,bottomSvg,headSvg;
+    switch (pose.toUpperCase()) {
+      case 'SITTING':
+        topSvg = sitTopSvg;
+        bottomSvg = sitBottomSvg;
+        headSvg = sitHeadSvg;
+        break;
+      case 'RUNNING':
+        // topSvg = runTopSvg;
+        // bottomSvg = runBottomSvg;
+        // headSvg = runHeadSvg;
+        // break;
+      case 'STANDING':
+        topSvg = standTopSvg;
+        bottomSvg = standBottomSvg;
+        headSvg = standHeadSvg;
+        break;
+      default:
+      // Default to standing pose if an unknown pose is provided
+        topSvg = sitTopSvg;
+        bottomSvg = sitBottomSvg;
+        headSvg = sitHeadSvg;
+    }
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -57,18 +79,6 @@ class CustomClothesWidget extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-            DateTime.now().day == int.parse(dateText) ? Positioned(
-              left: -10,
-              child: Container(
-                width: 20,
-                height: 20,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color:  Colors.purple[200]?.withOpacity(0.5),
-
-                ),
-              ),
-            ):SizedBox.shrink()
           ],
         ),
         SizedBox(height: 20), // 날짜와 이미지 사이의 간격
@@ -76,24 +86,26 @@ class CustomClothesWidget extends StatelessWidget {
           child: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
             return Container(
+              width: 38, // 원하는 너비 설정
+              height: 38, // 원하는 높이 설정
               child: Stack(
                 alignment: Alignment.center,
                 children: [
                   Positioned.fill(
                     child: SvgPicture.string(
-                      isRunning ? runBottomSvg.replaceAll('#000000', bottomColor) : sitBottomSvg.replaceAll('#000000', bottomColor),
+                       bottomSvg.replaceAll('#000000', bottomColor),
                       fit: BoxFit.contain,
                     ),
                   ),
                   Positioned.fill(
                     child: SvgPicture.string(
-                      isRunning ? runHeadSvg.replaceAll('#000000', '#000000') : sitHeadSvg.replaceAll('#000000', '#000000'),
+                      headSvg.replaceAll('#000000', '#000000'),
                       fit: BoxFit.contain,
                     ),
                   ),
                   Positioned.fill(
                     child: SvgPicture.string(
-                      isRunning ? runTopSvg.replaceAll('#000000', topColor) : sitTopSvg.replaceAll('#000000', topColor),
+                      topSvg.replaceAll('#000000', topColor),
                       fit: BoxFit.contain,
                     ),
                   ),
