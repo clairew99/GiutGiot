@@ -64,5 +64,17 @@
     "topColor": "PINK",
     "bottomColor": "NAVY",
     "walkingTime": 80
+  },
+  {
+    "date": "2024-08-09",
+    "topColor": "BLACK",
+    "bottomColor": "Sky Blue",
+    "walkingTime": 20
+  },
+  {
+    "date": "2024-08-10",
+    "topColor": "ORANGE",
+    "bottomColor": "GREY",
+    "walkingTime": 70
   }
 ]

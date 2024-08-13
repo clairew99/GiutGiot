@@ -9,17 +9,21 @@ import '../widget/button/bt_slide.dart'; // SlideButton 임포트
 import '../widget/button/bt_voice.dart'; // VoiceIcon 임포트
 import '../widget/button/bt_motion.dart'; // 모션 버튼 임포트
 
-
 class PageSlide extends StatefulWidget {
   const PageSlide({super.key});
-
 
   @override
   State<PageSlide> createState() => _PageSlideState();
 }
+
 class _PageSlideState extends State<PageSlide> {
   final PageController _pageController = PageController(initialPage: 0);
-  int currentPageIndex = 0; //
+  int currentPageIndex = 0;
+
+  void _refreshCalendar() {
+    // 캘린더 새로고침 트리거
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,5 +70,3 @@ class _PageSlideState extends State<PageSlide> {
       }
 
 }
-
-

@@ -1,16 +1,42 @@
-# GIUTGIOT
+# 👕서비스 소개
 
-A new Flutter project.                                                                                                                             
+## 서비스 설명
 
-## Getting Started
+### 개요
 
-This project is a starting point for a Flutter application.
+- 서비스 명 : 기웃기옷
+- 한 줄 소개 :
 
-A few resources to get you started if this is your first Flutter project:
+### 타겟
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## 기획 배경
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### 배경
+
+### 목적
+
+# 👕기능 소개
+
+# 👕기술 스택
+
+## 기능 별 기술 스택
+
+## 개발 환경
+
+### System Architecture
+
+# 산출물
+
+## 프로젝트 일정
+
+## 프로젝트 설계
+
+Figma
+
+ERD
+
+API 명세서
+
+# 👕개발 멤버 및 일정
+
+# 👕회고

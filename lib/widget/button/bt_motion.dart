@@ -1,13 +1,27 @@
+import 'package:GIUTGIOT/utils/clothes/controller/clothes_controller.dart';
+import 'package:GIUTGIOT/utils/clothes/dto/request_cloth_dto.dart';
+import 'package:GIUTGIOT/utils/clothes/dto/request_today_clothes_dto.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
 
+import '../../utils/clothes/clothes_request_manager.dart';
+
 class MotionButton extends StatefulWidget {
+  final VoidCallback onSelectionComplete;
+
+
+  MotionButton({required this.onSelectionComplete});
+
   @override
   _MotionButtonState createState() => _MotionButtonState();
 }
 
 class _MotionButtonState extends State<MotionButton> with SingleTickerProviderStateMixin {
-  Offset _buttonPosition = Offset.zero; // 버튼의 현재 위치. 초기값 (0,0)
+  final clothesController = Get.find<ClothesController>();
+  Offset _buttonPosition = Offset.zero;
   String? _selectedItem;
   String? _selectedColorName;
   Color? _selectedColor;
@@ -21,30 +35,27 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
   bool _isFirstChoiceComplete = false;
   late AnimationController _controller;
   late Animation<Offset> _animation;
-  bool _isSelectingColor = false; // 색상 선택 단계
-  bool _isSelectingType = false; // 타입 선택 단계
-  bool _isSelectingPattern = false; // 패턴 선택 단계
-  bool _isSelectionComplete = false; // 선택 완료 상태
-
-  String? _selectedTopColor;    // 선택된 상의 색상
-  String? _selectedBottomColor;   // 선택된 하의 색상
+  bool _isSelectingColor = false;
+  bool _isSelectingType = false;
+  bool _isSelectingPattern = false;
+  bool _isSelectionComplete = false;
 
   List<Map<String, dynamic>> _colors = [
-    {"name": "Yellow", "color": Color(0xFFFFFF00)},
-    {"name": "Ivory", "color": Color(0xFFFFFFF0)},
-    {"name": "Khaki", "color": Color(0xFF63C284)},
-    {"name": "Light Blue", "color": Color(0xFFB6F7FA)},
-    {"name": "Sky Blue", "color": Color(0xFF87CEEB)},
-    {"name": "Navy", "color": Color(0xFF000080)},
-    {"name": "Purple", "color": Color(0xFF800080)},
-    {"name": "Lavender", "color": Color(0xFFF3BFFF)},
-    {"name": "Brown", "color": Color(0xFFA52A2A)},
-    {"name": "Black", "color": Color(0xFF000000)},
-    {"name": "White", "color": Color(0xFFFFFFFF)},
-    {"name": "Grey", "color": Color(0xFF808080)},
-    {"name": "Red", "color": Color(0xFFF23D55)},
-    {"name": "Pink", "color": Color(0xFFFFC0CB)},
-    {"name": "Orange", "color": Color(0xFFFFA500)},
+    {"name": "YELLOW", "color": Color(0xFFFFFF00)},
+    {"name": "IVORY", "color": Color(0xFFFFFFF0)},
+    {"name": "GREEN", "color": Color(0xFF63C284)},
+    {"name": "SKYBLUE", "color": Color(0xFFB6F7FA)},
+    {"name": "BLUE", "color": Color(0xFF87CEEB)},
+    {"name": "NAVY", "color": Color(0xFF000080)},
+    {"name": "PURPLE", "color": Color(0xFF800080)},
+    {"name": "LAVENDER", "color": Color(0xFFF3BFFF)},
+    {"name": "BROWN", "color": Color(0xFFA52A2A)},
+    {"name": "BLACK", "color": Color(0xFF000000)},
+    {"name": "WHITE", "color": Color(0xFFFFFFFF)},
+    {"name": "GRAY", "color": Color(0xFF808080)},
+    {"name": "RED", "color": Color(0xFFF23D55)},
+    {"name": "PINK", "color": Color(0xFFFFC0CB)},
+    {"name": "ORANGE", "color": Color(0xFFFFA500)},
   ];
 
   final Map<String, String> _items = {
@@ -56,45 +67,45 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
 
   final Map<String, List<Map<String, String>>> _clothingTypes = {
     "상의": [
-      {"name": "니트", "icon": 'assets/test_icon/top/knit.webp'},
-      {"name": "셔츠", "icon": 'assets/test_icon/top/shirt.webp'},
-      {"name": "면티", "icon": 'assets/test_icon/top/muji.webp'},
-      {"name": "맨투맨", "icon": 'assets/test_icon/top/mujiTshirt.webp'},
-      {"name": "카라셔츠", "icon": 'assets/test_icon/top/shirt2.webp'},
+      {"name": "KNIT", "icon": 'assets/test_icon/top/knit.webp'},
+      {"name": "SHIRT", "icon": 'assets/test_icon/top/shirt.webp'},
+      {"name": "COTTON", "icon": 'assets/test_icon/top/muji.webp'},
+      {"name": "HOODIE", "icon": 'assets/test_icon/top/mujiTshirt.webp'},   // 맨투맨 -> 후디
+      {"name": "COLLAR", "icon": 'assets/test_icon/top/shirt2.webp'},
     ],
     "하의": [
-      {"name": "청바지", "icon": 'assets/test_icon/bottom/p_jean.png'},
-      {"name": "면바지", "icon": 'assets/test_icon/bottom/p_cotton.png'},
-      {"name": "슬랙스", "icon": 'assets/test_icon/bottom/p_slacks.png'},
-      {"name": "치마", "icon": 'assets/test_icon/bottom/skirt.png'},
-      {"name": "카고바지", "icon": 'assets/test_icon/bottom/p_cargo.png'},
-      {"name": "트레이닝", "icon": 'assets/test_icon/bottom/p_training.png'},
+      {"name": "JEANS", "icon": 'assets/test_icon/bottom/p_jean.png'},
+      {"name": "COTTON", "icon": 'assets/test_icon/bottom/p_cotton.png'},
+      {"name": "SLACKS", "icon": 'assets/test_icon/bottom/p_slacks.png'},
+      {"name": "SKIRT", "icon": 'assets/test_icon/bottom/skirt.png'},
+      {"name": "CARGO", "icon": 'assets/test_icon/bottom/p_cargo.png'},
+      {"name": "TRAINING", "icon": 'assets/test_icon/bottom/p_training.png'},
     ],
   };
 
   final List<Map<String, String>> _patterns = [
-    {"name": "땡땡이", "icon": 'assets/test_icon/pattern/dot.webp'},
-    {"name": "꽃무늬", "icon": 'assets/test_icon/pattern/flower.webp'},
-    {"name": "민무늬", "icon": 'assets/test_icon/pattern/muji.webp'},
-    {"name": "줄무늬", "icon": 'assets/test_icon/pattern/stripe.webp'},
-    {"name": "체크", "icon": 'assets/test_icon/pattern/check.webp'},
+    {"name": "DOT", "icon": 'assets/test_icon/pattern/pattern_dot.png'},
+    {"name": "FLOWER", "icon": 'assets/test_icon/pattern/pattern_flower.png'},
+    {"name": "SOLID", "icon": 'assets/test_icon/pattern/pattern_muji.png'},
+    {"name": "STRIPE", "icon": 'assets/test_icon/pattern/pattern_stripe.png'},
+    {"name": "CHECK", "icon": 'assets/test_icon/pattern/pattern_check.png'},
   ];
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: Duration(milliseconds: 500), // 애니메이션 속도 조정
+      duration: Duration(milliseconds: 500),
       vsync: this,
     );
-    _animation = Tween<Offset>(begin: Offset.zero, end: Offset.zero).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut))
+    _animation = Tween<Offset>(begin: Offset.zero, end: Offset.zero).animate(
+        CurvedAnimation(parent: _controller, curve: Curves.easeOut))
       ..addListener(() {
         setState(() {
           _buttonPosition = _animation.value;
         });
       });
   }
-
 
   @override
   void dispose() {
@@ -106,20 +117,39 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
     setState(() {
       _buttonPosition = Offset.zero;
       _controller.reset();
-      _animation = Tween<Offset>(begin: _buttonPosition, end: Offset.zero).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+      _animation = Tween<Offset>(
+          begin: _buttonPosition, end: Offset.zero)
+          .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
       _controller.forward();
     });
   }
 
-  void _updateButtonPosition(DragUpdateDetails details) {
-    setState(() {
-      _buttonPosition += Offset(details.delta.dx / 100, details.delta.dy / 100);
-      if (_buttonPosition.dx > 1.0) _buttonPosition = Offset(1.0, _buttonPosition.dy);
-      if (_buttonPosition.dx < -1.0) _buttonPosition = Offset(-1.0, _buttonPosition.dy);
-      if (_buttonPosition.dy > 1.0) _buttonPosition = Offset(_buttonPosition.dx, 1.0);
-      if (_buttonPosition.dy < -1.0) _buttonPosition = Offset(_buttonPosition.dx, -1.0);
-    });
+
+  // 선택된 상하의 색상 저장
+  void _saveSelectedColors() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selectedTopColor', _firstSelectedColorName!);
+    await prefs.setString('selectedBottomColor', _selectedColorName!);
+    await clothesController.setSelectedClothesColor(_firstSelectedColorName!, _selectedColorName!);
+
+
+    // 오늘 날짜의 옷 색상을 전송하고, 그 반환값을 다시 서버로 전송해야함
+    final topType = _firstSelectedItem == '긴팔' ? 'LONG' : 'SHORT';
+    final bottomType = _selectedItem == '긴바지' ? 'LONG' : 'SHORT';
+    final topClothes = RequestClothesDto(isTop: true,color: _firstSelectedColorName,type: topType, category: _firstSelectedClothingTypeName,pattern: _firstSelectedPatternName);
+    final bottomClothes = RequestClothesDto(isTop: false,color: _selectedColorName,type: bottomType, category: _selectedClothingTypeName,pattern: _selectedPatternName);
+
+    final topId =  await saveClothes(topClothes);
+    final bottomId =  await saveClothes(bottomClothes);
+    final now = DateTime.now();
+    String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+    final requestTodayClothesDto = RequestTodayClothesDto(topId: topId,bottomId: bottomId,date: formattedDate);
+    await saveTodayClothes(requestTodayClothesDto);
+    await clothesController.getCurrentClothes(clothesController.baseDate.value.add(Duration(days: 6)));
+    print('색상 선택 완료: 상의 - $_firstSelectedColorName, 하의 - $_selectedColorName');
   }
+
+
 
   void _onButtonEnd() {
     if (_isSelectingColor) {
@@ -136,7 +166,6 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
         }
       }
       if (!colorSelected) {
-        // 색상이 선택되지 않으면 경고 메시지를 표시하고 버튼 위치 초기화
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('색상을 선택해주세요.')),
         );
@@ -151,18 +180,25 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
       });
     } else if (_isSelectingType) {
       bool typeSelected = false;
-      for (int i = 0; i < (_selectedItem == "반팔" || _selectedItem == "긴팔" ? _clothingTypes["상의"] : _clothingTypes["하의"])!.length; i++) {
-        final angle = 2 * pi / (_selectedItem == "반팔" || _selectedItem == "긴팔" ? _clothingTypes["상의"] : _clothingTypes["하의"])!.length * i;
+      for (int i = 0; i < (_selectedItem == "반팔" || _selectedItem == "긴팔"
+          ? _clothingTypes["상의"]
+          : _clothingTypes["하의"])!.length;
+      i++) {
+        final angle = 2 * pi / (_selectedItem == "반팔" || _selectedItem == "긴팔"
+            ? _clothingTypes["상의"]
+            : _clothingTypes["하의"])!.length *
+            i;
         final x = cos(angle);
         final y = sin(angle);
         if ((_buttonPosition - Offset(x, y)).distance < 0.3) {
-          _selectedClothingTypeName = (_selectedItem == "반팔" || _selectedItem == "긴팔" ? _clothingTypes["상의"] : _clothingTypes["하의"])![i]["name"];
+          _selectedClothingTypeName = (_selectedItem == "반팔" || _selectedItem == "긴팔"
+              ? _clothingTypes["상의"]
+              : _clothingTypes["하의"])![i]["name"];
           typeSelected = true;
           break;
         }
       }
       if (!typeSelected) {
-        // 타입이 선택되지 않으면 경고 메시지를 표시하고 버튼 위치 초기화
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('타입을 선택해주세요.')),
         );
@@ -188,7 +224,6 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
         }
       }
       if (!patternSelected) {
-        // 패턴이 선택되지 않으면 경고 메시지를 표시하고 버튼 위치 초기화
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('패턴을 선택해주세요.')),
         );
@@ -200,10 +235,26 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
         _isSelectingPattern = false;
         _isSelectionComplete = true;
         if (_isFirstChoiceComplete) {
-          _resetButtonPosition();
+          _saveSelectedColors();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('선택이 완료되었습니다.')),
+          );
 
+          widget.onSelectionComplete(); // 선택 완료 후 콜백 호출
+
+          // 상태 초기화
+          _isFirstChoiceComplete = false;
+          _selectedItem = null;
+          _selectedColorName = null;
+          _selectedColor = null;
+          _selectedClothingTypeName = null;
+          _selectedPatternName = null;
+          _isSelectingColor = false;
+          _isSelectingType = false;
+          _isSelectingPattern = false;
+          _isSelectionComplete = false;
+          _resetButtonPosition();
         } else {
-          // 첫 번째 선택 완료 후 두 번째 선택으로 전환
           _isFirstChoiceComplete = true;
           _firstSelectedItem = _selectedItem;
           _firstSelectedColorName = _selectedColorName;
@@ -222,7 +273,7 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
           _resetButtonPosition();
         }
       });
-    } else if (!_isSelectionComplete) {
+  } else if (!_isSelectionComplete) {
       bool itemSelected = false;
       if (_buttonPosition.dy <= -0.9) {
         _selectedItem = "반팔";
@@ -239,7 +290,6 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
       }
 
       if (!itemSelected) {
-        // 종류가 선택되지 않으면 경고 메시지를 표시하고 버튼 위치 초기화
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('종류를 선택해주세요.')),
         );
@@ -254,35 +304,7 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
     }
   }
 
-  Widget _buildSelectionResult() {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Container(
-        margin: EdgeInsets.only(bottom: 20),
-        padding: EdgeInsets.all(10),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '선택한 항목',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              '상의: $_firstSelectedItem $_firstSelectedColorName $_firstSelectedClothingTypeName $_firstSelectedPatternName',
-              style: TextStyle(fontSize: 18),
-            ),
-            Text(
-              '하의: $_selectedItem $_selectedColorName $_selectedClothingTypeName $_selectedPatternName',
-              style: TextStyle(fontSize: 18),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-
-  // 모션 버튼
+  // 모션버튼
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -293,53 +315,53 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
           height: 320,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.purple[50],
+            // color: Colors.purple[50],
+            color: Colors.white.withOpacity(0.5),
+
           ),
         ),
-        if (_isSelectingColor)
-          ..._buildColorButtons(),
-        if (!_isSelectingColor && !_isSelectingType && !_isSelectingPattern && !_isSelectionComplete)
-          ..._buildItemButtons(),
-        if (_isSelectingType)
-          ..._buildTypeButtons(),
-        if (_isSelectingPattern)
-          ..._buildPatternButtons(),
-        if (_isSelectionComplete && _isFirstChoiceComplete)
-          _buildSelectionResult(),
+        if (_isSelectingColor) ..._buildColorButtons(),
+        if (!_isSelectingColor && !_isSelectingType && !_isSelectingPattern && !_isSelectionComplete) ..._buildItemButtons(),
+        if (_isSelectingType) ..._buildTypeButtons(),
+        if (_isSelectingPattern) ..._buildPatternButtons(),
+        // if (_isSelectionComplete && _isFirstChoiceComplete) _buildSelectionResult(),
         if (!_isSelectionComplete)
           GestureDetector(
-            onTap: _onButtonEnd,
-            onPanUpdate: _updateButtonPosition,
-            onPanEnd: (_) => _onButtonEnd(),
-            child: Transform.translate(
-              offset: Offset(_buttonPosition.dx * 100, _buttonPosition.dy * 100),
-              child: Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [Colors.blue[200]!, Colors.purple[100]!],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey,
-                      blurRadius: 10,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
+            onTap: () {
+              _handleBackButton();
+            },
+            child: Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [Colors.blue[200]!, Colors.purple[100]!],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
                 ),
-                child: Center(
-                  child: Container(
-                    width: 30,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.6),
-                    ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey,
+                    blurRadius: 10,
+                    offset: Offset(0, 2),
                   ),
+                ],
+              ),
+              child: Center(
+                child: Container(
+                  width: 30,
+                  height: 30,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withOpacity(0.6),
+                  ),
+                  child: _isSelectingColor || _isSelectingType || _isSelectingPattern
+                      ? Icon(
+                    Icons.arrow_back,
+                    color: Colors.black.withOpacity(0.4),
+                  )
+                      : null,
                 ),
               ),
             ),
@@ -348,99 +370,101 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
     );
   }
 
-  // 종류 선택 버튼
+  // Widget _buildSelectionResult() {
+  //   return Align(
+  //     alignment: Alignment.bottomCenter,
+  //     child: Container(
+  //       margin: EdgeInsets.only(bottom: 20),
+  //       padding: EdgeInsets.all(10),
+  //       child: Column(
+  //         mainAxisSize: MainAxisSize.min,
+  //         children: [
+  //           Text(
+  //             '선택한 항목',
+  //             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+  //           ),
+  //           Text(
+  //             '상의: $_firstSelectedItem $_firstSelectedColorName $_firstSelectedClothingTypeName $_firstSelectedPatternName',
+  //             style: TextStyle(fontSize: 18),
+  //           ),
+  //           Text(
+  //             '하의: $_selectedItem $_selectedColorName $_selectedClothingTypeName $_selectedPatternName',
+  //             style: TextStyle(fontSize: 18),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+
   List<Widget> _buildItemButtons() {
-    return [
-      Positioned(
-        top: 20,
-        child: GestureDetector(
-          onPanEnd: (DragEndDetails details) {
-            if (!_isFirstChoiceComplete || (_firstSelectedItem != "반팔" && _firstSelectedItem != "긴팔")) {
-              setState(() {
-                _selectedItem = "반팔";
-                _isSelectingColor = true;
-                _resetButtonPosition();
-              });
-            }
-          },
-          child: Image.asset(
-            'assets/test_icon/upclothes.png',
-            width: 80,
-            height: 80,
-            // color: _isFirstChoiceComplete && (_firstSelectedItem == "반팔" || _firstSelectedItem == "긴팔") ? Colors.grey.withOpacity(0.7) : null,
-            // colorBlendMode: BlendMode.modulate, // 색상 블렌딩 모드 설정
+    final double radius = 110.0;
+    final double angleStep = 2 * pi / 4;
 
-          ),
-        ),
-      ),
-      Positioned(
-        right: 20,
-        child: GestureDetector(
-          onTap: () {
-            if (!_isFirstChoiceComplete || (_firstSelectedItem != "반바지" && _firstSelectedItem != "긴바지")) {
-              setState(() {
-                _selectedItem = "반바지";
-                _isSelectingColor = true;
-                _resetButtonPosition();
-              });
-            }
-          },
-          child: Image.asset(
-            'assets/test_icon/short_downclothes.png',
-            width: 80,
-            height: 80,
-            // color: _isFirstChoiceComplete && (_firstSelectedItem == "반바지" || _firstSelectedItem == "긴바지") ? Colors.grey.withOpacity(0.7) : null,
-            // colorBlendMode: BlendMode.modulate, // 색상 블렌딩 모드 설정
-          ),
-        ),
-      ),
-      Positioned(
-        bottom: 20,
-        child: GestureDetector(
-          onPanEnd: (DragEndDetails details) {
-            if (!_isFirstChoiceComplete || (_firstSelectedItem != "반바지" && _firstSelectedItem != "긴바지")) {
-              setState(() {
-                _selectedItem = "긴바지";
-                _isSelectingColor = true;
-                _resetButtonPosition();
-              });
-            }
-          },
-          child: Image.asset(
-            'assets/test_icon/downclothes.png',
-            width: 80,
-            height: 80,
-            // color: _isFirstChoiceComplete && (_firstSelectedItem == "반바지" || _firstSelectedItem == "긴바지") ? Colors.grey.withOpacity(0.7) : null,
-            // colorBlendMode: BlendMode.modulate, // 색상 블렌딩 모드 설정
+    return List.generate(4, (index) {
+      final double angle = angleStep * index;
+      final double x = radius * cos(angle);
+      final double y = radius * sin(angle);
 
-          ),
-        ),
-      ),
-      Positioned(
-        left: 20,
+      String itemType;
+      String assetPath;
+      bool isBlurred = false;
+
+      switch (index) {
+        case 0:
+          itemType = "긴바지";
+          assetPath = 'assets/test_icon/downclothes.png';
+          isBlurred = !_isFirstChoiceComplete;
+          break;
+        case 1:
+          itemType = "반바지";
+          assetPath = 'assets/test_icon/short_downclothes.png';
+          isBlurred = !_isFirstChoiceComplete;
+          break;
+        case 2:
+          itemType = "긴팔";
+          assetPath = 'assets/test_icon/long_upclothes.png';
+          isBlurred = _isFirstChoiceComplete;
+          break;
+        case 3:
+          itemType = "반팔";
+          assetPath = 'assets/test_icon/upclothes.png';
+          isBlurred = _isFirstChoiceComplete;
+          break;
+        default:
+          itemType = "반팔";
+          assetPath = 'assets/test_icon/upclothes.png';
+          break;
+      }
+
+      return Positioned(
+        left: x + 160 - 48,
+        top: y + 160 - 50,
         child: GestureDetector(
-          onPanEnd: (DragEndDetails details) {
-            if (!_isFirstChoiceComplete || (_firstSelectedItem != "반팔" && _firstSelectedItem != "긴팔")) {
+          onTap: isBlurred ? null : () {
+            if (!_isFirstChoiceComplete || (_firstSelectedItem != itemType)) {
               setState(() {
-                _selectedItem = "긴팔";
+                _selectedItem = itemType;
                 _isSelectingColor = true;
                 _resetButtonPosition();
               });
             }
           },
-          child: Image.asset(
-            'assets/test_icon/long_upclothes.png',
-            width: 80,
-            height: 80,
-            // color: _isFirstChoiceComplete && (_firstSelectedItem == "반팔" || _firstSelectedItem == "긴팔") ? Colors.grey.withOpacity(0.7) : null,
-            // colorBlendMode: BlendMode.modulate, // 색상 블렌딩 모드 설정
+          child: ColorFiltered(
+            colorFilter: isBlurred
+                ? ColorFilter.mode(Colors.grey.withOpacity(0.4), BlendMode.srcATop)
+                : ColorFilter.mode(Colors.transparent, BlendMode.srcATop),
+            child: Image.asset(
+              assetPath,
+              width: 100,
+              height: 100,
+            ),
           ),
         ),
-      ),
-    ];
+      );
+    });
   }
 
-  // 색상 선택 버튼
   List<Widget> _buildColorButtons() {
     final double radius = 120.0;
     final double angleStep = 2 * pi / _colors.length;
@@ -454,7 +478,7 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
         left: x + 160 - 15,
         top: y + 160 - 15,
         child: GestureDetector(
-          onPanEnd: (DragEndDetails details) {
+          onTap: () {
             setState(() {
               _selectedColor = _colors[index]["color"];
               _selectedColorName = _colors[index]["name"];
@@ -476,10 +500,11 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
     });
   }
 
-  // 타입 선택
   List<Widget> _buildTypeButtons() {
-    final double radius = 60.0;
-    final List<Map<String, String>> types = (_selectedItem == "반팔" || _selectedItem == "긴팔") ? _clothingTypes["상의"]! : _clothingTypes["하의"]!;
+    final double radius = 110.0;
+    final List<Map<String, String>> types = (_selectedItem == "반팔" || _selectedItem == "긴팔")
+        ? _clothingTypes["상의"]!
+        : _clothingTypes["하의"]!;
     final double angleStep = 2 * pi / types.length;
 
     return List.generate(types.length, (index) {
@@ -488,10 +513,10 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
       final double y = radius * sin(angle);
 
       return Positioned(
-        left: x + 160 - 35,
-        top: y + 160 - 35,
+        left: x + 160 - 40,
+        top: y + 160 - 45,
         child: GestureDetector(
-          onPanUpdate: (details) {
+          onTap: () {
             setState(() {
               _selectedClothingTypeName = types[index]["name"];
               _isSelectingType = false;
@@ -499,23 +524,18 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
               _resetButtonPosition();
             });
           },
-          child: Transform.translate(
-            offset: Offset(x, y),
-            child: Image.asset(
-              types[index]["icon"]!,
-              width: 70,
-              height: 70,
-            ),
+          child: Image.asset(
+            types[index]["icon"]!,
+            width: 80,
+            height: 80,
           ),
         ),
       );
     });
   }
 
-
-  // 패턴 선택
   List<Widget> _buildPatternButtons() {
-    final double radius = 120.0;
+    final double radius = 110.0;
     final double angleStep = 2 * pi / _patterns.length;
 
     return List.generate(_patterns.length, (index) {
@@ -524,20 +544,21 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
       final double y = radius * sin(angle);
 
       return Positioned(
-        left: x + 160 - 35,
-        top: y + 160 - 35,
+        left: x + 160 - 25,
+        top: y + 160 - 28,
         child: GestureDetector(
-          onPanUpdate: (details) {
+          onTap: () {
             setState(() {
               _selectedPatternName = _patterns[index]["name"];
               _isSelectingPattern = false;
               _isSelectionComplete = true;
               if (_isFirstChoiceComplete) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('상의: $_firstSelectedItem $_firstSelectedColorName $_firstSelectedClothingTypeName $_firstSelectedPatternName, 하의: $_selectedItem $_selectedColorName $_selectedClothingTypeName $_selectedPatternName')),
-                );
+                _saveSelectedColors();
+                // ScaffoldMessenger.of(context).showSnackBar(
+                //   SnackBar(content: Text('상의: $_firstSelectedItem $_firstSelectedColorName $_firstSelectedClothingTypeName $_firstSelectedPatternName, 하의: $_selectedItem $_selectedColorName $_selectedClothingTypeName $_selectedPatternName')),
+                // );
+                widget.onSelectionComplete(); // 선택 완료 후 콜백 호출
                 _resetButtonPosition();
-                // 선택 항목을 모두 초기화하거나 필요한 후처리를 추가
               } else {
                 _isFirstChoiceComplete = true;
                 _firstSelectedItem = _selectedItem;
@@ -560,14 +581,28 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
           },
           child: Image.asset(
             _patterns[index]["icon"]!,
-            width: 70,
-            height: 70,
+            width: 55,
+            height: 55,
           ),
         ),
       );
     });
   }
+
+  void _handleBackButton() {
+    setState(() {
+      if (_isSelectingPattern) {
+        _isSelectingPattern = false;
+        _isSelectingType = true;
+      } else if (_isSelectingType) {
+        _isSelectingType = false;
+        _isSelectingColor = true;
+      } else if (_isSelectingColor) {
+        _isSelectingColor = false;
+        _selectedItem = null;
+      } else if (!_isFirstChoiceComplete) {
+        _resetButtonPosition();
+      }
+    });
+  }
 }
-
-
-

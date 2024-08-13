@@ -3,6 +3,7 @@ import 'package:GIUTGIOT/screen/s_PageSlide.dart';
 import 'package:GIUTGIOT/screen/s_splash.dart';
 import 'package:GIUTGIOT/src/utils/clothLoad.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../models/sensor_management.dart';
 import 'screen/s_setting.dart';
@@ -13,6 +14,7 @@ import 'package:tflite_flutter/tflite_flutter.dart';
 import '../models/ml_model.dart';
 
 import '../Dio/access_token_manager.dart';
+import 'utils/clothes/controller/clothes_controller.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -171,7 +173,7 @@ class _MyAppState extends State<MyApp> {
       );
     }
 
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'GIUT_GIOT',
       home: PageSlide(),

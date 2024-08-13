@@ -44,7 +44,7 @@ dependencies:
 
   ## dio
   dio: ^5.5.0+1
-  flame_splash_screen: ^0.3.0
+  get: ^4.6.6
 
   ## splash
 #  flutter_native_splash: ^2.4.1
@@ -102,11 +102,7 @@ flutter:
     - assets/test_icon/bottom/p_training.png
 
     # pattern
-    - assets/test_icon/pattern/dot.webp
-    - assets/test_icon/pattern/flower.webp
-    - assets/test_icon/pattern/muji.webp
-    - assets/test_icon/pattern/stripe.webp
-    - assets/test_icon/pattern/check.webp
+    - assets/test_icon/pattern/
 
     - assets/today_clothes.json
 

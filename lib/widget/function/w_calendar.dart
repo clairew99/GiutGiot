@@ -1,6 +1,14 @@
+import 'dart:developer';
+
+import 'package:GIUTGIOT/utils/clothes/controller/clothes_controller.dart';
+import 'package:GIUTGIOT/utils/clothes/dto/response_select_clothes_dto.dart';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 import '../function/clothes_calendar_widget.dart'; // 올바른 경로로 수정
+
 
 // 2주간의 날짜를 표시하는 캘린더 위젯
 class CalendarWidget extends StatefulWidget {
@@ -12,11 +20,17 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   DateTime _selectedDate = DateTime.now(); // 선택된 날짜를 저장 (2주 범위 변경)
   DateTime _today = DateTime.now(); // 오늘 날짜
   DateTime? _clickedDate; // 클릭된 날짜
+  DateTime? _highlightedDate; // 클릭 후 강조된 날짜
+  final clothesController = Get.find<ClothesController>();
+
+  // ResponseSelectDayClothesDto? _selectedClothesData; // 선택한 날짜의 옷 데이터를 저장
+
 
   // 주어진 날짜 기준으로 2주간의 날짜 목록 생성
   List<DateTime> _getDatesForTwoWeeks(DateTime baseDate) {
     List<DateTime> dates = [];
-    DateTime startDate = baseDate.subtract(Duration(days: baseDate.weekday + 6));
+    DateTime startDate = baseDate.subtract(
+        Duration(days: baseDate.weekday % 7));
     for (int i = 0; i < 14; i++) {
       dates.add(startDate.add(Duration(days: i)));
     }
@@ -24,17 +38,25 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   }
 
   // 현재 표시된 날짜보다 2주 전으로 이동
-  void _previousTwoWeeks() {
+  Future<void> _previousTwoWeeks() async {
     setState(() {
       _selectedDate = _selectedDate.subtract(Duration(days: 14));
+      clothesController.setBaseDate(_selectedDate);
     });
+    // 조회일자기준 중간일 기준으로 조회 - 해당일 전의 일요일에서부터, 선택한 일자의
+    // 일요일까지 조회하므로
+    await clothesController.getCurrentClothes(
+        _selectedDate.add(Duration(days: 7)));
   }
 
   // 현재 표시된 날짜보다 2주 후로 이동
-  void _nextTwoWeeks() {
+  Future<void> _nextTwoWeeks() async {
     setState(() {
       _selectedDate = _selectedDate.add(Duration(days: 14));
+      clothesController.setBaseDate(_selectedDate);
     });
+    await clothesController.getCurrentClothes(
+        _selectedDate.add(Duration(days: 7)));
   }
 
   // 특정 날짜에 대한 위젯을 생성
@@ -43,33 +65,58 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         date.month == _today.month &&
         date.day == _today.day;
 
-    bool isSelected = _clickedDate != null &&
-        date.year == _clickedDate!.year &&
-        date.month == _clickedDate!.month &&
-        date.day == _clickedDate!.day;
+    bool isBeforeToday = date.isBefore(_today); // 오늘 이전의 날짜인지 확인
 
     // 날짜를 클릭했을 때의 동작
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         setState(() {
           _clickedDate = date;
+          _highlightedDate = date;
         });
+
+        // 선택한 날짜에 해당하는 옷 데이터를 서버에서 가져옴
+        final selectedClothes = await clothesController.getSelectDayClothes(
+            date);
+        print('클릭한 날짜의 데이터를 불러옴: $selectedClothes');
+
+
+        // 1초 후에 강조된 상태 해제
         Future.delayed(Duration(seconds: 1), () {
           setState(() {
-            _clickedDate = null;
+            _highlightedDate = null; // 클릭된 상태를 초기화
           });
         });
       },
-      child: Container(
-        width: 50.0,
-        height: 80.0, // 높이를 늘려 숫자와 이미지를 분리
-        margin: EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: isToday ? Colors.purple[200] : isSelected ? Colors.purple[50] : Colors.transparent,
-        ),
-        alignment: Alignment.topCenter, // 숫자를 상단에 배치
-        child: ClothesCalendarWidget(date: date),
+
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // 원을 먼저 배치
+          if (isBeforeToday || isToday) // 오늘 또는 오늘 이전 날짜에만 원이 표시되도록 조건 추가
+            Positioned(
+              top: 35, // Y축을 조정하여 원의 위치를 조정
+              child: Container(
+                width: 50.0,
+                height: 50.0, // 원의 크기
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isToday
+                      ? Colors.purple[300]!.withOpacity(0.5)
+                      : Colors.white.withOpacity(0.4),
+
+                ),
+              ),
+            ),
+          // ClothesCalendarWidget을 원 위에 배치
+          Container(
+            width: 40.0,
+            height: 80.0,
+            margin: EdgeInsets.all(4),
+            alignment: Alignment.topCenter,
+            child: ClothesCalendarWidget(date: date),
+          ),
+        ],
       ),
     );
   }
@@ -89,7 +136,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
               onPressed: _previousTwoWeeks,
             ),
             Text(
-              DateFormat.yMMMM().format(_selectedDate),
+              DateFormat.yMMMM().format(_selectedDate.add(Duration(days: 6))),
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             IconButton(
@@ -104,16 +151,16 @@ class _CalendarWidgetState extends State<CalendarWidget> {
             Table(
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: [
-                TableRow( // 표의 한 행
+                TableRow(
                   children: List.generate(7, (index) {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: Center(
                         child: Text(
-                          DateFormat.E().format(DateTime(2022, 1, index + 3)),
+                          DateFormat.E().format(DateTime(2022, 1, index + 2)),
                           style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey[600],
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[600],
                           ),
                         ),
                       ),
@@ -145,7 +192,57 @@ class _CalendarWidgetState extends State<CalendarWidget> {
             ),
           ],
         ),
+        SizedBox(height: 45), // 캘린더와 데이터 표시 영역 사이의 간격
+        Obx(() {
+          if (clothesController.selectedClothes.isEmpty) {
+            return Center(
+              child: Text(''),
+              // child: Text('선택된 데이터가 없습니다.'),
+            );
+          } else {
+            final selectedClothes = clothesController.selectedClothes.first;
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center, // 세로로 중앙에 배치
+              crossAxisAlignment: CrossAxisAlignment.center, // 가로로 중앙에 배치
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center, // 가로로 중앙에 배치
+                  children: [
+                    Text('상의: ', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                    Text(' ${selectedClothes?.topCategory}',style: TextStyle(fontSize: 16)),
+                    Text(' ${selectedClothes?.topType}',style: TextStyle(fontSize: 16)),
+                    Text(' ${selectedClothes?.topColor}',style: TextStyle(fontSize: 16)),
+                    Text(' ${selectedClothes?.topPattern}',style: TextStyle(fontSize: 16)),
+                  ],
+                ),
+                SizedBox(height: 10), // 상의와 하의 사이에 간격 추가
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center, // 가로로 중앙에 배치
+                  children: [
+                    Text('하의: ', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                    Text(' ${selectedClothes?.bottomCategory}',style: TextStyle(fontSize: 16)),
+                    Text(' ${selectedClothes?.bottomType}',style: TextStyle(fontSize: 16)),
+                    Text(' ${selectedClothes?.bottomColor}',style: TextStyle(fontSize: 16)),
+                    Text(' ${selectedClothes?.bottomPattern}',style: TextStyle(fontSize: 16)),
+                  ],
+                ),
+
+                // 활동량 포즈 나타내기
+                // SizedBox(height: 10),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.center, // 가로로 중앙에 배치
+                //   children: [
+                //     Text('POSE:', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                //     Text(' ${clothesController.selectedClothes.first?.pose}',style: TextStyle(fontSize: 16)),
+                //   ],
+                // ),
+              ],
+            );
+          }
+        }),
       ],
     );
   }
 }
+
+
