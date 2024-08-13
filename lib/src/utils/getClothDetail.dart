@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import '../../../Dio/api_service.dart';
 import '../../../Dio/access_token_manager.dart';
 
@@ -15,7 +14,7 @@ class GetClothDetail {
       return null;
     }
 
-    print('Loading...');
+    // print('Loading...');
     var response = await apiService.fetchClothesDetail(clothId.toString(), token);
     if (response != null) {
       print('Response received: $response');

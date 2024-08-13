@@ -6,6 +6,7 @@ class AccessTokenManager {
   static const String _accessTokenKey = 'ACCESS_TOKEN';
   static const String _refreshTokenKey = 'REFRESH_TOKEN';
 
+
   // AccessToken 저장
   static Future<void> setAccessToken(String accessToken) async {
     final prefs = await SharedPreferences.getInstance();
@@ -41,6 +42,9 @@ class AccessTokenManager {
     try {
       final dio = Dio();
       //final response = await dio.post(Config.getAuthUri().toString());
+      print('${Config.baseUrl}/auth/login?memberId=1');
+
+      print(dio.post('${Config.baseUrl}/auth/login?memberId=1')); // 임시 로그인
       final response = await dio.post('${Config.baseUrl}/auth/login?memberId=1'); // 임시 로그인
       print('Login response: ${response.statusCode}'); // 디버깅용 로그
 
