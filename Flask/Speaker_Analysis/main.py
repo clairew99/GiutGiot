@@ -110,6 +110,14 @@ class AudioProcessor:
             result[j] = best_speaker
 
         return result
+    
+
+    def calculate_speaker_times(self, diarization_result):
+        speaker_times = defaultdict(float)
+        for start, end, speaker in diarization_result:
+            speaker_times[speaker] += end - start
+        return dict(speaker_times)
+    
 
     def process_audio(self, file):
         print("음성 전처리 중...")
@@ -117,32 +125,24 @@ class AudioProcessor:
         
         print("화자 수 예측 중...")
         predicted_speakers = self.predict_number_of_speakers(preprocessed_audio_path)
-        print(f"예측된 화자 수: {predicted_speakers}")
-        
-        print("음성 텍스트 변환 중...")
-        whisper_segments = self.transcribe_audio(preprocessed_audio_path)
+        print(f"예상 화자 수: {predicted_speakers}")
         
         print("화자 분리 중...")
         diarization_result = self.diarize_audio(preprocessed_audio_path, min_speakers=predicted_speakers, max_speakers=10)
         if diarization_result is None:
             print("화자 분리에 실패했습니다.")
-            return []
+            return {}
 
         print(diarization_result)
 
-        print("화자 매칭 및 대화 시간 계산 중...")
-        speaker_labels = self.match_speakers(diarization_result, whisper_segments)
+        print("화자별 대화 시간 계산 중...")
+        speaker_times = self.calculate_speaker_times(diarization_result)
         
-        # 화자별 대화 시간 계산
-        speaker_times = defaultdict(float)
-        for seg, label in zip(whisper_segments, speaker_labels):
-            if label != 'Unknown':
-                speaker_times[label] += seg['end'] - seg['start']
+            # 모든 화자의 대화 시간을 더함
+        total_time = sum(speaker_times.values())
+        
+        # 화자 수만큼 리스트에 동일한 값을 넣음
+        speaker_count = len(speaker_times)
+        result_list = [total_time] * speaker_count
 
-        # 결과 생성
-        result = [{"start": seg['start'], "end": seg['end'], "speaker": label, "text": seg['text']} for seg, label in zip(whisper_segments, speaker_labels)]
-        
-        return {
-            "segments": result,
-            "speaker_times": dict(speaker_times)
-        }
+        return result_list
