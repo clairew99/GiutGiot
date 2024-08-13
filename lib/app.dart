@@ -78,6 +78,8 @@ class _MyAppState extends State<MyApp> {
       setState(() {
         _isfetched = true ;
       });
+      await ClothLoad().testFetchClothesByMemory();
+
     } else {
       print('토큰 가져오기 실패'); // 토큰 가져오기 실패 로그
     }
