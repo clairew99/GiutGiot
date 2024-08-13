@@ -44,6 +44,7 @@ dependencies:
 
   ## dio
   dio: ^5.5.0+1
+  flame_splash_screen: ^0.3.0
 
   ## splash
 #  flutter_native_splash: ^2.4.1

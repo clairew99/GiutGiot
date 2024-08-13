@@ -17,6 +17,7 @@ class _HomeHourglassPageState extends State<HomeHourglassPage> with AutomaticKee
   @override
   void initState() {
     super.initState();
+    print('PageSlide() start ') ;
   }
 
   @override
@@ -35,6 +36,7 @@ class _HomeHourglassPageState extends State<HomeHourglassPage> with AutomaticKee
 
     return Scaffold(
       body: Center(
+
         child: _gameInstance != null
             ? GameWidget(game: _gameInstance!)  // 게임 인스턴스가 초기화되었을 때만 렌더링
             : CircularProgressIndicator(),  // 게임 인스턴스가 초기화되지 않았을 경우 로딩 인디케이터

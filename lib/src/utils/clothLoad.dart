@@ -13,7 +13,7 @@ class ClothLoad {
       return null;
     }
 
-    print('Loading...');
+    // print('Loading...');
     var response = await apiService.fetchClothesByMemory(token);
     if (response != null) {
       _storeClothPaths(response); // 전역 변수에 저장

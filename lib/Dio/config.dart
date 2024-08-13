@@ -1,6 +1,6 @@
 class Config {
   // API 베이스 URL
-  static const String baseUrl = 'http://i11a409.p.ssafy.io:8080';
+  static const String baseUrl = 'https://i11a409.p.ssafy.io:8443';
 
   // 타임아웃 설정
   static const Duration connectTimeout = Duration(seconds: 10);

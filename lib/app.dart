@@ -31,6 +31,8 @@ class _MyAppState extends State<MyApp> {
   String activity = 'Unknown';
   final List<StreamSubscription<dynamic>> _streamSubscriptions = [];
 
+  bool _isfetched = false ;
+
   @override
   void initState() {
     super.initState();
@@ -45,9 +47,12 @@ class _MyAppState extends State<MyApp> {
       // 토큰 가져오기 호출
       await _fetchToken();
 
-      setState(() {
-        _isInitialized = true;
-      });
+      // _isIntialized 비활성화
+      // 정진영 (24.08.13)
+
+      // setState(() {
+      //   _isInitialized = true;
+      // });
     } catch (e) {
       print('Error initializing app: $e');
     }
@@ -57,11 +62,22 @@ class _MyAppState extends State<MyApp> {
   Future<void> _fetchToken() async {
     print('토큰 가져오는 중...'); // 로그 출력
     bool success = await AccessTokenManager.fetchAndSaveToken();
+    // 토큰 여부 상관 없이 스플래쉬 화면 구현을 위한 setState()
+    // 정진영 (24.08.13)
+
+    setState(() {
+      _isfetched = true ;
+      print('check _isfetched ! ');
+    });
+
+
     if (success) {
       // 홈 화면 기억도 관련 옷 전체 가져오기
-      ClothLoad().testFetchClothesByMemory();
 
       print('토큰 가져오기 성공'); // 토큰 가져오기 성공 로그
+      setState(() {
+        _isfetched = true ;
+      });
     } else {
       print('토큰 가져오기 실패'); // 토큰 가져오기 실패 로그
     }
@@ -76,15 +92,15 @@ class _MyAppState extends State<MyApp> {
 
       print("Loading model...");
       Interpreter interpreter = await loadModel('assets/model/posture_analysis.tflite');
-      setState(() {
-        _interpreter = interpreter;
-        _isLoading = false;
-      });
 
       print("Initializing sensors...");
       initializeSensors(_streamSubscriptions, (accelerometerValues, gyroscopeValues, userAccelerometerValues) {
         // 상태 갱신이 필요하지 않으므로 setState 호출 생략
         // - 정진영 (24.08.08)
+      });
+
+      setState(() {
+        _interpreter = interpreter;
       });
 
       if (_interpreter != null) {
@@ -111,7 +127,9 @@ class _MyAppState extends State<MyApp> {
     } catch (e) {
       print("Error loading model or initializing sensors: $e");
     } finally {
+      print('initialization fished');
       setState(() {
+        _isInitialized = true;
         _isLoading = false;
       });
     }
@@ -141,7 +159,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_isInitialized || _isLoading) {
+    if (!_isInitialized || _isLoading || !_isfetched) {
       return MaterialApp(
         home: Scaffold(
           body: Center(

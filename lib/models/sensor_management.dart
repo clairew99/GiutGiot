@@ -19,6 +19,7 @@ BluetoothScanner bluetoothScanner = BluetoothScanner();
 
 // 초기화 함수
 Future<void> initialize() async {
+  print('record start ..');
   recorder = AudioRecorder();
   await recorder.initRecorder();
 }
@@ -28,7 +29,7 @@ Future<void> requestPermissions() async {
   var sensorStatus = await Permission.sensors.request();
   var activityStatus = await Permission.activityRecognition.request();
   var microphoneStatus = await Permission.microphone.request();
-
+  print ('permission strat');
   print('Sensor permission status: $sensorStatus');
   print('Activity recognition permission status: $activityStatus');
   print('Microphone permission status: $microphoneStatus');
