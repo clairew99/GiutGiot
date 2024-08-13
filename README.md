@@ -38,5 +38,11 @@ ERD
 API 명세서
 
 # 👕개발 멤버 및 일정
+| 이재성 | 신희진 | 류인환 | 이은우 | 정진영 | 김규림 |
+| --- | --- | --- | --- | --- | --- |
+| AI/ML
+Backend | AI/ML
+Frontend | Backend | Infra CI/CD
+Backend | Frontend | Frontend |
 
 # 👕회고
