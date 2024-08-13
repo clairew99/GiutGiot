@@ -75,6 +75,7 @@ flutter:
     - assets/images/clothes/
     - assets/images/background/
     - assets/images/bg_frames/
+    - assets/images/icons/
     - assets/images/
     - assets/icon/
     - assets/test.json

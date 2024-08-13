@@ -25,6 +25,10 @@ import 'dart:math';
 
 import 'package:GIUTGIOT/storage.dart';
 
+import '../src/intro/colorBall.dart';
+import '../src/intro/memoryBall.dart';
+import '../src/intro/conversationBall.dart';
+
 class MyGame extends Forge2DGame with HasCollisionDetection {
   final playArea = PlayArea();
   final Vector2 screenSize;
@@ -94,11 +98,37 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
     await add(Boundary(path1));
     await add(Boundary(path2));
 
+
+
     // 작은 구슬 생성
     spawnSmallBalls();
 
+
     // 구슬을 생성하는 비동기 작업을 시작
-    startDroppingBalls();
+    // startDroppingBalls();
+
+    // intro 출력 구현중
+    // 정진영 (24.08.13)
+    await add(ColorbBall(
+      position: Vector2( screenSize.x/2, 0),
+      radius: 85,
+    )) ;
+
+    await add(ConversationBall(
+      position: Vector2( screenSize.x/2, 0),
+      radius: 70,
+    )) ;
+
+    await add(MemoryBall(
+      position: Vector2( screenSize.x/2, 0),
+      radius: 70,
+    )) ;
+    // await add(
+    //     ConversationBall(
+    //   position: Vector2( screenSize.x/2, 0),
+    //   radius: 70,
+    // )) ;
+
   }
 
   Future<void> spawnSmallBalls() async {
