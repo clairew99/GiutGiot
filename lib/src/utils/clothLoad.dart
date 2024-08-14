@@ -13,11 +13,9 @@ class ClothLoad {
       return null;
     }
 
-    // print('Loading...');
     var response = await apiService.fetchClothesByMemory(token);
     if (response != null) {
       _storeClothPaths(response); // 전역 변수에 저장
-
     } else {
       print('Failed to get response');
     }
@@ -36,7 +34,8 @@ void _storeClothPaths(Map<String, dynamic> response) {
   List<dynamic> forgottenClothesList = response['forgottenClothesList'];
   List<dynamic> rememberedClothesList = response['rememberedClothesList'];
 
-  // 기억되지 않은 옷들을 HomeClothPaths에 추가
+  // 기억되지 않은 옷들을 임시 리스트에 추가
+  List<List<dynamic>> forgottenTempList = [];
   for (var item in forgottenClothesList) {
     final temp_list = [];
 
@@ -55,10 +54,17 @@ void _storeClothPaths(Map<String, dynamic> response) {
     temp_list.add(item['memory']);
     temp_list.add(clothPath);
 
-    HomeClothPaths['forgotten']?.add(temp_list);
+    forgottenTempList.add(temp_list);
   }
 
-  // 기억된 옷들을 HomeClothPaths에 추가
+  // 메모리 값 기준으로 오름차순 정렬
+  forgottenTempList.sort((a, b) => a[1].compareTo(b[1]));
+
+  // 정렬된 리스트를 HomeClothPaths에 추가
+  HomeClothPaths['forgotten']?.addAll(forgottenTempList);
+
+  // 기억된 옷들을 임시 리스트에 추가
+  List<List<dynamic>> rememberedTempList = [];
   for (var item in rememberedClothesList) {
     final temp_list = [];
 
@@ -77,6 +83,12 @@ void _storeClothPaths(Map<String, dynamic> response) {
     temp_list.add(item['memory']);
     temp_list.add(clothPath);
 
-    HomeClothPaths['remembered']?.add(temp_list);
+    rememberedTempList.add(temp_list);
   }
+
+  // 메모리 값 기준으로 오름차순 정렬
+  rememberedTempList.sort((a, b) => a[1].compareTo(b[1]));
+
+  // 정렬된 리스트를 HomeClothPaths에 추가
+  HomeClothPaths['remembered']?.addAll(rememberedTempList);
 }
