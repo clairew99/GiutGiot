@@ -33,10 +33,11 @@ class _PageSlideState extends State<PageSlide> {
   Future<void> _checkSelectedDayClothes(DateTime date) async {
     try {
       final response = await saveSelecteddayClothes(date);
+      print('########### $response');
 
       // Check if the response is null, indicating an error or no data
       setState(() {
-        showMotionButton = response == null; // Show MotionButton if no valid data
+        showMotionButton == null; // Show MotionButton if no valid data
       });
     } catch (e) {
       setState(() {
@@ -59,6 +60,7 @@ class _PageSlideState extends State<PageSlide> {
               });
               if (index == 1) {
                 await _checkSelectedDayClothes(DateTime.now()); // Replace DateTime.now() with the selected date
+
               }
             },
             children: [
