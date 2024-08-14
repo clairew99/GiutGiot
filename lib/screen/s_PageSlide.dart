@@ -60,7 +60,11 @@ class _PageSlideState extends State<PageSlide> {
         VoiceIcon(),
         currentPageIndex==1 ? Positioned( // 20, -40
           bottom: 20,
+<<<<<<< HEAD
+          right: -40,
+=======
           right: 45,
+>>>>>>> app
           child: MotionButton(onSelectionComplete: () {}),
         ):
         SizedBox.shrink()

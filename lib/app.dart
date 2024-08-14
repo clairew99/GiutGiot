@@ -2,6 +2,7 @@ import 'package:GIUTGIOT/Dio/api_service.dart';
 import 'package:GIUTGIOT/screen/s_PageSlide.dart';
 import 'package:GIUTGIOT/screen/s_splash.dart';
 import 'package:GIUTGIOT/src/utils/clothLoad.dart';
+import 'package:GIUTGIOT/storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -81,6 +82,7 @@ class _MyAppState extends State<MyApp> {
         _isfetched = true ;
       });
       await ClothLoad().testFetchClothesByMemory();
+      print(HomeClothPaths);
 
     } else {
       print('토큰 가져오기 실패'); // 토큰 가져오기 실패 로그
@@ -165,6 +167,8 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     if (!_isInitialized || _isLoading || !_isfetched) {
       return MaterialApp(
+        debugShowCheckedModeBanner: false,
+
         home: Scaffold(
           body: Center(
             child: CircularProgressIndicator(),
