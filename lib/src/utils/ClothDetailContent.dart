@@ -129,7 +129,6 @@ class _ClothDetailContentState extends State<ClothDetailContent> {
               Container(
                 child: Image.asset(
                   'assets/images/${widget.clothUrl}',
-                  fit: BoxFit.cover, // 이미지가 원형을 채우도록 설정
                   width: 100, // 이미지의 너비
                   height: 100, // 이미지의 높이
                 ),
