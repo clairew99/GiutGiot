@@ -10,7 +10,7 @@ import 'custom_clothes.dart';
 class ClothesCalendarWidget extends StatefulWidget {
   final DateTime date;
 
-  ClothesCalendarWidget({required this.date});
+  const ClothesCalendarWidget({super.key, required this.date});
 
   @override
   _ClothesCalendarWidgetState createState() => _ClothesCalendarWidgetState();
@@ -20,28 +20,30 @@ class _ClothesCalendarWidgetState extends State<ClothesCalendarWidget> {
   late Future<Map<String, Map<String, dynamic>>> _clothesDataFuture;
   Map<String, dynamic>? _clothes;
   final clothesController = Get.find<ClothesController>();
-  @override
-  void initState() {
-    super.initState();
-    _clothesDataFuture = _loadClothesData();
-    _loadClothesForDate();
-  }
 
-  Future<Map<String, Map<String, dynamic>>> _loadClothesData() async {
-    final response = await rootBundle.loadString('assets/today_clothes.json');
-    List<Map<String, dynamic>> data = List<Map<String, dynamic>>.from(json.decode(response));
-    // final List<dynamic> jsonData = json.decode(response);
-    // print(response);
-    return {
-      for (var item in clothesController.currentClothes)
-      // for (var item in jsonData)
-        item!.date.toString(): {
-          'topColor': item.topColor,
-          'bottomColor': item.bottomColor,
-          'pose': item.pose,
-        }
-    };
-  }
+  // 기존 json데이터 불러오기
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _clothesDataFuture = _loadClothesData();
+  //   _loadClothesForDate();
+  // }
+  //
+  // Future<Map<String, Map<String, dynamic>>> _loadClothesData() async {
+  //   final response = await rootBundle.loadString('assets/today_clothes.json');
+  //   List<Map<String, dynamic>> data = List<Map<String, dynamic>>.from(json.decode(response));
+  //   // final List<dynamic> jsonData = json.decode(response);
+  //   // print(response);
+  //   return {
+  //     for (var item in clothesController.currentClothes)
+  //     // for (var item in jsonData)
+  //       item!.date.toString(): {
+  //         'topColor': item.topColor,
+  //         'bottomColor': item.bottomColor,
+  //         'pose': item.pose,
+  //       }
+  //   };
+  // }
 
   Future<void> _loadClothesForDate() async {
     final data = await _clothesDataFuture;
@@ -79,6 +81,8 @@ class _ClothesCalendarWidgetState extends State<ClothesCalendarWidget> {
       String dateText = DateFormat.d().format(widget.date);
       final now = DateTime.now();
       if (clothes != null) {
+        // print('check bottom ${clothes.bottomColor!}');
+        // print(_getColorCode(clothes.bottomColor!));
         return CustomClothesWidget(
           topColor: _getColorCode(clothes.topColor!),
           bottomColor: _getColorCode(clothes.bottomColor!),
@@ -95,7 +99,7 @@ class _ClothesCalendarWidgetState extends State<ClothesCalendarWidget> {
       } else {
         return Text(
           dateText,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 14,
             color: Colors.black,
             fontWeight: FontWeight.bold,
@@ -164,8 +168,8 @@ class _ClothesCalendarWidgetState extends State<ClothesCalendarWidget> {
         return '#FFA500';
       case 'IVORY':
         return '#FFFFF0';
-      case 'KHAKI':
-        return '#63C284';
+      case 'GREEN':
+        return '#008000';
       case 'LIGHT BLUE':
         return '#B6F7FA';
       case 'SKY BLUE':
@@ -176,6 +180,8 @@ class _ClothesCalendarWidgetState extends State<ClothesCalendarWidget> {
         return '#800080';
       case 'BROWN':
         return '#A52A2A';
+      case 'BLUE':
+        return '#2C0EC2';
       default:
         return '#000000';
     }

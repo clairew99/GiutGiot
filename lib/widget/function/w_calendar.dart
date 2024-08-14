@@ -9,6 +9,8 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 import '../function/clothes_calendar_widget.dart'; // 올바른 경로로 수정
 
+// 상세 정보 위젯 생성 - 정진영(24.08.14)
+import '../function/selected_clothes_display.dart';
 
 // 2주간의 날짜를 표시하는 캘린더 위젯
 class CalendarWidget extends StatefulWidget {
@@ -192,7 +194,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
             ),
           ],
         ),
-        SizedBox(height: 45), // 캘린더와 데이터 표시 영역 사이의 간격
+        SizedBox(height: 30), // 캘린더와 데이터 표시 영역 사이의 간격
         Obx(() {
           if (clothesController.selectedClothes.isEmpty) {
             return Center(
@@ -200,49 +202,12 @@ class _CalendarWidgetState extends State<CalendarWidget> {
               // child: Text('선택된 데이터가 없습니다.'),
             );
           } else {
-            final selectedClothes = clothesController.selectedClothes.first;
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center, // 세로로 중앙에 배치
-              crossAxisAlignment: CrossAxisAlignment.center, // 가로로 중앙에 배치
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center, // 가로로 중앙에 배치
-                  children: [
-                    Text('상의: ', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                    Text(' ${selectedClothes?.topCategory}',style: TextStyle(fontSize: 16)),
-                    Text(' ${selectedClothes?.topType}',style: TextStyle(fontSize: 16)),
-                    Text(' ${selectedClothes?.topColor}',style: TextStyle(fontSize: 16)),
-                    Text(' ${selectedClothes?.topPattern}',style: TextStyle(fontSize: 16)),
-                  ],
-                ),
-                SizedBox(height: 10), // 상의와 하의 사이에 간격 추가
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center, // 가로로 중앙에 배치
-                  children: [
-                    Text('하의: ', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                    Text(' ${selectedClothes?.bottomCategory}',style: TextStyle(fontSize: 16)),
-                    Text(' ${selectedClothes?.bottomType}',style: TextStyle(fontSize: 16)),
-                    Text(' ${selectedClothes?.bottomColor}',style: TextStyle(fontSize: 16)),
-                    Text(' ${selectedClothes?.bottomPattern}',style: TextStyle(fontSize: 16)),
-                  ],
-                ),
-
-                // 활동량 포즈 나타내기
-                // SizedBox(height: 10),
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.center, // 가로로 중앙에 배치
-                //   children: [
-                //     Text('POSE:', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                //     Text(' ${clothesController.selectedClothes.first?.pose}',style: TextStyle(fontSize: 16)),
-                //   ],
-                // ),
-              ],
-            );
+            final selectedClothes = clothesController.selectedClothes.first!;
+            return SelectedClothes(selectedClothes: selectedClothes);
           }
         }),
       ],
     );
   }
 }
-
 

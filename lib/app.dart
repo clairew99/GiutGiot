@@ -17,6 +17,11 @@ import '../models/ml_model.dart';
 import '../Dio/access_token_manager.dart';
 import 'utils/clothes/controller/clothes_controller.dart';
 
+import 'package:GIUTGIOT/utils/clothes/clothes_request_manager.dart';
+import 'package:GIUTGIOT/utils/clothes/controller/clothes_controller.dart';
+
+
+
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -188,3 +193,5 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
+
+

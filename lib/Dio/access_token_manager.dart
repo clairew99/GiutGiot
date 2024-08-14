@@ -44,7 +44,10 @@ class AccessTokenManager {
       //final response = await dio.post(Config.getAuthUri().toString());
       print('${Config.baseUrl}/login/temp?memberId=1');
 
+      print(dio.post('${Config.baseUrl}/auth/login?memberId=1')); // 임시 로그인
       final response = await dio.post('${Config.baseUrl}/login/temp?memberId=1'); // 임시 로그인
+      // final response = await dio.post('${Config.baseUrl}/auth/login?memberId=1'); // 임시 로그인
+
       print('Login response: ${response.statusCode}'); // 디버깅용 로그
 
       if (response.statusCode == 200) {

@@ -311,8 +311,8 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
       alignment: Alignment.center,
       children: [
         Container(
-          width: 320,
-          height: 320,
+          width: 300,
+          height: 300,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             // color: Colors.purple[50],
@@ -398,7 +398,7 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
   // }
 
   List<Widget> _buildItemButtons() {
-    final double radius = 110.0;
+    final double radius = 100.0;
     final double angleStep = 2 * pi / 4;
 
     return List.generate(4, (index) {
@@ -438,8 +438,8 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
       }
 
       return Positioned(
-        left: x + 160 - 48,
-        top: y + 160 - 50,
+        left: x + 160 - 58,
+        top: y + 160 - 60,
         child: GestureDetector(
           onTap: isBlurred ? null : () {
             if (!_isFirstChoiceComplete || (_firstSelectedItem != itemType)) {
@@ -456,8 +456,8 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
                 : ColorFilter.mode(Colors.transparent, BlendMode.srcATop),
             child: Image.asset(
               assetPath,
-              width: 100,
-              height: 100,
+              width: 90,
+              height: 90,
             ),
           ),
         ),
@@ -475,8 +475,8 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
       final double y = radius * sin(angle);
 
       return Positioned(
-        left: x + 160 - 15,
-        top: y + 160 - 15,
+        left: x + 160 - 25,
+        top: y + 160 - 25,
         child: GestureDetector(
           onTap: () {
             setState(() {
@@ -501,7 +501,7 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
   }
 
   List<Widget> _buildTypeButtons() {
-    final double radius = 110.0;
+    final double radius = 105.0;
     final List<Map<String, String>> types = (_selectedItem == "반팔" || _selectedItem == "긴팔")
         ? _clothingTypes["상의"]!
         : _clothingTypes["하의"]!;
@@ -513,8 +513,8 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
       final double y = radius * sin(angle);
 
       return Positioned(
-        left: x + 160 - 40,
-        top: y + 160 - 45,
+        left: x + 160 - 48,
+        top: y + 160 - 50,
         child: GestureDetector(
           onTap: () {
             setState(() {
@@ -526,8 +526,8 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
           },
           child: Image.asset(
             types[index]["icon"]!,
-            width: 80,
-            height: 80,
+            width: 75,
+            height: 75,
           ),
         ),
       );
@@ -535,7 +535,7 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
   }
 
   List<Widget> _buildPatternButtons() {
-    final double radius = 110.0;
+    final double radius = 105.0;
     final double angleStep = 2 * pi / _patterns.length;
 
     return List.generate(_patterns.length, (index) {
@@ -544,8 +544,8 @@ class _MotionButtonState extends State<MotionButton> with SingleTickerProviderSt
       final double y = radius * sin(angle);
 
       return Positioned(
-        left: x + 160 - 25,
-        top: y + 160 - 28,
+        left: x + 160 - 35,
+        top: y + 160 - 35,
         child: GestureDetector(
           onTap: () {
             setState(() {

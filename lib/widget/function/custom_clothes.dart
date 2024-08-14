@@ -8,7 +8,8 @@ class CustomClothesWidget extends StatelessWidget {
   final String dateText;
   final String pose;
 
-  CustomClothesWidget({required this.topColor, required this.bottomColor, required this.dateText, required this.pose});
+  const CustomClothesWidget({super.key, required this.topColor, required this.bottomColor, required this.dateText, required this.pose});
+
 
 
   // Sit
@@ -31,6 +32,8 @@ class CustomClothesWidget extends StatelessWidget {
 
 
   // Run ( = STAND)
+
+  // Run ( = STAND)
   final String standHeadSvg = '''<svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120.59 140.96">
     <circle cx="55.95" cy="10.91" r="10.91" stroke="#231815" stroke-width="2"/>
 </svg>''';
@@ -45,19 +48,19 @@ class CustomClothesWidget extends StatelessWidget {
 
 
 
-  // Running
+  // Running -> viewBox와 stroke-width로 크기랑 위치 조정
   final String RunningHeadSvg ='''<svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120.59 140.96">
     <circle cx="55.95" cy="10.91" r="10.91" stroke="#231815" stroke-width="2"/>
 </svg>''';
 
-  final String RunningTopSvg ='''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 181.33 190.67" >
+  final String RunningTopSvg ='''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170.33 210.67" >
     <path fill="none" stroke="#000000" stroke-width="20"  stroke-miterlimit="10" d="M88.85,63.74c13.33-4.08,20.45,13.81,20.67,14.92c1.67,8.67,2.8,12.68,6.33,16.33 c2.32,2.41,7.29,4.48,19.33,1.33" />
     <path fill="none" stroke="#000000" stroke-width="20"  stroke-miterlimit="10" d="M60.51,78.67" />
     <path fill="none" stroke="#000000" stroke-width="20" stroke-miterlimit="10" d="M56.33,79.68c1.79-2.86,7.08-10.38,16.67-13" />
 </svg>''';
-  final String RunningBottomSvg ='''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 181.33 190.67" >
-    <path fill="none" stroke="#000000" stroke-width="14" stroke-miterlimit="10" d="M78.51,104c12.89,0.05,24.29,8.05,28.33,19.67c4.57,13.15-1.18,28.37-14,35.67" />
-    <path fill="none" stroke="#000000" stroke-width="10" stroke-miterlimit="10" d="M73,119.23c-1.23,3.92-3.13,6.44-4.67,8c-7.15,7.28-20.31,8.19-33.33,2.67" />
+  final String RunningBottomSvg ='''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160.33 190.67" >
+    <path fill="none" stroke="#000000" stroke-width="20" stroke-miterlimit="10" d="M78.51,104c12.89,0.05,24.29,8.05,28.33,19.67c4.57,13.15-1.18,28.37-14,35.67" />
+    <path fill="none" stroke="#000000" stroke-width="20" stroke-miterlimit="10" d="M73,119.23c-1.23,3.92-3.13,6.44-4.67,8c-7.15,7.28-20.31,8.19-33.33,2.67" />
 </svg>''';
 
 
@@ -72,6 +75,10 @@ class CustomClothesWidget extends StatelessWidget {
         headSvg = sitHeadSvg;
         break;
       case 'RUNNING':
+        topSvg = RunningTopSvg;
+        bottomSvg = RunningBottomSvg;
+        headSvg = RunningHeadSvg;
+        break;
         topSvg = RunningTopSvg;
         bottomSvg = RunningBottomSvg;
         headSvg = RunningHeadSvg;
@@ -94,7 +101,7 @@ class CustomClothesWidget extends StatelessWidget {
         Stack(
           children: [Text(
             dateText,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               color: Colors.black,
               fontWeight: FontWeight.bold,
@@ -102,11 +109,11 @@ class CustomClothesWidget extends StatelessWidget {
           ),
           ],
         ),
-        SizedBox(height: 20), // 날짜와 이미지 사이의 간격
+        const SizedBox(height: 20), // 날짜와 이미지 사이의 간격
         Flexible(
           child: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
-            return Container(
+            return SizedBox(
               width: 38, // 원하는 너비 설정
               height: 38, // 원하는 높이 설정
               child: Stack(
