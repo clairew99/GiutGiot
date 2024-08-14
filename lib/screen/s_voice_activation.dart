@@ -14,6 +14,10 @@ class VoiceActivationScreen extends StatefulWidget {
 }
 
 class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
+  static const String _contentTypeHeader = 'Content-Type';
+  static const String _authorizationHeader = 'Authorization';
+  static const String _contentTypeValue = 'application/json; charset=UTF-8';
+
   String _text = '';
   late stt.SpeechToText _speech;
   late IOS9SiriWaveformController _waveController;
@@ -28,37 +32,27 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
     _waveController = IOS9SiriWaveformController();
     _flutterTts = FlutterTts();
     _initializeTts();
-    // _fetchToken();
+    _fetchToken();
     _startListeningIfNotActive();
   }
 
   void _initializeTts() {
-    _flutterTts.setStartHandler(() {
-      setState(() {
-        print("TTS is starting");
-      });
-    });
-
+    _flutterTts.setStartHandler(() => print("TTS is starting"));
     _flutterTts.setCompletionHandler(() {
-      setState(() {
-        print("TTS is completed");
-        _startListeningIfNotActive();
-      });
+      print("TTS is completed");
+      _startListeningIfNotActive();
     });
-
-    _flutterTts.setErrorHandler((msg) {
-      setState(() {
-        print("TTS error: $msg");
-      });
-    });
+    _flutterTts.setErrorHandler((msg) => print("TTS error: $msg"));
   }
 
-  // Future<void> _fetchToken() async {
-  //   bool success = await AccessTokenManager.fetchAndSaveToken();
-  //   if (!success) {
-  //     print('Failed to fetch and save token');
-  //   }
-  // }
+  Future<void> _fetchToken() async {
+    try {
+      await AccessTokenManager.fetchAndSaveToken();
+    } catch (e) {
+      print('Failed to fetch and save token: $e');
+      _showErrorDialog('토큰 갱신 실패', '다시 시도해주세요.');
+    }
+  }
 
   Future<void> _startListeningIfNotActive() async {
     if (!_isListening) {
@@ -70,6 +64,7 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
     PermissionStatus status = await Permission.microphone.request();
     if (status != PermissionStatus.granted) {
       print('Microphone permission denied');
+      _showErrorDialog('권한 오류', '마이크 권한이 필요합니다.');
       return;
     }
 
@@ -77,7 +72,7 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
       onStatus: (status) => print('Speech recognition status: $status'),
       onError: (errorNotification) => print('Speech recognition error: $errorNotification'),
     );
-    print('Speech recognition available: $available');
+
     if (available) {
       setState(() => _isListening = true);
       _speech.listen(
@@ -86,7 +81,6 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
             setState(() {
               _text = val.recognizedWords;
               _waveController.amplitude = (val.confidence ?? 1.0) * 0.5;
-              print('Recognized words: $_text');
             });
             if (val.finalResult) {
               _sendTextToServer(_text);
@@ -94,15 +88,14 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
             }
           }
         },
-        onSoundLevelChange: (level) {
-          _waveController.amplitude = level / 100;
-        },
+        onSoundLevelChange: (level) => _waveController.amplitude = level / 100,
         listenFor: Duration(seconds: 60),
         pauseFor: Duration(seconds: 3),
         cancelOnError: true,
       );
     } else {
       setState(() => _isListening = false);
+      _showErrorDialog('음성 인식 오류', '음성 인식을 시작할 수 없습니다.');
     }
   }
 
@@ -115,47 +108,39 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
     try {
       String? accessToken = await AccessTokenManager.getAccessToken();
       if (accessToken == null) {
-        print('Access token is missing');
-        return;
+        throw Exception('Access token is missing');
       }
 
       final dio = Dio();
-      print('Sending text to server: $text');
       final response = await dio.post(
         Config.getConversationUri().toString(),
         options: Options(
           headers: {
-            'Content-Type': 'application/json; charset=UTF-8',
-            'Authorization': '$accessToken',
+            _contentTypeHeader: _contentTypeValue,
+            _authorizationHeader: accessToken,
           },
         ),
         data: jsonEncode(<String, String>{'text': text}),
       );
-      print('Server response status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final responseData = response.data;
-        print('Server response data: $responseData');
-
         if (responseData['type'] == 'Question') {
           String message = responseData['message'];
-
-          setState(() {
-            _text = message;
-          });
-
+          setState(() => _text = message);
           await _speak(message);
 
           if (responseData.containsKey('clothesId')) {
             String clothesId = responseData['clothesId'].toString();
-            _fetchClothesDetail(clothesId, accessToken);
+            await _fetchClothesDetail(clothesId, accessToken);
           }
         }
       } else {
-        print('Failed to send text: ${response.statusCode}');
+        throw Exception('Failed to send text: ${response.statusCode}');
       }
     } catch (e) {
       print('Error sending text to server: $e');
+      _showErrorDialog('서버 통신 오류', '서버와의 통신 중 오류가 발생했습니다.');
     }
   }
 
@@ -166,27 +151,24 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
         Config.getClothesUri(clothesId).toString(),
         options: Options(
           headers: {
-            'Content-Type': 'application/json; charset=UTF-8',
-            // 'Authorization': '$token',
+            _contentTypeHeader: _contentTypeValue,
+            // _authorizationHeader: token,
           },
         ),
       );
 
       if (response.statusCode == 200) {
-        setState(() {
-          _clothesDetail = response.data;
-          print('Clothes detail fetched: $_clothesDetail');
-        });
+        setState(() => _clothesDetail = response.data);
       } else {
-        print('Failed to fetch clothes detail: ${response.statusCode}');
+        throw Exception('Failed to fetch clothes detail: ${response.statusCode}');
       }
     } catch (e) {
       print('Error fetching clothes detail: $e');
+      _showErrorDialog('의류 정보 오류', '의류 정보를 가져오는데 실패했습니다.');
     }
   }
 
   Future<void> _speak(String text) async {
-    print('Speaking text: $text');
     if (_isListening) {
       await _stopListening();
     }
@@ -194,8 +176,29 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
       await _flutterTts.speak(text);
     } catch (e) {
       print('Error speaking text: $e');
+      _showErrorDialog('음성 출력 오류', '음성 출력 중 오류가 발생했습니다.');
       _startListeningIfNotActive();
     }
+  }
+
+  void _showErrorDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text('확인'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -203,8 +206,8 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
     _stopListening();
     _flutterTts.stop();
     super.dispose();
-    print('Disposed VoiceActivationScreen');
   }
+
 
   @override
   Widget build(BuildContext context) {
