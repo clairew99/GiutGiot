@@ -116,7 +116,6 @@ class _MemoryDetailContentState extends State<MemoryDetailContent> {
             '이 기억도는 에빙하우스의 망각 곡선을 적용하여, 특정 옷차림이 사람들의 기억 속에서 언제쯤 희미해질지 예측합니다.',
             style: TextStyle(fontSize: 12),
           ),
-          SizedBox(height: 75,),
 
         ],
       ),
@@ -149,8 +148,8 @@ class _MemoryDetailContentState extends State<MemoryDetailContent> {
                 Container(
                   child: Image.asset('assets/images/icons/memory.gif',
                     fit: BoxFit.cover, // 이미지가 원형을 채우도록 설정
-                    width: 230,
-                    height: 230,),
+                    width: 200,
+                    height: 200,),
                 )]
           ),
           SizedBox(height: 20,),

@@ -58,8 +58,8 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
       List<double> accelerometer = lastSensorValues.sublist(0, 3);
       List<double> gyroscope = lastSensorValues.sublist(3, 6);
 
-      // 중력 벡터 업데이트 (예시)
-      Vector2 newGravity = Vector2(-accelerometer[0] * 15, accelerometer[1] * 15);
+      // 중력 벡터 업데이트
+      Vector2 newGravity = Vector2(-accelerometer[0] * 30, accelerometer[1] * 30);
 
       // 자이로스코프 데이터를 통해 보정
       double gyroX = gyroscope[0];
@@ -111,7 +111,7 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
     // 정진영 (24.08.13)
     await add(ColorbBall(
       position: Vector2( screenSize.x/2, 0),
-      radius: 80,
+      radius: 70,
     )) ;
 
     await add(ConversationBall(
