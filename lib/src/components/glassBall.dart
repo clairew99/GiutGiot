@@ -7,6 +7,9 @@ import 'dart:ui'; // Canvas를 사용하기 위해 dart:ui를 임포트
 import 'package:flutter/material.dart'; // 모달 팝업을 사용하기 위해 임포트
 import '../utils/clothDetail.dart';
 
+// 클릭 시 진동 구현 - 정진영 (24.08.14)
+import 'package:vibration/vibration.dart';
+
 class GlassBall extends BodyComponent with HasGameRef<Forge2DGame>, TapCallbacks {
   final String marbleURL;
   final double clothID;
@@ -67,6 +70,11 @@ class GlassBall extends BodyComponent with HasGameRef<Forge2DGame>, TapCallbacks
   void onTapUp(TapUpEvent event) {
     final context = gameRef.buildContext;
     if (context != null) {
+      if (Vibration.hasVibrator() != null) {
+        // 클릭 시 진동 추가
+        Vibration.vibrate(pattern: [100],
+        intensities: [50]);      }
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -81,6 +89,7 @@ class GlassBall extends BodyComponent with HasGameRef<Forge2DGame>, TapCallbacks
       print('BuildContext가 null입니다.');
     }
   }
+
 
   @override
   void update(double dt) {

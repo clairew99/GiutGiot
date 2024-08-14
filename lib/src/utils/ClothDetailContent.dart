@@ -144,7 +144,7 @@ class _ClothDetailContentState extends State<ClothDetailContent> {
               ),
               SizedBox(width: 8), // 아이콘과 텍스트 사이의 간격
               Text(
-                '${widget.data['leftTime']} mins',
+                '${widget.data['leftTime']} hours',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
