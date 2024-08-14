@@ -31,7 +31,7 @@ class _ClothesCalendarWidgetState extends State<ClothesCalendarWidget> {
     final response = await rootBundle.loadString('assets/today_clothes.json');
     List<Map<String, dynamic>> data = List<Map<String, dynamic>>.from(json.decode(response));
     // final List<dynamic> jsonData = json.decode(response);
-    print(response);
+    // print(response);
     return {
       for (var item in clothesController.currentClothes)
       // for (var item in jsonData)

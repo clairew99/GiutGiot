@@ -105,13 +105,13 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
 
 
     // 구슬을 생성하는 비동기 작업을 시작
-    // startDroppingBalls();
+    startDroppingBalls();
 
     // intro 출력 구현중
     // 정진영 (24.08.13)
     await add(ColorbBall(
       position: Vector2( screenSize.x/2, 0),
-      radius: 85,
+      radius: 80,
     )) ;
 
     await add(ConversationBall(
@@ -123,11 +123,6 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
       position: Vector2( screenSize.x/2, 0),
       radius: 70,
     )) ;
-    // await add(
-    //     ConversationBall(
-    //   position: Vector2( screenSize.x/2, 0),
-    //   radius: 70,
-    // )) ;
 
   }
 

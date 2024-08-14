@@ -53,7 +53,7 @@ class GlassBall extends BodyComponent with HasGameRef<Forge2DGame>, TapCallbacks
     );
 
     // 옷 사이즈를 위한 factor
-    double clothSizeFactor = 1.3;
+    double clothSizeFactor = 1.0;
     // clothSprite를 렌더링합니다.
     clothSprite.render(
       canvas,
