@@ -1,6 +1,4 @@
-import 'package:GIUTGIOT/Dio/api_service.dart';
 import 'package:GIUTGIOT/screen/s_PageSlide.dart';
-import 'package:GIUTGIOT/screen/s_splash.dart';
 import 'package:GIUTGIOT/src/utils/clothLoad.dart';
 import 'package:GIUTGIOT/storage.dart';
 import 'package:flutter/material.dart';
@@ -10,17 +8,10 @@ import 'models/sensor_management.dart';
 import 'screen/s_setting.dart';
 import 'screen/s_voice_activation.dart';
 import 'screen/s_login.dart'; // 로그인 페이지 가져오기
-import 'screen/s_PageSlide.dart';
-import 'package:GIUTGIOT/Dio/access_token_manager.dart';
+import 'Dio/access_token_manager.dart';
 import 'dart:async';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import '../models/ml_model.dart';
-
-import '../Dio/access_token_manager.dart';
-import 'utils/clothes/controller/clothes_controller.dart';
-
-import 'package:GIUTGIOT/utils/clothes/clothes_request_manager.dart';
-import 'package:GIUTGIOT/utils/clothes/controller/clothes_controller.dart';
 
 
 
