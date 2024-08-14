@@ -5,8 +5,8 @@ import 'package:dio/dio.dart';
 import 'package:siri_wave/siri_wave.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'dart:convert';
-import '../Dio/config.dart'; // config.dart 파일을 임포트
-import '../Dio/access_token_manager.dart'; // access_token_manager.dart 파일을 임포트
+import '../Dio/config.dart';
+import '../Dio/access_token_manager.dart';
 
 class VoiceActivationScreen extends StatefulWidget {
   @override
@@ -14,14 +14,12 @@ class VoiceActivationScreen extends StatefulWidget {
 }
 
 class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
-  bool _isRecording = false; // 녹음 중인지 여부를 나타내는 플래그
-  String _text = ''; // 인식된 텍스트를 저장하는 변수
-  late stt.SpeechToText _speech; // 음성 인식 객체
-  late IOS9SiriWaveformController _waveController; // Siri 파형 컨트롤러
-  late FlutterTts _flutterTts; // TTS 객체
-  bool _isListeningForResponse = false; // 응답을 듣고 있는지 여부를 나타내는 플래그
-  String? _clothingImageUrl; // 받아온 의상 이미지 URL을 저장하는 변수
-  Map<String, dynamic>? _clothesDetail; // 옷의 세부 정보를 저장하는 변수
+  String _text = '';
+  late stt.SpeechToText _speech;
+  late IOS9SiriWaveformController _waveController;
+  late FlutterTts _flutterTts;
+  bool _isListening = false;
+  Map<String, dynamic>? _clothesDetail;
 
   @override
   void initState() {
@@ -30,23 +28,41 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
     _waveController = IOS9SiriWaveformController();
     _flutterTts = FlutterTts();
     _initializeTts();
-    _fetchToken();
+    // _fetchToken();
+    _startListeningIfNotActive();
   }
 
   void _initializeTts() {
+    _flutterTts.setStartHandler(() {
+      setState(() {
+        print("TTS is starting");
+      });
+    });
+
     _flutterTts.setCompletionHandler(() {
-      if (_isListeningForResponse && mounted) {
-        if (!_speech.isListening) {
-          _listen();
-        }
-      }
+      setState(() {
+        print("TTS is completed");
+        _startListeningIfNotActive();
+      });
+    });
+
+    _flutterTts.setErrorHandler((msg) {
+      setState(() {
+        print("TTS error: $msg");
+      });
     });
   }
 
-  Future<void> _fetchToken() async {
-    bool success = await AccessTokenManager.fetchAndSaveToken();
-    if (!success) {
-      print('Failed to fetch and save token'); // 토큰 가져오기 실패 시 로그 출력
+  // Future<void> _fetchToken() async {
+  //   bool success = await AccessTokenManager.fetchAndSaveToken();
+  //   if (!success) {
+  //     print('Failed to fetch and save token');
+  //   }
+  // }
+
+  Future<void> _startListeningIfNotActive() async {
+    if (!_isListening) {
+      await _listen();
     }
   }
 
@@ -57,9 +73,13 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
       return;
     }
 
-    bool available = await _speech.initialize();
+    bool available = await _speech.initialize(
+      onStatus: (status) => print('Speech recognition status: $status'),
+      onError: (errorNotification) => print('Speech recognition error: $errorNotification'),
+    );
     print('Speech recognition available: $available');
     if (available) {
+      setState(() => _isListening = true);
       _speech.listen(
         onResult: (val) {
           if (mounted) {
@@ -70,31 +90,25 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
             });
             if (val.finalResult) {
               _sendTextToServer(_text);
+              setState(() => _isListening = false);
             }
           }
         },
+        onSoundLevelChange: (level) {
+          _waveController.amplitude = level / 100;
+        },
+        listenFor: Duration(seconds: 60),
+        pauseFor: Duration(seconds: 3),
+        cancelOnError: true,
       );
-      if (mounted) {
-        setState(() {
-          _isRecording = true;
-        });
-      }
     } else {
-      if (mounted) {
-        setState(() {
-          _isRecording = false;
-        });
-      }
+      setState(() => _isListening = false);
     }
   }
 
   Future<void> _stopListening() async {
     await _speech.stop();
-    if (mounted) {
-      setState(() {
-        _isRecording = false;
-      });
-    }
+    setState(() => _isListening = false);
   }
 
   Future<void> _sendTextToServer(String text) async {
@@ -112,7 +126,7 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
         options: Options(
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',
-            'Authorization': 'Bearer $accessToken',
+            'Authorization': '$accessToken',
           },
         ),
         data: jsonEncode(<String, String>{'text': text}),
@@ -125,20 +139,23 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
 
         if (responseData['type'] == 'Question') {
           String message = responseData['message'];
+
+          setState(() {
+            _text = message;
+          });
+
           await _speak(message);
 
           if (responseData.containsKey('clothesId')) {
             String clothesId = responseData['clothesId'].toString();
-            _fetchClothesDetail(clothesId, accessToken); // 옷 세부 정보 조회
+            _fetchClothesDetail(clothesId, accessToken);
           }
-        } else {
-          _isListeningForResponse = false;
         }
       } else {
         print('Failed to send text: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error sending text: $e');
+      print('Error sending text to server: $e');
     }
   }
 
@@ -150,33 +167,40 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
         options: Options(
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',
-            'Authorization': 'Bearer $token',
+            // 'Authorization': '$token',
           },
         ),
       );
 
       if (response.statusCode == 200) {
         setState(() {
-          _clothesDetail = response.data; // 옷 세부 정보를 저장
-          print('Clothes detail fetched: $_clothesDetail'); // 디버깅용 로그
+          _clothesDetail = response.data;
+          print('Clothes detail fetched: $_clothesDetail');
         });
       } else {
-        print('Failed to fetch clothes detail: ${response.statusCode}'); // 실패 로그
+        print('Failed to fetch clothes detail: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching clothes detail: $e'); // 오류 로그
+      print('Error fetching clothes detail: $e');
     }
   }
 
   Future<void> _speak(String text) async {
     print('Speaking text: $text');
-    await _flutterTts.speak(text);
-    _isListeningForResponse = true;
+    if (_isListening) {
+      await _stopListening();
+    }
+    try {
+      await _flutterTts.speak(text);
+    } catch (e) {
+      print('Error speaking text: $e');
+      _startListeningIfNotActive();
+    }
   }
 
   @override
   void dispose() {
-    _speech.cancel();
+    _stopListening();
     _flutterTts.stop();
     super.dispose();
     print('Disposed VoiceActivationScreen');
@@ -200,8 +224,6 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
               icon: Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () async {
                 await _stopListening();
-                await _speech.cancel();
-                await _flutterTts.stop();
                 Navigator.pop(context);
                 print('Back button pressed');
               },
@@ -211,24 +233,6 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (_clothingImageUrl != null)
-                  Image.network(
-                    _clothingImageUrl!,
-                    height: 200,
-                    width: 200,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Text('Failed to load image', style: TextStyle(color: Colors.red));
-                    },
-                  ),
-                if (_clothesDetail != null) ...[
-                  Text('Clothes ID: ${_clothesDetail!['clothesId']}'),
-                  Text('Color: ${_clothesDetail!['color']}'),
-                  Text('Category: ${_clothesDetail!['category']}'),
-                  Text('Type: ${_clothesDetail!['type']}'),
-                  Text('Pattern: ${_clothesDetail!['pattern']}'),
-                ],
-                SizedBox(height: 20),
                 SiriWaveform.ios9(
                   controller: _waveController,
                   options: IOS9SiriWaveformOptions(
@@ -238,17 +242,19 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
                   ),
                 ),
                 SizedBox(height: 20),
+                Text(_text, style: TextStyle(fontSize: 20, color: Colors.white)),
+                SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
-                    if (_isRecording) {
+                    if (_isListening) {
                       await _stopListening();
-                      print('Stopped recording');
+                      print('Stopped listening');
                     } else {
-                      await _listen();
-                      print('Started recording');
+                      await _startListeningIfNotActive();
+                      print('Started listening');
                     }
                   },
-                  child: Text(_isRecording ? 'Stop Recording' : 'Start Recording'),
+                  child: Text(_isListening ? 'Stop Listening' : 'Start Listening'),
                 ),
               ],
             ),

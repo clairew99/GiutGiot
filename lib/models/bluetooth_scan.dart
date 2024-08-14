@@ -81,7 +81,7 @@ class BluetoothScanner {
       await initialize();
     }
     if (!_isScanning) {
-      _scanTimer = Timer.periodic(Duration(seconds: 10), (_) => _performScan());
+      _scanTimer = Timer.periodic(Duration(seconds: 30), (_) => _performScan());
       _isScanning = true;
     }
   }
@@ -103,7 +103,7 @@ class BluetoothScanner {
               try {
                 await _readDeviceInfo(deviceModel);
                 scannedDevices.add(deviceModel);
-                print(deviceModel);
+                print('New device found: $deviceModel');
               } catch (e) {
                 print('Failed to read device info: ${deviceModel.name} (${deviceModel.id}): $e');
               }
@@ -115,7 +115,7 @@ class BluetoothScanner {
 
       FlutterBluePlus.cancelWhenScanComplete(_scanSubscription!);
 
-      await FlutterBluePlus.startScan(timeout: Duration(seconds: 4));
+      await FlutterBluePlus.startScan(timeout: Duration(seconds: 30));
       await FlutterBluePlus.isScanning.where((val) => val == false).first;
 
       print('Scan complete. Devices found: ${scannedDevices.length}');
@@ -129,30 +129,50 @@ class BluetoothScanner {
 
   Future<void> _readDeviceInfo(DeviceModel deviceModel) async {
     try {
-      await deviceModel.device.connect();
+      await deviceModel.device.connect(timeout: Duration(seconds: 10));
+      print('Connected to device: ${deviceModel.name}');
+
       List<BluetoothService> services = await deviceModel.device.discoverServices();
+      print('Services discovered for device: ${deviceModel.name}');
+
       for (BluetoothService service in services) {
         if (service.uuid == Guid('0000180a-0000-1000-8000-00805f9b34fb')) {
           for (BluetoothCharacteristic c in service.characteristics) {
             if (c.uuid == Guid('00002a24-0000-1000-8000-00805f9b34fb')) {
               List<int> value = await c.read();
               deviceModel.modelNumber = String.fromCharCodes(value);
+              print('Model Number for ${deviceModel.name}: ${deviceModel.modelNumber}');
               deviceModel.isPhone = _isPhone(deviceModel.modelNumber);
               break;
             }
           }
         }
       }
+    } catch (e) {
+      print('Error reading device info for ${deviceModel.name}: $e');
     } finally {
-      await deviceModel.device.disconnect();
+      try {
+        await deviceModel.device.disconnect();
+        print('Disconnected from device: ${deviceModel.name}');
+      } catch (e) {
+        print('Error disconnecting from ${deviceModel.name}: $e');
+      }
     }
   }
 
   bool _isPhone(String modelNumber) {
     const phonePatterns = [
-      "iPhone", // Apple
-      "Galaxy", // Samsung
-      // 필요에 따라 다른 제조사의 패턴을 추가할 수 있습니다.
+      "Phone", "phone", // Apple, generic
+      "Galaxy", "SM-", // Samsung
+      "Pixel", // Google
+      "LG-", // LG
+      "Xperia", // Sony
+      "Moto", // Motorola
+      "OnePlus", // OnePlus
+      "Redmi", "Mi ", // Xiaomi
+      "HUAWEI", // Huawei
+      "OPPO", // OPPO
+      "vivo", // Vivo
     ];
     for (var pattern in phonePatterns) {
       if (modelNumber.contains(pattern)) {
@@ -183,8 +203,8 @@ void main() async {
   BluetoothScanner scanner = BluetoothScanner();
   await scanner.startScanning();
 
-  // 스캔이 완료될 때까지 대기
-  await Future.delayed(Duration(seconds: 15));
+  // 스캔이 완료될 때까지 대기 (시간 증가)
+  await Future.delayed(Duration(minutes: 2));
 
   List<DeviceModel> phoneDevices = scanner.getPhoneDevices();
   List<String> phoneDeviceIds = scanner.getPhoneDeviceIds();

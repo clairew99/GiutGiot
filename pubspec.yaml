@@ -47,6 +47,15 @@ dependencies:
   get: ^4.6.6
   vibration: ^1.9.0
 
+  ## login
+  get: ^4.6.6
+#  flutter_svg: ^2.0.10+1
+  app_links: ^3.5.1
+  url_launcher: ^6.3.0
+  flutter_web_auth: ^0.5.0
+  flutter_custom_tabs: ^2.1.0
+  flutter_secure_storage: ^4.2.1
+
   ## splash
 #  flutter_native_splash: ^2.4.1
 #
