@@ -23,7 +23,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace = "com.example.GIUTGIOT"
+    namespace = "com.ssafy.giutgiot"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -33,7 +33,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.GIUTGIOT"
+        applicationId "com.ssafy.giutgiot"
         // 240802 SHJ
         // 모델을 불러오기 위한 버전 변경
         // 기존 flutter.minSdkVersion
