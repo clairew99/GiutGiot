@@ -2,9 +2,9 @@ import 'package:GIUTGIOT/utils/clothes/controller/clothes_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'app.dart';
+import 'widget/function/w_cloth_loader.dart';
+import 'storage.dart';
 import 'dart:io' ;
-import 'src/utils/clothLoad.dart';
-
 
 class MyHttpOverrides extends HttpOverrides{
   @override
@@ -15,6 +15,10 @@ class MyHttpOverrides extends HttpOverrides{
 }
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // await ClothLoader('assets/test.json').loadClothItems(); // 앱 실행 시 데이터 로드
+  await Get.put(ClothesController());
+  WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = MyHttpOverrides();
+
   runApp(MyApp());
 }
