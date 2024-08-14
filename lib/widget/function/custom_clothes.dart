@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter/material.dart';
+
 
 
 class CustomClothesWidget extends StatelessWidget {
@@ -32,8 +33,6 @@ class CustomClothesWidget extends StatelessWidget {
 
 
   // Run ( = STAND)
-
-  // Run ( = STAND)
   final String standHeadSvg = '''<svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120.59 140.96">
     <circle cx="55.95" cy="10.91" r="10.91" stroke="#231815" stroke-width="2"/>
 </svg>''';
@@ -48,21 +47,18 @@ class CustomClothesWidget extends StatelessWidget {
 
 
 
-  // Running -> viewBox와 stroke-width로 크기랑 위치 조정
-  final String RunningHeadSvg ='''<svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120.59 140.96">
-    <circle cx="55.95" cy="10.91" r="10.91" stroke="#231815" stroke-width="2"/>
+// Running
+  final String RunningHeadSvg = '''<svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+    <circle fill="#000000" cx="150" cy="80" r="25" transform="translate(0, -40)"/> 
 </svg>''';
 
-  final String RunningTopSvg ='''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170.33 210.67" >
-    <path fill="none" stroke="#000000" stroke-width="20"  stroke-miterlimit="10" d="M88.85,63.74c13.33-4.08,20.45,13.81,20.67,14.92c1.67,8.67,2.8,12.68,6.33,16.33 c2.32,2.41,7.29,4.48,19.33,1.33" />
-    <path fill="none" stroke="#000000" stroke-width="20"  stroke-miterlimit="10" d="M60.51,78.67" />
-    <path fill="none" stroke="#000000" stroke-width="20" stroke-miterlimit="10" d="M56.33,79.68c1.79-2.86,7.08-10.38,16.67-13" />
-</svg>''';
-  final String RunningBottomSvg ='''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160.33 190.67" >
-    <path fill="none" stroke="#000000" stroke-width="20" stroke-miterlimit="10" d="M78.51,104c12.89,0.05,24.29,8.05,28.33,19.67c4.57,13.15-1.18,28.37-14,35.67" />
-    <path fill="none" stroke="#000000" stroke-width="20" stroke-miterlimit="10" d="M73,119.23c-1.23,3.92-3.13,6.44-4.67,8c-7.15,7.28-20.31,8.19-33.33,2.67" />
+  final String RunningTopSvg = '''<svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+    <path fill="none" stroke="#000000" stroke-miterlimit="10" stroke-width="25px" d="M50.17,120c8.18-4.59,20.4-12.95,35.33-12.33,20.16,1.35,24.48,12.06,42,16.45,12.54,3.39,46.12-.62,72.33-16.51" transform="translate(-40, -40) scale(1.5, 1.2)"/>
 </svg>''';
 
+  final String RunningBottomSvg = '''<svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+    <path fill="none" stroke="#000000" stroke-miterlimit="10" stroke-width="23px" d="M60.5,220c42.25-22,32.67-71.1,51.67-68.33,18.51,2.71,46.33,40.64,35.33,81.33" transform="translate(20, -170) scale(1.2, 2.0)"/>
+</svg>''';
 
 
   @override
@@ -75,10 +71,6 @@ class CustomClothesWidget extends StatelessWidget {
         headSvg = sitHeadSvg;
         break;
       case 'RUNNING':
-        topSvg = RunningTopSvg;
-        bottomSvg = RunningBottomSvg;
-        headSvg = RunningHeadSvg;
-        break;
         topSvg = RunningTopSvg;
         bottomSvg = RunningBottomSvg;
         headSvg = RunningHeadSvg;
@@ -113,33 +105,33 @@ class CustomClothesWidget extends StatelessWidget {
         Flexible(
           child: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
-            return SizedBox(
-              width: 38, // 원하는 너비 설정
-              height: 38, // 원하는 높이 설정
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Positioned.fill(
-                    child: SvgPicture.string(
-                       bottomSvg.replaceAll('#000000', bottomColor),
-                      fit: BoxFit.contain,
+              return SizedBox(
+                width: 38, // 원하는 너비 설정
+                height: 38, // 원하는 높이 설정
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Positioned.fill(
+                      child: SvgPicture.string(
+                        bottomSvg.replaceAll('#000000', bottomColor),
+                        fit: BoxFit.contain,
+                      ),
                     ),
-                  ),
-                  Positioned.fill(
-                    child: SvgPicture.string(
-                      headSvg.replaceAll('#000000', '#000000'),
-                      fit: BoxFit.contain,
+                    Positioned.fill(
+                      child: SvgPicture.string(
+                        headSvg.replaceAll('#000000', '#000000'),
+                        fit: BoxFit.contain,
+                      ),
                     ),
-                  ),
-                  Positioned.fill(
-                    child: SvgPicture.string(
-                      topSvg.replaceAll('#000000', topColor),
-                      fit: BoxFit.contain,
+                    Positioned.fill(
+                      child: SvgPicture.string(
+                        topSvg.replaceAll('#000000', topColor),
+                        fit: BoxFit.contain,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            );
+                  ],
+                ),
+              );
             },
           ),
         ),
