@@ -86,6 +86,15 @@ def conversation():
         if top_features:  # 상의 정보가 있는 경우
             session['top_features'] = top_features  # 세션에 상의 정보를 저장
             session['top_clothesId'] = features.get('top', {}).get('clothesId', '')  # Spring에서 받아온 clothesId를 저장한다고 가정
+
+            if 'bottom_clothesId' in session:  # 상의 정보가 이미 있는 경우       
+                session.pop('top_clothesId', None)  # 세션에서 상의 정보 삭제
+                session.pop('bottom_clothesId', None)  # 세션에서 하의 정보 삭제
+                return jsonify({
+                    "type":"Statement",
+                    "message": "코디가 완료되었습니다. 저장합니다."
+                })
+            
             return jsonify({
                 "type":"Statement",
                 "message": "상의가 선택되었어요. 하의도 선택해주세요."
@@ -95,7 +104,9 @@ def conversation():
             session['bottom_features'] = bottom_features  # 세션에 하의 정보를 저장
             session['bottom_clothesId'] = features.get('bottom', {}).get('clothesId', '')  # Spring에서 받아온 clothesId를 저장한다고 가정
 
-            if 'top_clothesId' in session:  # 상의 정보가 이미 있는 경우
+            if 'top_clothesId' in session:  # 상의 정보가 이미 있는 경우       
+                session.pop('top_clothesId', None)  # 세션에서 상의 정보 삭제
+                session.pop('bottom_clothesId', None)  # 세션에서 하의 정보 삭제
                 return jsonify({
                     "type":"Statement",
                     "message": "코디가 완료되었습니다. 저장합니다."
