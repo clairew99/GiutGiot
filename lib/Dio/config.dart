@@ -14,8 +14,8 @@ class Config {
   // static const String authEndpoint = '/auth/login?memberId=1';
 
   // 전송할 URI 생성 메서드
-  static Uri getpyannoteUri() => Uri.parse('$FlaskbaseUrl$speakeranalysisEndpoint');
-  static Uri getConversationUri() => Uri.parse('$FlaskbaseUrl$conversationEndpoint');
+  static Uri getpyannoteUri() => Uri.parse('$baseUrl$speakeranalysisEndpoint');
+  static Uri getConversationUri() => Uri.parse('$baseUrl$conversationEndpoint');
   static Uri getClothesUri(String clothesId) => Uri.parse('$baseUrl$clothesEndpoint/$clothesId');
   static Uri getClothesCheckUri() => Uri.parse('$baseUrl$clothesEndpoint/check');
   static Uri getMonthlyCoordinateUri(String year, String month, String day) =>

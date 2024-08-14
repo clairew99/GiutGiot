@@ -1,10 +1,11 @@
+import 'package:dio/dio.dart' as Dio;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AccessTokenManager {
   static final _storage = FlutterSecureStorage();
-
   static const _accessTokenKey = 'ACCESS_TOKEN';
   static const _refreshTokenKey = 'REFRESH_TOKEN';
+  static const _baseUrl = 'https://i11a409.p.ssafy.io:8443';
 
   // 액세스 토큰 저장
   static Future<void> setAccessToken(String accessToken) async {
@@ -37,5 +38,35 @@ class AccessTokenManager {
     final accessToken = await getAccessToken();
     final refreshToken = await getRefreshToken();
     return accessToken != null && refreshToken != null;
+  }
+
+  // 액세스 토큰 갱신
+  static Future<void> fetchAndSaveToken() async {
+    final refreshToken = await getRefreshToken();
+    if (refreshToken == null) {
+      throw Exception('리프레시 토큰이 없습니다. 다시 로그인하세요.');
+    }
+
+    try {
+      final dio = Dio.Dio();
+      final response = await dio.post(
+        '$_baseUrl/refresh-token',
+        options: Dio.Options(
+          headers: {
+            'Authorization': 'Bearer $refreshToken',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final newAccessToken = response.data['accessToken'];
+        await setAccessToken(newAccessToken);
+      } else {
+        throw Exception('토큰 갱신 실패: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('토큰 갱신 중 오류 발생: $e');
+      throw e;
+    }
   }
 }

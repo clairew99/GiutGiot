@@ -5,14 +5,7 @@ import 'widget/function/w_cloth_loader.dart';  // ClothLoader 클래스를 불�
 import 'dart:io';  // HttpOverrides 클래스 사용을 위해 추가
 import 'package:flutter/foundation.dart';  // kDebugMode 사용을 위해 추가
 import 'Dio/access_token_manager.dart';  // AccessTokenManager 클래스를 불러오는 파일
-
-class MyHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
-  }
-}
+import 'package:get/get.dart';
 
 class MyHttpOverrides extends HttpOverrides{
   @override
@@ -22,6 +15,7 @@ class MyHttpOverrides extends HttpOverrides{
   }
 }
 void main() async {
+  Get.put(ClothesController());
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = MyHttpOverrides();
 
