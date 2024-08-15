@@ -22,6 +22,7 @@ class _PageSlideState extends State<PageSlide> {
   final PageController _pageController = PageController(initialPage: 0);
   int currentPageIndex = 0;
   bool showMotionButton = false; // 모션 버튼 표시 여부
+  bool showWalkingGif = false; // 걷기 상태일 때 walking.gif 표시 여부
 
   @override
   void initState() {
@@ -42,6 +43,13 @@ class _PageSlideState extends State<PageSlide> {
         showMotionButton = true; // 오류 발생 시 모션 버튼을 표시
       });
     }
+  }
+
+  // 센서 데이터를 바탕으로 걷기 상태 업데이트
+  void _updateWalkingGifBasedOnSensor(bool isWalking) {
+    setState(() {
+      showWalkingGif = isWalking; // 걷기 감지 시 walking.gif를 표시
+    });
   }
 
   @override
@@ -93,8 +101,20 @@ class _PageSlideState extends State<PageSlide> {
               right: 45,
               child: MotionButton(onSelectionComplete: () {}),
             ),
+          // 걷기 상태일 때 작은 walking.gif 표시
+          if (showWalkingGif)
+            Positioned(
+              top: 20,
+              right: 20,
+              child: Image.asset(
+                'assets/icon/walking.gif',
+                width: 50, // 이미지 크기를 작게 설정
+                height: 50,
+              ),
+            ),
         ],
       ),
     );
   }
 }
+

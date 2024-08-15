@@ -88,6 +88,8 @@ flutter:
     - assets/icon/
     - assets/test.json
     - assets/background/
+    - assets/icon/app_icon.png
+    - assets/icon/walking.gif
 
     - assets/test_icon/upclothes.png
     - assets/test_icon/downclothes.png

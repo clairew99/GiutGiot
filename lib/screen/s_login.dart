@@ -10,7 +10,6 @@ import 'package:GIUTGIOT/Dio/access_token_manager.dart';
 import 'package:GIUTGIOT/src/myHome.dart';
 import 's_PageSlide.dart';
 
-
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -41,6 +40,12 @@ class _LoginState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset(
+              'assets/icon/app_icon.png',
+              width: 150, // 이미지의 너비
+              height: 150, // 이미지의 높이
+            ),
+            SizedBox(height: 30), // 이미지와 버튼 사이에 간격 추가
             Container(
               width: size.width,
               height: size.height * 0.01,
@@ -159,4 +164,3 @@ class _LoginState extends State<LoginPage> {
     }
   }
 }
-
