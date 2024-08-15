@@ -115,28 +115,36 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
     // HomeClothPaths의 "forgotten"과 "remembered" 리스트의 길이 확인
     bool shouldShowIntro = HomeClothPaths['forgotten']!.length + HomeClothPaths['remembered']!.length < 5;
     if (shouldShowIntro) {
-      print('Intro Balls will be displayed!');
-      await add(ColorBall(
-        position: Vector2(screenSize.x / 2, 0),
-        radius: 70,
-      ));
+      await displayIntroBalls(); // intro 공을 비동기로 처리
 
-      await add(ConversationBall(
-        position: Vector2(screenSize.x / 2, 0),
-        radius: 70,
-      ));
-
-      await add(MemoryBall(
-        position: Vector2(screenSize.x / 2, 0),
-        radius: 70,
-      ));
     }
 
     // 구슬을 생성하는 비동기 작업을 시작
-    dropNewBalls();
-
+    await dropNewBalls();
 
   }
+
+  // 설명 구슬 시간 차이 주기
+  // 정진영 (24.08.15)
+  Future<void> displayIntroBalls() async {
+    await add(ColorBall(
+      position: Vector2(screenSize.x / 2, 0),
+      radius: 70,
+    ));
+    await ASYNC.Future.delayed(const Duration(milliseconds: 1000));
+
+    await add(ConversationBall(
+      position: Vector2(screenSize.x / 2, 0),
+      radius: 70,
+    ));
+    await ASYNC.Future.delayed(const Duration(milliseconds: 1000));
+
+    await add(MemoryBall(
+      position: Vector2(screenSize.x / 2, 0),
+      radius: 70,
+    ));
+  }
+
 
   Future<void> spawnSmallBalls() async {
     // 상단 넓은 부분에서 중간 좁은 부분으로 퍼져서 배치
@@ -157,7 +165,7 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
     double InitialRadius_L = 75;
     double InitailRadius_S = 60;
     double radiusIncrement = 10;
-
+    print (HomeClothPaths);
     for (var key in HomeClothPaths.keys) {
       var paths = HomeClothPaths[key];
       if (paths == null) {

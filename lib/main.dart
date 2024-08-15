@@ -1,7 +1,6 @@
 import 'package:GIUTGIOT/utils/clothes/controller/clothes_controller.dart';
 import 'package:flutter/material.dart';
 import 'app.dart';  // MyApp 클래스를 불러오는 파일
-import 'widget/function/w_cloth_loader.dart';  // ClothLoader 클래스를 불러오는 파일
 import 'dart:io';  // HttpOverrides 클래스 사용을 위해 추가
 import 'package:flutter/foundation.dart';  // kDebugMode 사용을 위해 추가
 import 'Dio/access_token_manager.dart';  // AccessTokenManager 클래스를 불러오는 파일
@@ -18,9 +17,6 @@ void main() async {
   Get.put(ClothesController());
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = MyHttpOverrides();
-
-  // 앱 실행 시 필요한 데이터를 로드
-  await ClothLoader('assets/test.json').loadClothItems();
 
   // 디버그 모드에서 토큰을 초기화
   if (kDebugMode) {
