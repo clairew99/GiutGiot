@@ -113,13 +113,14 @@ ex: 나 오늘 빨간색 반팔 니트 입을래
 
 ## 프로젝트 설계
 
-<b>Figma</b>
+<b>Figma</b><br>
 <a href="https://www.figma.com/design/x5ofY06DF2N9mXaj9msi4C/%EC%84%9C%EC%9A%B8-4%EB%B0%98-9%EC%A1%B0-PJT?node-id=0-1&t=Eduh4cYxgUnjmdNU-0"><img src="./assets/figma.png" width="700" alt="figma"/></a><br>
 
 <b>ERD</b><br>
 <a href="https://www.erdcloud.com/d/6Mdr9dTKsJc6Lijvw"><img src="./assets/ERD.png" width="700" alt="ERD"/></a><br>
 
-API 명세서
+<b>API 명세서</b><br>
+<a href="https://www.notion.so/API-48f183c1bd8e4a1aa9bf8a1a9d702787"><img src="./assets/API.png" width="700" alt="API"/></a><br>
 
 # 👕개발 멤버
 <table>
