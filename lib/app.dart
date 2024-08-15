@@ -1,3 +1,4 @@
+import 'package:GIUTGIOT/screen/s_splash.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -129,10 +130,13 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+
+    // 스플래시 화면 적용
+    // 정진영 (24.08.15)
     if (!_isInitialized) {
       return GetMaterialApp(  // GetMaterialApp 사용
         home: Scaffold(
-          body: Center(child: CircularProgressIndicator()),
+          body: Center(child: SplashScreen()),
         ),
       );
     }
