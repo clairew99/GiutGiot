@@ -74,20 +74,31 @@ ex: 나 오늘 빨간색 반팔 니트 입을래
 - 과거 2주일 간 코디 조회
 - 픽토그램으로 색 중심 코디 표현
 - 각 날짜의 픽토그램은 그날의 활동량에 따라 3가지 자세로 표현
+- 캘린더의 각 날짜 클릭 시 코디 상세 정보 조회 가능
 
 ### 5. 설정
-- 음성 분석이 활성화 될 출퇴근 시간 수정
+
+<img src="./assets/Settings.gif" height="500" alt="tutorial3"/><br>
+
 - 회원정보(닉네임) 수정
-- 튜토리얼 다시보기 제공
-- 회원탈퇴
+- 음성 분석이 활성화 될 출퇴근 시간 수정
+- 서비스 설명
 
 
 # 👕기술 스택
 
 ## 기능 별 기술 스택
-1. 코디 입력
+1. 음성 코디 입력
+- 자연어 처리 : 사용자의 음성 토큰화를 통한 옷 특징 추출
+- SVM(Support vector machine) 모델을 활용한 평문/의문문 구별
+- Naive Bayes Classifier 모델을 활용한 사용자의 긍/부정 판단
 
-2. 음성 분석
+2. 음성 화자 분석
+- 인식된 음성 데이터로부터 대화하는 화자 수 추출
+- MFCC : 음성 신호의 주파수 특성을 정확하게 구별해 각 화자의 특징 추출
+- Pyannote : MFCC에서 추출한 정보를 활용해 효율적인 화자 분할
+- 서로 보완적인 역할을 하는 두 기술을 결합
+
 
 ## 개발 환경
 
@@ -99,8 +110,6 @@ ex: 나 오늘 빨간색 반팔 니트 입을래
 <img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white"/> <img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white"/> <img src="https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=Gradle&logoColor=white"/> <img src="https://img.shields.io/badge/JSON Web Tokens-000000?style=for-the-badge&logo=JSON Web Tokens&logoColor=white"/> <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=Spring Security&logoColor=white"/> <img src="https://img.shields.io/badge/mySql-007ec6?style=for-the-badge&logo=mySql&logoColor=white"/> <img src="https://img.shields.io/badge/Amazon EC2-569A31?style=for-the-badge&logo=Amazon EC2&logoColor=white"/> <img src="https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=Jenkins&logoColor=white"/> <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white"/> <img src="https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=Ubuntu&logoColor=white"/> <img src="https://img.shields.io/badge/Jira-0052CC?style=for-the-badge&logo=Jira&logoColor=white"/> <img src="https://img.shields.io/badge/GitLab-FCA121?style=for-the-badge&logo=GitLab&logoColor=white"/> <br/>
 
 # 산출물
-
-## 프로젝트 일정
 
 ## 프로젝트 설계
 
@@ -135,5 +144,3 @@ API 명세서
         <td align="center">Frontend</td>
     </tr>
 </table>
-
-# 👕회고
