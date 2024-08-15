@@ -1,7 +1,8 @@
 class Config {
   // API 베이스 URL
   static const String baseUrl = 'https://i11a409.p.ssafy.io:8443';
-
+  static const String FlaskbaseUrl = 'http://127.0.0.1:5000';
+  // static const String FlaskbaseUrl = 'http://i11a409.p.ssafy.io:5000';
   // 타임아웃 설정
   static const Duration connectTimeout = Duration(seconds: 10);
   static const Duration receiveTimeout = Duration(seconds: 10);
@@ -14,8 +15,8 @@ class Config {
   // static const String authEndpoint = '/auth/login?memberId=1';
 
   // 전송할 URI 생성 메서드
-  static Uri getpyannoteUri() => Uri.parse('$baseUrl$speakeranalysisEndpoint');
-  static Uri getConversationUri() => Uri.parse('$baseUrl$conversationEndpoint');
+  static Uri getpyannoteUri() => Uri.parse('$FlaskbaseUrl$speakeranalysisEndpoint');
+  static Uri getConversationUri() => Uri.parse('$FlaskbaseUrl$conversationEndpoint');
   static Uri getClothesUri(String clothesId) => Uri.parse('$baseUrl$clothesEndpoint/$clothesId');
   static Uri getClothesCheckUri() => Uri.parse('$baseUrl$clothesEndpoint/check');
   static Uri getMonthlyCoordinateUri(String year, String month, String day) =>

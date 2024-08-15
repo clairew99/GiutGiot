@@ -7,6 +7,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'dart:convert';
 import '../Dio/config.dart';
 import '../Dio/access_token_manager.dart';
+import 'package:dio/io.dart';
 
 class VoiceActivationScreen extends StatefulWidget {
   @override
@@ -15,7 +16,6 @@ class VoiceActivationScreen extends StatefulWidget {
 
 class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
   static const String _contentTypeHeader = 'Content-Type';
-  static const String _authorizationHeader = 'Authorization';
   static const String _contentTypeValue = 'application/json; charset=UTF-8';
 
   String _text = '';
@@ -23,6 +23,7 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
   late IOS9SiriWaveformController _waveController;
   late FlutterTts _flutterTts;
   bool _isListening = false;
+  bool _sendToResponse = false; // 다음 요청을 response로 보낼지 여부를 저장하는 플래그
   Map<String, dynamic>? _clothesDetail;
 
   @override
@@ -32,7 +33,6 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
     _waveController = IOS9SiriWaveformController();
     _flutterTts = FlutterTts();
     _initializeTts();
-    _fetchToken();
     _startListeningIfNotActive();
   }
 
@@ -43,15 +43,6 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
       _startListeningIfNotActive();
     });
     _flutterTts.setErrorHandler((msg) => print("TTS error: $msg"));
-  }
-
-  Future<void> _fetchToken() async {
-    try {
-      await AccessTokenManager.fetchAndSaveToken();
-    } catch (e) {
-      print('Failed to fetch and save token: $e');
-      _showErrorDialog('토큰 갱신 실패', '다시 시도해주세요.');
-    }
   }
 
   Future<void> _startListeningIfNotActive() async {
@@ -90,7 +81,7 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
         },
         onSoundLevelChange: (level) => _waveController.amplitude = level / 100,
         listenFor: Duration(seconds: 60),
-        pauseFor: Duration(seconds: 3),
+        pauseFor: Duration(seconds: 10),
         cancelOnError: true,
       );
     } else {
@@ -104,36 +95,62 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
     setState(() => _isListening = false);
   }
 
+  // 서버로 텍스트와 토큰을 전송하는 메서드
   Future<void> _sendTextToServer(String text) async {
     try {
       String? accessToken = await AccessTokenManager.getAccessToken();
+
+      print("accessToken: $accessToken");
       if (accessToken == null) {
         throw Exception('Access token is missing');
       }
 
       final dio = Dio();
+
+      // 다음 요청이 /response로 가야 할 경우 URL을 변경
+      final url = _sendToResponse
+          ? 'http://127.0.0.1:5000/response'
+          : 'http://127.0.0.1:5000/conversation';
+
+      // 요청이 끝나면 다시 conversation으로 보내도록 플래그를 false로 리셋
+      _sendToResponse = false;
+
+      // 토큰을 body에 포함하여 서버로 전송
       final response = await dio.post(
-        Config.getConversationUri().toString(),
+        url,
         options: Options(
           headers: {
             _contentTypeHeader: _contentTypeValue,
-            _authorizationHeader: accessToken,
           },
         ),
-        data: jsonEncode(<String, String>{'text': text}),
+        data: jsonEncode(<String, String>{'text': text, 'token': '$accessToken'}),
       );
 
       if (response.statusCode == 200) {
+        print('STT 전송 완료~');
         final responseData = response.data;
-        if (responseData['type'] == 'Question') {
-          String message = responseData['message'];
-          setState(() => _text = message);
-          await _speak(message);
+        print('받은 데이터다! $responseData');
+
+        if (responseData is Map<String, dynamic>) {
+          String? message = responseData['message'] as String?;
+          if (message != null) {
+            setState(() => _text = message);
+            await _speak(message);
+
+            // 응답 메시지에 따라 다음 요청을 /response로 보낼지 결정
+            if (message == "입어도 됩니다. 입으시겠어요?" ||
+                message == "다른 걸 입는 걸 추천드려요. 그래도 입으시겠어요?") {
+              _sendToResponse = true;
+            }
+          }
 
           if (responseData.containsKey('clothesId')) {
             String clothesId = responseData['clothesId'].toString();
             await _fetchClothesDetail(clothesId, accessToken);
           }
+        } else {
+          print('Unexpected response type');
+          _showErrorDialog('서버 응답 오류', '서버에서 잘못된 데이터를 수신했습니다.');
         }
       } else {
         throw Exception('Failed to send text: ${response.statusCode}');
@@ -144,17 +161,20 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
     }
   }
 
+  // 의류 상세 정보를 가져오는 메서드
   Future<void> _fetchClothesDetail(String clothesId, String token) async {
     try {
       final dio = Dio();
-      final response = await dio.get(
+
+      // 토큰을 body에 포함하여 서버로 요청
+      final response = await dio.post(
         Config.getClothesUri(clothesId).toString(),
         options: Options(
           headers: {
             _contentTypeHeader: _contentTypeValue,
-            // _authorizationHeader: token,
           },
         ),
+        data: jsonEncode(<String, String>{'clothesId': clothesId, 'token': '$token'}),
       );
 
       if (response.statusCode == 200) {
@@ -208,7 +228,6 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -239,7 +258,7 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
                 SiriWaveform.ios9(
                   controller: _waveController,
                   options: IOS9SiriWaveformOptions(
-                    height: 150,
+                    height: 300,
                     width: 300,
                     showSupportBar: true,
                   ),
