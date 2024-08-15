@@ -7,7 +7,7 @@ import 'dart:ui'; // Canvas를 사용하기 위해 dart:ui를 임포트
 import 'package:flutter/material.dart'; // 모달 팝업을 사용하기 위해 임포트
 import 'introContent.dart';
 
-class ColorbBall extends BodyComponent with HasGameRef<Forge2DGame>, TapCallbacks {
+class ColorBall extends BodyComponent with HasGameRef<Forge2DGame>, TapCallbacks {
   final Vector2 position;
   final double radius;
   final double collisionMargin; // 충돌 마진 추가
@@ -16,7 +16,7 @@ class ColorbBall extends BodyComponent with HasGameRef<Forge2DGame>, TapCallback
 
 
 
-  ColorbBall({
+  ColorBall({
     required this.position,
     required this.radius,
     this.collisionMargin = 15, // 기본 충돌 마진 설정

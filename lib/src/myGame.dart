@@ -37,6 +37,10 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
   List<double>? accelerometerValues;
   List<double>? gyroscopeValues;
 
+  // 이미 출력된 clothID와 메모리 값을 저장하는 Map
+  // 데이터 변화 감지 후 옷 구슬 출력을 위함
+  Map<int, MapEntry<GlassBall, double>> processedClothes = {};
+
   MyGame({required this.screenSize})
       : super(
     zoom: 100,
@@ -103,28 +107,44 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
     // 작은 구슬 생성
     spawnSmallBalls();
 
+    // intro 출력 구현
+    // 기억도 관련 옷 데이터 개수가 5개보다 작으면 출력할 수 있도록 조건 설정
+    // 정진영 (24.08.14)
+
+    // intro 출력 조건
+    // HomeClothPaths의 "forgotten"과 "remembered" 리스트의 길이 확인
+    bool shouldShowIntro = HomeClothPaths['forgotten']!.length + HomeClothPaths['remembered']!.length < 5;
+    if (shouldShowIntro) {
+      await displayIntroBalls(); // intro 공을 비동기로 처리
+
+    }
 
     // 구슬을 생성하는 비동기 작업을 시작
-    startDroppingBalls();
-
-    // intro 출력 구현중
-    // 정진영 (24.08.13)
-    await add(ColorbBall(
-      position: Vector2( screenSize.x/2, 0),
-      radius: 70,
-    )) ;
-
-    await add(ConversationBall(
-      position: Vector2( screenSize.x/2, 0),
-      radius: 70,
-    )) ;
-
-    await add(MemoryBall(
-      position: Vector2( screenSize.x/2, 0),
-      radius: 70,
-    )) ;
+    await dropNewBalls();
 
   }
+
+  // 설명 구슬 시간 차이 주기
+  // 정진영 (24.08.15)
+  Future<void> displayIntroBalls() async {
+    await add(ColorBall(
+      position: Vector2(screenSize.x / 2, 0),
+      radius: 70,
+    ));
+    await ASYNC.Future.delayed(const Duration(milliseconds: 1000));
+
+    await add(ConversationBall(
+      position: Vector2(screenSize.x / 2, 0),
+      radius: 70,
+    ));
+    await ASYNC.Future.delayed(const Duration(milliseconds: 1000));
+
+    await add(MemoryBall(
+      position: Vector2(screenSize.x / 2, 0),
+      radius: 70,
+    ));
+  }
+
 
   Future<void> spawnSmallBalls() async {
     // 상단 넓은 부분에서 중간 좁은 부분으로 퍼져서 배치
@@ -141,77 +161,70 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
   }
 
 
-  Future<void> dropBalls() async {
-    double InitialRadius_L = 80;
+  Future<void> dropNewBalls() async {
+    double InitialRadius_L = 75;
     double InitailRadius_S = 60;
     double radiusIncrement = 10;
+    print (HomeClothPaths);
     for (var key in HomeClothPaths.keys) {
-      if (!isDropping) break; // isDropping이 false이면 루프 중단
-
       var paths = HomeClothPaths[key];
       if (paths == null) {
-        isDropping = false; // paths가 null인 경우 중단
-        break;
+        continue;
       }
 
-      for (var i = 0; i < paths.length ; i++) {
-        if (!isDropping) break; // isDropping이 false이면 루프 중단
-        int clothID = paths[i][0] ;
-        double memory = paths[i][1] ;
-        String clothURL = paths[i][2] ;
+      for (var i = 0; i < paths.length; i++) {
+        int clothID = paths[i][0];
+        double memory = paths[i][1];
+        String clothURL = paths[i][2];
 
-        // int initialPosition_X = Random().nextInt(screenSize.x.toInt());
-        int initialPosition_X = (screenSize.x / 2).toInt() -30+ Random().nextInt(50);
-        // 메모리 field 값 기준으로 사이즈 조정
-        if (memory >= 0.2) {
-          InitialRadius_L += radiusIncrement * ((memory - 0.2) / 0.8);
-        } else {
-          // InitailRadius_S +=  ((0.2 - field) / 0.2);
+        // 새로운 데이터인지 확인
+        // 테스트 아직 완성되지 않음 (캘린더 등록 X)
+        if (!processedClothes.containsKey(clothID)) {
+          // 새로운 메모리 값으로 구슬 생성
+          int initialPosition_X = (screenSize.x / 2).toInt() - 80 + Random().nextInt(160);
+
+          if (memory >= 0.2) {
+            InitialRadius_L += radiusIncrement * ((memory - 0.2) / 0.8);
+          }
+
+          final ball = key == 'remembered'
+              ? GlassBall(
+            marbleURL: 'marble.png',
+            clothID: clothID.toDouble(),
+            clothURL: clothURL,
+            position: Vector2(initialPosition_X.toDouble(), 0),
+            radius: InitialRadius_L,
+          )
+              : GlassBall(
+            marbleURL: 'marble.png',
+            clothID: clothID.toDouble(),
+            clothURL: clothURL,
+            position: Vector2(initialPosition_X.toDouble(), 0),
+            radius: InitailRadius_S,
+          );
+
+          await add(ball);
+
+          // 새로운 구슬과 메모리를 processedClothes에 추가
+          processedClothes[clothID] = MapEntry(ball, memory);
+
+          await ASYNC.Future.delayed(const Duration(milliseconds: 800));
         }
-
-        // i++; // field 값을 읽은 후 인덱스 증가
-
-        // GlowEffect를 정의합니다.
-        final effect = GlowEffect(
-          10.0, // Glow intensity
-          EffectController(duration: 3), // 효과의 지속 시간
-        );
-
-
-        final ball = key == 'remembered'
-            ? GlassBall(
-          marbleURL: 'marble.png',
-          clothID : clothID.toDouble(),
-          clothURL: clothURL,
-          position: Vector2( screenSize.x/2, 0),
-          radius: InitialRadius_L,
-        )
-            : GlassBall(
-          marbleURL: 'marble.png',
-          clothID : clothID.toDouble(),
-          clothURL: clothURL,
-          position : Vector2(initialPosition_X.toDouble(), 0),
-          // position: i%2 == 0
-          //     ? Vector2(-100, screenSize.y * 0.34)
-          //     : Vector2(screenSize.x + 100, screenSize.y * 0.34),
-          radius: InitailRadius_S,
-        );
-
-        await add(ball);
-
-        await ASYNC.Future.delayed(const Duration(milliseconds: 600)); // 공 생성 후 0.6초 지연
       }
-        await ASYNC.Future.delayed(const Duration(milliseconds: 1000)); // 공 생성 후 1초 지연
+      await ASYNC.Future.delayed(const Duration(milliseconds: 1300));
     }
-
-    isDropping = false; // 모든 공이 생성된 후 중단
   }
-  void startDroppingBalls() {
+
+  void startDroppingNewBalls() {
     if (!isDropping) {
       isDropping = true;
-      dropBalls();
+      dropNewBalls().then((_) {
+        isDropping = false;
+      });
     }
   }
+
+
 
   void stopDroppingBalls() {
     isDropping = false; // 구슬 떨어뜨리기 작업 중단
