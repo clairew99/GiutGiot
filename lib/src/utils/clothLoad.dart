@@ -15,6 +15,7 @@ class ClothLoad {
 
     var response = await apiService.fetchClothesByMemory(token);
     if (response != null) {
+      print('success! HomeClothPath!!');
       _storeClothPaths(response); // 전역 변수에 저장
     } else {
       print('Failed to get response');

@@ -165,7 +165,7 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
     double InitialRadius_L = 75;
     double InitailRadius_S = 60;
     double radiusIncrement = 10;
-    print (HomeClothPaths);
+    print ('myGame.dart :  $HomeClothPaths');
     for (var key in HomeClothPaths.keys) {
       var paths = HomeClothPaths[key];
       if (paths == null) {
