@@ -1,8 +1,8 @@
 class Config {
   // API 베이스 URL
   static const String baseUrl = 'https://i11a409.p.ssafy.io:8443';
-  static const String FlaskbaseUrl = 'http://127.0.0.1:5000';
-  // static const String FlaskbaseUrl = 'http://i11a409.p.ssafy.io:5000';
+  // static const String FlaskbaseUrl = 'http://127.0.0.1:5000';
+  static const String FlaskbaseUrl = 'http://i11a409.p.ssafy.io:5000';
   // 타임아웃 설정
   static const Duration connectTimeout = Duration(seconds: 10);
   static const Duration receiveTimeout = Duration(seconds: 10);
