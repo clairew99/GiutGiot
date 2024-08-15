@@ -113,9 +113,10 @@ ex: 나 오늘 빨간색 반팔 니트 입을래
 
 ## 프로젝트 설계
 
-Figma
+<b>Figma</b>
+<a href="https://www.figma.com/design/x5ofY06DF2N9mXaj9msi4C/%EC%84%9C%EC%9A%B8-4%EB%B0%98-9%EC%A1%B0-PJT?node-id=0-1&t=Eduh4cYxgUnjmdNU-0"><img src="./assets/figma.png" width="700" alt="figma"/></a><br>
 
-ERD
+<b>ERD</b><br>
 <a href="https://www.erdcloud.com/d/6Mdr9dTKsJc6Lijvw"><img src="./assets/ERD.png" width="700" alt="ERD"/></a><br>
 
 API 명세서
