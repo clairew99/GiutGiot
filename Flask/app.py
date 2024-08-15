@@ -14,7 +14,6 @@ import threading
 
 app = Flask(__name__)
 app.secret_key = Config.SECRETKEY
-app.access_token = Config.access_token
 
 # 세션 수명을 30분으로 설정
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
@@ -30,7 +29,10 @@ audio_files = []
 classifier = QuestionStatementClassifier()
 classifier.load_model('svc_model.pkl', 'tfidf_vectorizer.pkl')
 
-
+def get_access_token():
+    """Request headers에서 토큰을 받아오는 함수"""
+    access_token = request.headers.get('Authorization')
+    return access_token
 
 @app.route('/conversation', methods=['POST'])
 def conversation():
@@ -38,10 +40,8 @@ def conversation():
     text = request_data.get('text', '')
     text_type = classifier.predict(text)
     
-    # access_token을 request headers에서 가져옴
-    access_token = request.headers.get('Authorization')
-    if not access_token:
-        access_token = app.access_token
+    # access_token을 받아옴
+    access_token = get_access_token()
     
     print(f"Authorization header: {access_token}")
     print(f"text_type: {text_type}")
@@ -51,7 +51,7 @@ def conversation():
 
     features = extractor.extract_clothing_features(text)
     
-    # 기본값 설정
+        # 기본값 설정
     default_top = {
         "color": "WHITE",
         "type": "SHORT",
@@ -65,18 +65,23 @@ def conversation():
         "pattern": "SOLID"
     }
 
-    # 사용자가 상의를 말한 경우 기본값 할당, 없으면 처리하지 않음
+    # 사용자가 상의를 말한 경우, 추출된 키워드는 그대로 유지하고 누락된 값만 기본값으로 채움
     if 'top' in features:
-        top_features = {**default_top, **features['top']}  # 사용자가 말한 상의 정보에 기본값 적용
+        top_features = {key: features['top'].get(key, default_value) 
+                        for key, default_value in default_top.items()}
     else:
         top_features = None
 
-    # 사용자가 하의를 말한 경우 기본값 할당, 없으면 처리하지 않음
+    # 사용자가 하의를 말한 경우, 추출된 키워드는 그대로 유지하고 누락된 값만 기본값으로 채움
     if 'bottom' in features:
-        bottom_features = {**default_bottom, **features['bottom']}  # 사용자가 말한 하의 정보에 기본값 적용
+        print(features['bottom'])
+        bottom_features = {key: features['bottom'].get(key, default_value) 
+                        for key, default_value in default_bottom.items()}
     else:
         bottom_features = None
 
+
+        ''
     print(f"features: {features}")
     print(f"top_features: {top_features}")
     print(f"bottom_features: {bottom_features}")
@@ -108,15 +113,14 @@ def conversation():
 
     elif text_type == 'Question':
         # Question: 사용자가 조언을 묻는 경우
+        spring_url = "https://i11a409.p.ssafy.io:8443/clothes/check"
+        spring_headers = {
+            'Content-Type': 'application/json;charset=UTF-8',
+            'Authorization': access_token,
+        }
+
         if top_features:  # 상의 정보가 있는 경우
             session['top_features'] = top_features  # 세션에 상의 정보를 저장
-            
-            spring_url = "https://i11a409.p.ssafy.io:8443/clothes/check"
-            spring_headers = {
-                'Content-Type': 'application/json;charset=UTF-8',
-                'Authorization': access_token,
-            }
-
             spring_data_top = {
                 "isTop": True,
                 "color": top_features.get('color', ''),
@@ -125,7 +129,7 @@ def conversation():
                 "pattern": top_features.get('pattern', '')
             }
 
-            print("spring_data_top",spring_data_top)
+            print("spring_data_top", spring_data_top)
             try:
                 response = requests.post(spring_url, headers=spring_headers, json=spring_data_top)
                 response.raise_for_status()
@@ -141,21 +145,15 @@ def conversation():
                 return jsonify({
                     "type":"Question",
                     "message": "입어도 됩니다. 입으시겠어요?"
-                    })
+                })
             else:
                 return jsonify({
                     "type":"Question",
-                    "message": "다른 걸 입는 걸 추천드려요. 그래도 입으시겠어요?"})
+                    "message": "다른 걸 입는 걸 추천드려요. 그래도 입으시겠어요?"
+                })
 
         if bottom_features:  # 하의 정보가 있는 경우
             session['bottom_features'] = bottom_features  # 세션에 하의 정보를 저장
-            
-            spring_url = "https://i11a409.p.ssafy.io:8443/clothes/check"
-            spring_headers = {
-                'Content-Type': 'application/json;charset=UTF-8',
-                'Authorization': access_token,
-            }
-
             spring_data_bottom = {
                 "isTop": False,
                 "color": bottom_features.get('color', ''),
@@ -178,33 +176,26 @@ def conversation():
             if isAvailable:
                 return jsonify({
                     "type":"Question",
-                    "message": "입어도 됩니다. 입으시겠어요?"})
+                    "message": "입어도 됩니다. 입으시겠어요?"
+                })
             else:
                 return jsonify({
                     "type":"Question",
-                    "message": "다른 걸 입는 걸 추천드려요. 그래도 입으시겠어요?"})
+                    "message": "다른 걸 입는 걸 추천드려요. 그래도 입으시겠어요?"
+                })
 
     return jsonify({"error": "잘못된 요청입니다."}), 400
-
-
-
 
 @app.route('/response', methods=['POST'])
 def handle_response():
     data = request.json
     response = data.get('text', '')
     print(response)
-    access_token = request.headers.get('Authorization')
-    if not access_token:
-        access_token = app.access_token
     
-
+    access_token = get_access_token()
+    
     sentiment = predict_sentiment(response)
     print(f"Sentiment: {sentiment}")
-
-    # last_question = session.get('last_question')
-    # if not last_question:
-    #     return jsonify({'error': 'No question asked previously.'}), 400
 
     if sentiment == '긍정':
         if 'top_clothesId' in session and 'bottom_clothesId' not in session:
@@ -254,9 +245,6 @@ def handle_response():
 
     return jsonify({"message": "다른 옷을 추천합니다."})
 
-
-
-
 ## 화자분석
 @app.route('/pyannote', methods=['POST'])
 def pyannote():
@@ -297,7 +285,6 @@ def send_voice_data(voice_list, date):
         print(f"Voice data sent successfully for date: {date}")
     except requests.exceptions.RequestException as e:
         print(f"Error sending voice data: {str(e)}")
-
 
 
 def process_audio_files():
