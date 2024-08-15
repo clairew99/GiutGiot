@@ -31,9 +31,11 @@ class _PageSlideState extends State<PageSlide> {
   void initState() {
     super.initState();
     print('PageSLide()');
+    // 홈 화면 기억 관련 데이터 불러오기
     ClothLoad().testFetchClothesByMemory();
+    // 캘린더 화면 데이터 불러오기
     _fetchDailyCoordinate(DateTime.now());
-    // _checkSelectedDayClothes(DateTime.now()); // 초기 날짜로 데이터 확인
+
   }
 
   Future<void> _fetchDailyCoordinate(DateTime date) async {

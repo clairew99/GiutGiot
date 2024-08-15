@@ -114,6 +114,10 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
       await displayIntroBalls(); // intro 공을 비동기로 처리
     }
 
+    // 구슬을 생성하는 비동기 작업을 시작
+    startDroppingBalls();
+
+
   }
   // 설명 구슬 시간 차이 주기
   // 정진영 (24.08.15)
@@ -180,6 +184,7 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
           // InitailRadius_S +=  ((0.2 - field) / 0.2);
         }
 
+        // i++; // field 값을 읽은 후 인덱스 증가
 
         // GlowEffect를 정의합니다.
         final effect = GlowEffect(
@@ -201,7 +206,9 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
           clothID : clothID.toDouble(),
           clothURL: clothURL,
           position : Vector2(initialPosition_X.toDouble(), 0),
-
+          // position: i%2 == 0
+          //     ? Vector2(-100, screenSize.y * 0.34)
+          //     : Vector2(screenSize.x + 100, screenSize.y * 0.34),
           radius: InitailRadius_S,
         );
 
@@ -220,6 +227,9 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
       dropBalls();
     }
   }
+
+
+
 
   void stopDroppingBalls() {
     isDropping = false; // 구슬 떨어뜨리기 작업 중단
