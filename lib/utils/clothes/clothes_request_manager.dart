@@ -5,8 +5,15 @@ import 'package:GIUTGIOT/utils/clothes/dto/clothes_for_date.dart';
 import 'package:GIUTGIOT/utils/clothes/dto/request_cloth_dto.dart';
 import 'package:GIUTGIOT/utils/dio_singleton.dart';
 import 'package:dio/dio.dart';
+import '../../Dio/config.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../../../Dio/api_service.dart';
+
+
 
 Future<ClothesForMonth> getMonthlyClothes (DateTime date) async {
+  String? token = await AccessTokenManager.getAccessToken();
   Dio dio = DioSingleton().dio;
   // 임시로그인 설정
 
@@ -31,8 +38,37 @@ Future<void> saveTodayClothes (RequestTodayClothesDto dto) async {
 }
 
 
+// 9. 코디 일별 조회 API - GET
+Future<Map<String, dynamic>?> fetchDailyCoordinate(DateTime date, String token) async {
+  String year = date.year.toString() ;
+  String month = date.month.toString() ;
+  String day = date.day.toString();
+  String? token = await AccessTokenManager.getAccessToken();
+
+
+  final uri = Uri.parse('${Config.baseUrl}${Config.coordinateEndpoint}/daily?year=$year&month=$month&day=$day');
+
+  final response = await http.get(
+    uri,
+    headers: {
+      'Authorization': '$token',
+      'Content-Type': 'application/json',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body);
+  } else {
+    print('Failed to fetch daily coordinates: ${response.statusCode}');
+    return null;
+  }
+
+}
+
+
 // 선택한 날의 상의, 하의 정보를 받아오는 함수
 Future<ResponseSelectDayClothesDto> saveSelecteddayClothes (DateTime date) async {
+
   Dio dio = DioSingleton().dio;
 
   // URL에 날짜 정보를 year, month, day로 개별 쿼리 파라미터로 전송
