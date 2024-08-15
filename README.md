@@ -68,6 +68,7 @@
 ## 개발 환경
 
 ### System Architecture
+<img src="./assets/System_architecture.png" alt="architecture"/>
 
 
 <img src ="https://img.shields.io/badge/python-3776AB.svg?&style=for-the-badge&logo=python&logoColor=ffdd54"/> <img src ="https://img.shields.io/badge/PyTorch-EE4C2C.svg?&style=for-the-badge&logo=pytorch&logoColor=white"/> <img src ="https://img.shields.io/badge/Flask-000000.svg?&style=for-the-badge&logo=flask&logoColor=white"/> <img src ="https://img.shields.io/badge/Flutter-02569B.svg?&style=for-the-badge&logo=flutter&logoColor=white"/>
