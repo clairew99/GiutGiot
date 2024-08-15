@@ -28,7 +28,8 @@
 
 # 👕기능 소개
 1. 로그인
-
+<br>
+<img src="./assets/로그인인.gif" height="500" alt="home"/><br>
 - OAuth 를 활용한 Google, Naver, Kakao 로그인
 
 
