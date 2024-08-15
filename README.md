@@ -39,6 +39,7 @@
 <img src="./assets/설명화면__2_.gif" height="300" alt="tutorial2"/>
 <img src="./assets/설명화면__3_.gif" height="300" alt="tutorial3"/>
 <br>
+
 - 앱의 컨셉을 설명하는 튜토리얼 진행
 - 입었던 옷 기억도 조회
 - 아직 사람들의 기억에 남아있는 옷은 모래시계 상단, 잊혀진 옷은 모래시계 하단에 위치
