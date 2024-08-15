@@ -84,7 +84,7 @@ class AudioRecorder {
       });
 
       // 블루투스 스캔 시작
-      bluetoothScanner.startScanning();
+      await bluetoothScanner.startScanning();
 
       print('Recording and Bluetooth scanning started at ${DateTime.now()}');
       print('Audio file path: $_audioFilePath');
@@ -102,7 +102,7 @@ class AudioRecorder {
     print('-----------------------------------------------------------------');
     print('데시벨 측정중: ${decibels.toStringAsFixed(2)} dB');
 
-    if (decibels > 60) {  // 예시 임계값, 필요에 따라 조정
+    if (decibels > 50) {  // 예시 임계값, 필요에 따라 조정
       lastVoiceDetectedTime = DateTime.now();
       print('Voice detected at ${lastVoiceDetectedTime} (${decibels.toStringAsFixed(2)} dB)');
     } else {

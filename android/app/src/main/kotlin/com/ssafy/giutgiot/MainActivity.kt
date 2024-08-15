@@ -1,4 +1,4 @@
-package com.example.GIUTGIOT
+package com.ssafy.giutgiot
 
 import io.flutter.embedding.android.FlutterActivity
 

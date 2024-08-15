@@ -1,26 +1,16 @@
-import 'package:GIUTGIOT/Dio/api_service.dart';
-import 'package:GIUTGIOT/screen/s_PageSlide.dart';
 import 'package:GIUTGIOT/screen/s_splash.dart';
-import 'package:GIUTGIOT/src/utils/clothLoad.dart';
-import 'package:GIUTGIOT/storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
-import '../models/sensor_management.dart';
+import 'models/sensor_management.dart';
 import 'screen/s_setting.dart';
 import 'screen/s_voice_activation.dart';
-
+import 'screen/s_login.dart'; // 로그인 페이지 가져오기
+import 'screen/s_PageSlide.dart';
+import 'package:GIUTGIOT/Dio/access_token_manager.dart';
 import 'dart:async';
 import 'package:tflite_flutter/tflite_flutter.dart';
-import '../models/ml_model.dart';
-
-import '../Dio/access_token_manager.dart';
-import 'utils/clothes/controller/clothes_controller.dart';
-
-import 'package:GIUTGIOT/utils/clothes/clothes_request_manager.dart';
-import 'package:GIUTGIOT/utils/clothes/controller/clothes_controller.dart';
-
-
+import 'models/ml_model.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -32,14 +22,12 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   bool _isInitialized = false;
   Interpreter? _interpreter;
+  bool _isLoggedIn = false;
   bool _isLoading = true;
   int maxIndex = 0;
-  // 이전 maxIndex를 저장하기 위한 변수 추가 - 정진영 (24.08.09)
   int prevMaxIndex = -1;
   String activity = 'Unknown';
   final List<StreamSubscription<dynamic>> _streamSubscriptions = [];
-
-  bool _isfetched = false ;
 
   @override
   void initState() {
@@ -49,51 +37,28 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _initializeApp() async {
     try {
+      print('앱 초기화 시작');
       await _requestPermissions();
-      await setupSensorManagement();
-      await _initializeModelAndSensors();
-      // 토큰 가져오기 호출
-      await _fetchToken();
 
-      // _isIntialized 비활성화
-      // 정진영 (24.08.13)
+      print('로그인 상태 확인 중...');
+      _isLoggedIn = await AccessTokenManager.hasValidToken();
+      print('로그인 상태: $_isLoggedIn');
 
-      // setState(() {
-      //   _isInitialized = true;
-      // });
-    } catch (e) {
-      print('Error initializing app: $e');
-    }
-  }
+      if (_isLoggedIn) {
+        print('로그인됨, 센서 및 모델 초기화 시작');
+        await setupSensorManagement();
+        await _initializeModelAndSensors();
+      } else {
+        print('로그인되지 않음, 로그인 페이지 표시 예정');
+      }
 
-  // 토큰 가져오는 메서드 추가
-  Future<void> _fetchToken() async {
-    print('토큰 가져오는 중...'); // 로그 출력
-    bool success = await AccessTokenManager.fetchAndSaveToken();
-    // 토큰 여부 상관 없이 스플래쉬 화면 구현을 위한 setState()
-    // 정진영 (24.08.13)
-
-    setState(() {
-      _isfetched = true ;
-      print('check _isfetched ! ');
-    });
-
-
-    if (success) {
-      // 홈 화면 기억도 관련 옷 전체 가져오기
-
-      print('토큰 가져오기 성공'); // 토큰 가져오기 성공 로그
       setState(() {
-        _isfetched = true ;
+        _isInitialized = true;
       });
-      await ClothLoad().testFetchClothesByMemory();
-      print(HomeClothPaths);
-
-    } else {
-      print('토큰 가져오기 실패'); // 토큰 가져오기 실패 로그
+    } catch (e) {
+      print('앱 초기화 오류: $e');
     }
   }
-
 
   Future<void> _initializeModelAndSensors() async {
     try {
@@ -101,32 +66,29 @@ class _MyAppState extends State<MyApp> {
         _isLoading = true;
       });
 
-      print("Loading model...");
+      print("모델 로딩 중...");
       Interpreter interpreter = await loadModel('assets/model/posture_analysis.tflite');
-
-      print("Initializing sensors...");
-      initializeSensors(_streamSubscriptions, (accelerometerValues, gyroscopeValues, userAccelerometerValues) {
-        // 상태 갱신이 필요하지 않으므로 setState 호출 생략
-        // - 정진영 (24.08.08)
-      });
-
       setState(() {
         _interpreter = interpreter;
+        _isLoading = false;
+      });
+
+      print("센서 초기화 중...");
+      initializeSensors(_streamSubscriptions, (accelerometerValues, gyroscopeValues, userAccelerometerValues) {
+        // 상태 갱신이 필요하지 않으므로 setState 호출 생략
       });
 
       if (_interpreter != null) {
-        print("Starting movement detection...");
+        print("운동 감지 시작...");
         startMovementDetection(
           _interpreter!,
           predict,
               (int predictedMaxIndex) {
             if (predictedMaxIndex != prevMaxIndex) {
-              // maxIndex가 변경될 때만 setState 호출
-              // 정진영 (24.08.08)
               setState(() {
                 maxIndex = predictedMaxIndex;
                 activity = getActivityText(maxIndex);
-                prevMaxIndex = predictedMaxIndex; // prevMaxIndex 업데이트
+                prevMaxIndex = predictedMaxIndex;
               });
             }
           },
@@ -136,11 +98,9 @@ class _MyAppState extends State<MyApp> {
         );
       }
     } catch (e) {
-      print("Error loading model or initializing sensors: $e");
+      print("모델 또는 센서 초기화 중 오류 발생: $e");
     } finally {
-      print('initialization fished');
       setState(() {
-        _isInitialized = true;
         _isLoading = false;
       });
     }
@@ -170,22 +130,21 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_isInitialized || _isLoading || !_isfetched) {
-      return MaterialApp(
-        debugShowCheckedModeBanner: false,
 
+    // 스플래시 화면 적용
+    // 정진영 (24.08.15)
+    if (!_isInitialized) {
+      return GetMaterialApp(  // GetMaterialApp 사용
         home: Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
+          body: Center(child: SplashScreen()),
         ),
       );
     }
 
-    return GetMaterialApp(
+    return GetMaterialApp(  // GetMaterialApp 사용
       debugShowCheckedModeBanner: false,
       title: 'GIUT_GIOT',
-      home: PageSlide(),
+      home: _isLoggedIn ? PageSlide() : LoginPage(),
       routes: {
         '/settings': (context) => const SettingScreen(),
         '/voice_activation': (context) => VoiceActivationScreen(),
@@ -193,5 +152,3 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-
-

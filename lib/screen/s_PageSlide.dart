@@ -11,7 +11,6 @@ import '../widget/button/bt_voice.dart'; // VoiceIcon 임포트
 import '../widget/button/bt_motion.dart'; // 모션 버튼 임포트
 import '../utils/clothes/clothes_request_manager.dart';
 
-
 class PageSlide extends StatefulWidget {
   const PageSlide({super.key});
 
@@ -22,12 +21,12 @@ class PageSlide extends StatefulWidget {
 class _PageSlideState extends State<PageSlide> {
   final PageController _pageController = PageController(initialPage: 0);
   int currentPageIndex = 0;
-  bool showMotionButton = false; // Variable to control the visibility of MotionButton
+  bool showMotionButton = false; // 모션 버튼 표시 여부
 
   @override
   void initState() {
     super.initState();
-    _checkSelectedDayClothes(DateTime.now()); // Initial check with today's date or desired date
+    _checkSelectedDayClothes(DateTime.now()); // 초기 날짜로 데이터 확인
   }
 
   Future<void> _checkSelectedDayClothes(DateTime date) async {
@@ -35,22 +34,28 @@ class _PageSlideState extends State<PageSlide> {
       final response = await saveSelecteddayClothes(date);
       print('########### $response');
 
-      // Check if the response is null, indicating an error or no data
+      // 응답이 null인 경우, 즉 오류나 데이터가 없는 경우에 대한 처리
       setState(() {
-        showMotionButton == null; // Show MotionButton if no valid data
+        showMotionButton = response == null;
       });
     } catch (e) {
       setState(() {
-        showMotionButton = true; // Show MotionButton if an error occurs
+        showMotionButton = true; // 오류 발생 시 모션 버튼을 표시
       });
     }
   }
 
+  @override
+  void dispose() {
+    _pageController.dispose(); // PageController 해제
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Stack(children: [
+      body: Stack(
+        children: [
           PageView(
             controller: _pageController, // 페이지 컨트롤러 설정
             scrollDirection: Axis.vertical,
@@ -59,8 +64,7 @@ class _PageSlideState extends State<PageSlide> {
                 currentPageIndex = index;
               });
               if (index == 1) {
-                await _checkSelectedDayClothes(DateTime.now()); // Replace DateTime.now() with the selected date
-
+                await _checkSelectedDayClothes(DateTime.now()); // 선택된 날짜로 데이터 확인
               }
             },
             children: [
@@ -83,14 +87,15 @@ class _PageSlideState extends State<PageSlide> {
             },
           ),
           const VoiceIcon(),
-          // if (currentPageIndex == 1 ) // 조건에 따라 MotionButton 표시
-          if (currentPageIndex == 1 && showMotionButton) // 조건에 따라 MotionButton 표시
+          // 조건에 따라 MotionButton 표시
+          if (currentPageIndex == 1 && showMotionButton)
             Positioned(
               bottom: 20,
               right: 45,
               child: MotionButton(onSelectionComplete: () {}),
             ),
-        ]));
+        ],
+      ),
+    );
   }
 }
-

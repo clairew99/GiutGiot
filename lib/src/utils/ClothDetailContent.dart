@@ -84,22 +84,25 @@ class _ClothDetailContentState extends State<ClothDetailContent> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
-              mainAxisAlignment: MainAxisAlignment.center, // 수평 가운데 정렬
-              children: [
-                Text('${widget.data['color']}'),
-                SizedBox(width: 10), // 텍스트 사이의 간격 추가
-                Text('${widget.data['pattern']}'),
-              ]
-          ),
-          SizedBox(height: 4),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('${widget.data['type']}'),
-              SizedBox(width: 10), // 텍스트 사이의 간격 추가
-              Text('${widget.data['category']}')
-            ],
+          Column(
+            children: [Row(
+                mainAxisAlignment: MainAxisAlignment.center, // 수평 가운데 정렬
+                children: [
+                  Text('${widget.data['color']}'),
+                  SizedBox(width: 10), // 텍스트 사이의 간격 추가
+                  Text('${widget.data['pattern']}'),
+                ]
+              ),
+              SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('${widget.data['type']}'),
+                  SizedBox(width: 10), // 텍스트 사이의 간격 추가
+                  Text('${widget.data['category']}')
+                ],
+              ),
+            ]
           ),
           SizedBox(height: 16),
           Stack(
@@ -126,7 +129,6 @@ class _ClothDetailContentState extends State<ClothDetailContent> {
               Container(
                 child: Image.asset(
                   'assets/images/${widget.clothUrl}',
-                  fit: BoxFit.cover, // 이미지가 원형을 채우도록 설정
                   width: 100, // 이미지의 너비
                   height: 100, // 이미지의 높이
                 ),
@@ -134,21 +136,48 @@ class _ClothDetailContentState extends State<ClothDetailContent> {
             ],
           ),
           SizedBox(height: 16,),
-          Row(
+          Column(
             mainAxisAlignment: MainAxisAlignment.center, // 가운데 정렬
             children: [
-              Icon(
-                Icons.access_time, // 시계 아이콘
-                color: Colors.black, // 아이콘 색상
-                size: 24, // 아이콘 크기
-              ),
-              SizedBox(width: 8), // 아이콘과 텍스트 사이의 간격
               Text(
-                '${widget.data['leftTime']} hours',
+                widget.data['leftTime'] == 0
+                    ? '이 옷의 기억도는'
+                    : '이 옷은 잊혀지기까지',
                 style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  fontSize: 14,
+                ),
+              ),
+              SizedBox(height: 8), // 아이콘과 텍스트 사이의 간격
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.center, // 가운데 정렬
+                  children: [
+                    SizedBox(width: 10)
+                    ,Text(
+                      '${widget.data['leftTime']}시간',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                  SizedBox(width: 5), // 아이콘과 텍스트 사이의 간격
+                  Text(
+                    widget.data['leftTime'] != 0
+                        ? '남았습니다!'
+                        : '입니다!',
+                    style: TextStyle(
+                      fontSize: 14,
+                    ),
+                  ),]
+              ),
+
+              SizedBox(height: 8), // 아이콘과 텍스트 사이의 간격
+              Text(
+                widget.data['leftTime'] == 0
+                    ? '오늘 입어보시는 건 어떠세요?'
+                    : '',
+                style: TextStyle(
+                  fontSize: 14,
                 ),
               ),
             ],
@@ -228,7 +257,7 @@ class _ClothDetailContentState extends State<ClothDetailContent> {
         children: [
           Text(
             '$lastWorn',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
           Text(
@@ -243,7 +272,7 @@ class _ClothDetailContentState extends State<ClothDetailContent> {
           SizedBox(height: 16),
           Text(
             '$conversationMessage',
-            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 10),
           ),
         ],
       ),
@@ -275,11 +304,11 @@ class _ClothDetailContentState extends State<ClothDetailContent> {
         children: [
           Text(
             '$lastWorn',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
           Text(
-            'Walking',
+            'Walking Time',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 16),
@@ -289,8 +318,8 @@ class _ClothDetailContentState extends State<ClothDetailContent> {
           ),
           SizedBox(height: 16),
           Text(
-            '$walkingTime mins',
-            style: TextStyle(fontSize: 16),
+            '활동 시간은 $walkingTime 분 입니다!',
+            style: TextStyle(fontSize: 12),
           ),
         ],
       ),
@@ -303,33 +332,20 @@ class _ClothDetailContentState extends State<ClothDetailContent> {
     switch (level) {
       case "Low":
         images.add(
-            Image.asset('assets/icon/active.gif', width: 50, height: 50));
-        images.add(SizedBox(width: 10));
-        images.add(
-            Image.asset('assets/icon/static.png', width: 50, height: 50));
-        images.add(SizedBox(width: 10));
-        images.add(
-            Image.asset('assets/icon/static.png', width: 50, height: 50));
+            Image.asset('assets/icon/standing.gif', width: 150, height: 150));
+
         break;
       case "Medium":
         images.add(
-            Image.asset('assets/icon/active.gif', width: 50, height: 50));
-        images.add(
-            Image.asset('assets/icon/active.gif', width: 50, height: 50));
-        images.add(
-            Image.asset('assets/icon/static.png', width: 50, height: 50));
+            Image.asset('assets/icon/walking.gif',width: 150, height: 150));
         break;
       case "High":
         images.add(
-            Image.asset('assets/icon/active.gif', width: 50, height: 50));
-        images.add(
-            Image.asset('assets/icon/active.gif', width: 50, height: 50));
-        images.add(
-            Image.asset('assets/icon/active.gif', width: 50, height: 50));
+            Image.asset('assets/icon/running.gif', width: 150, height: 150));
         break;
       default:
         images.add(
-            Image.asset('assets/images/static.png', width: 50, height: 50));
+            Image.asset('assets/images/standing.png', width: 50, height: 50));
         break;
     }
     return images;
