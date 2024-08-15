@@ -92,7 +92,7 @@ def conversation():
 
     print(f"top_features: {top_features}")
     print(f"bottom_features: {bottom_features}")
-    print("---------------------")
+    print("-----------------------")
 
     user_id = request_data.get('user_id', 'default_user')  # 사용자별로 데이터를 관리하기 위한 user_id 설정
 
