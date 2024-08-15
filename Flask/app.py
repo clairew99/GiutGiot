@@ -12,6 +12,7 @@ import schedule
 import time
 import threading
 
+
 app = Flask(__name__)
 app.secret_key = Config.SECRETKEY
 
@@ -64,33 +65,59 @@ def conversation():
         "category": "SLACKS",
         "pattern": "SOLID"
     }
-
+    print(f"features: {features}")
     # 사용자가 상의를 말한 경우, 추출된 키워드는 그대로 유지하고 누락된 값만 기본값으로 채움
+    top_features = []
     if 'top' in features:
-        top_features = {key: features['top'].get(key, default_value) 
-                        for key, default_value in default_top.items()}
-    else:
-        top_features = None
+        cnt_top = 0
+        for key, value in features['top'].items():
+            print(f"Key: {key}, Value: {value}")
+            if value == None:
+                features['top'][key]=default_top[key]
+                print(default_top[key])
+                cnt_top += 1
+            if cnt_top == 4:
+                features['top'] = None
+        
+    
+        top_features = features['top']
 
     # 사용자가 하의를 말한 경우, 추출된 키워드는 그대로 유지하고 누락된 값만 기본값으로 채움
+    
+    bottom_features = []
     if 'bottom' in features:
-        print(features['bottom'])
-        bottom_features = {key: features['bottom'].get(key, default_value) 
-                        for key, default_value in default_bottom.items()}
-    else:
-        bottom_features = None
+        print("features1 : ", features['bottom'])
+        cnt_bottom = 0
+        for key, value in features['bottom'].items():
+            print(f"Key: {key}, Value: {value}")
+            if value == None:
+                features['bottom'][key]=default_bottom[key]
+                print(default_bottom[key])
+                cnt_bottom += 1
+            if cnt_bottom == 4:
+                features['bottom'] = None
+        
+    
+        bottom_features = features['bottom']
 
-
-        ''
-    print(f"features: {features}")
     print(f"top_features: {top_features}")
     print(f"bottom_features: {bottom_features}")
+    print("-------------------")
 
     if text_type == 'Statement':
         # Statement: 사용자가 특정 옷을 입겠다는 의지를 표현한 경우
         if top_features:  # 상의 정보가 있는 경우
             session['top_features'] = top_features  # 세션에 상의 정보를 저장
             session['top_clothesId'] = features.get('top', {}).get('clothesId', '')  # Spring에서 받아온 clothesId를 저장한다고 가정
+
+            if 'bottom_clothesId' in session:  # 상의 정보가 이미 있는 경우       
+                session.pop('top_clothesId', None)  # 세션에서 상의 정보 삭제
+                session.pop('bottom_clothesId', None)  # 세션에서 하의 정보 삭제
+                return jsonify({
+                    "type":"Statement",
+                    "message": "코디가 완료되었습니다. 저장합니다."
+                })
+            
             return jsonify({
                 "type":"Statement",
                 "message": "상의가 선택되었어요. 하의도 선택해주세요."
@@ -100,7 +127,9 @@ def conversation():
             session['bottom_features'] = bottom_features  # 세션에 하의 정보를 저장
             session['bottom_clothesId'] = features.get('bottom', {}).get('clothesId', '')  # Spring에서 받아온 clothesId를 저장한다고 가정
 
-            if 'top_clothesId' in session:  # 상의 정보가 이미 있는 경우
+            if 'top_clothesId' in session:  # 상의 정보가 이미 있는 경우       
+                session.pop('top_clothesId', None)  # 세션에서 상의 정보 삭제
+                session.pop('bottom_clothesId', None)  # 세션에서 하의 정보 삭제
                 return jsonify({
                     "type":"Statement",
                     "message": "코디가 완료되었습니다. 저장합니다."
@@ -131,7 +160,8 @@ def conversation():
 
             print("spring_data_top", spring_data_top)
             try:
-                response = requests.post(spring_url, headers=spring_headers, json=spring_data_top)
+                response = requests.post(spring_url, headers=spring_headers, json=spring_data_top, verify=False)
+                # response = requests.get('https://i11a409.p.ssafy.io:8443/clothes/check', verify=False)
                 response.raise_for_status()
                 spring_response_data = response.json()
             except requests.exceptions.RequestException as e:
@@ -163,7 +193,7 @@ def conversation():
             }
 
             try:
-                response = requests.post(spring_url, headers=spring_headers, json=spring_data_bottom)
+                response = requests.post(spring_url, headers=spring_headers, json=spring_data_bottom, verify=False)
                 response.raise_for_status()
                 spring_response_data = response.json()
             except requests.exceptions.RequestException as e:
@@ -228,7 +258,7 @@ def handle_response():
             }
 
             try:
-                response = requests.post(spring_url, headers=spring_headers, json=spring_data)
+                response = requests.post(spring_url, headers=spring_headers, json=spring_data, verify=False)
                 response.raise_for_status()
             except requests.exceptions.RequestException as e:
                 return jsonify({"error": str(e)}), 500
