@@ -37,12 +37,13 @@
 2. 메인 페이지 (모래시계)
 
 <img src="./assets/홈_화면.gif" height="500" alt="home"/>
-<img src="./assets/설명화면__1_.gif" height="500" alt="tutorial1"/>
-<img src="./assets/설명화면__2_.gif" height="500" alt="tutorial2"/>
-<img src="./assets/설명화면__3_.gif" height="500" alt="tutorial3"/>
+<img src="./assets/설명1.gif" height="500" alt="tutorial1"/>
+<img src="./assets/설명2.gif" height="500" alt="tutorial2"/>
+<img src="./assets/설명3.gif" height="500" alt="tutorial3"/>
 <br>
 
-- 앱의 컨셉을 설명하는 튜토리얼 진행
+- 메인 페이지 시작 시 기억도가 낮은 구슬부터 내려옴옴
+- 설명 구슬: 클릭 시 앱 동작 원리 설명명
 - 입었던 옷 기억도 조회
 - 아직 사람들의 기억에 남아있는 옷은 모래시계 상단, 잊혀진 옷은 모래시계 하단에 위치
 - 각 구슬 클릭 시 옷 정보 상세조회 가능
