@@ -48,8 +48,8 @@
 
 2-1. 메인 페이지 상세조회
 
-<img src="./assets/옷_직접등록.gif" height="500" alt="tutorial3"/>
-<br>
+
+
 - 각 구슬 클릭 시 옷 정보 상세조회 가능
 - 입었던 옷 기억도 조회
 
@@ -64,7 +64,8 @@
     - 서비스와의 대화를 통한 등록
     
     2) 직접 등록
-    
+
+    <img src="./assets/옷_직접등록.gif" height="500" alt="tutorial3"/><br>
     <img src="./assets/캘린더_등록.gif" height="500" alt="architecture"/><br>
     - 45일간의 데이터 중 겹치는 코디의 주기를 분석해 사용자의 빠른 선택 지원
     - 상/하의, 색, 옷 종류를 직접 선택해 등록
