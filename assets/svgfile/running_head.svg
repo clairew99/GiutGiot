@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 269.67 169.42">
-	<g id="a"/>
-	<g id="b" transform="translate(-50, 0) scale(1.5)">
-		<circle fill="#000000" cx="116.51" cy="52.83" r="10.91"/>
-	</g>
+<svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 189.1 154.43"><defs>
+	<style>.b{fill:#000000;}</style></defs>
+	<circle  fill="#000000" cx="94.55" cy="39.75" r="10.91" transform="translate(-3.46 9.51) rotate(-5.65)"/>
 </svg>

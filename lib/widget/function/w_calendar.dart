@@ -25,9 +25,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   DateTime? _highlightedDate; // 클릭 후 강조된 날짜
   final clothesController = Get.find<ClothesController>();
 
-  // ResponseSelectDayClothesDto? _selectedClothesData; // 선택한 날짜의 옷 데이터를 저장
-
-
   // 주어진 날짜 기준으로 2주간의 날짜 목록 생성
   List<DateTime> _getDatesForTwoWeeks(DateTime baseDate) {
     List<DateTime> dates = [];
@@ -45,8 +42,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       _selectedDate = _selectedDate.subtract(Duration(days: 14));
       clothesController.setBaseDate(_selectedDate);
     });
-    // 조회일자기준 중간일 기준으로 조회 - 해당일 전의 일요일에서부터, 선택한 일자의
-    // 일요일까지 조회하므로
     await clothesController.getCurrentClothes(
         _selectedDate.add(Duration(days: 7)));
   }
@@ -67,7 +62,10 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         date.month == _today.month &&
         date.day == _today.day;
 
-    bool isBeforeToday = date.isBefore(_today); // 오늘 이전의 날짜인지 확인
+    bool isHighlighted = _highlightedDate != null &&
+        _highlightedDate!.year == date.year &&
+        _highlightedDate!.month == date.month &&
+        _highlightedDate!.day == date.day;
 
     // 날짜를 클릭했을 때의 동작
     return GestureDetector(
@@ -78,13 +76,11 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         });
 
         // 선택한 날짜에 해당하는 옷 데이터를 서버에서 가져옴
-        final selectedClothes = await clothesController.getSelectDayClothes(
-            date);
+        final selectedClothes = await clothesController.getSelectDayClothes(date);
         print('클릭한 날짜의 데이터를 불러옴: $selectedClothes');
 
-
         // 1초 후에 강조된 상태 해제
-        Future.delayed(Duration(seconds: 1), () {
+        Future.delayed(Duration(milliseconds: 100), () {
           setState(() {
             _highlightedDate = null; // 클릭된 상태를 초기화
           });
@@ -94,22 +90,22 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // 원을 먼저 배치
-          if (isBeforeToday || isToday) // 오늘 또는 오늘 이전 날짜에만 원이 표시되도록 조건 추가
-            Positioned(
-              top: 35, // Y축을 조정하여 원의 위치를 조정
-              child: Container(
-                width: 50.0,
-                height: 50.0, // 원의 크기
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isToday
-                      ? Colors.purple[300]!.withOpacity(0.5)
-                      : Colors.white.withOpacity(0.4),
-
-                ),
+          // 모든 날짜에 대해 원을 표시
+          Positioned(
+            top: 35, // Y축을 조정하여 원의 위치를 조정
+            child: Container(
+              width: 50.0,
+              height: 50.0, // 원의 크기
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isToday
+                    ? Colors.purple[300]!.withOpacity(0.5)
+                    : isHighlighted
+                    ? Colors.grey.withOpacity(0.3) // 클릭 시 회색으로 강조
+                    : Colors.white.withOpacity(0.4), // 일반 상태
               ),
             ),
+          ),
           // ClothesCalendarWidget을 원 위에 배치
           Container(
             width: 40.0,
@@ -199,7 +195,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
           if (clothesController.selectedClothes.isEmpty) {
             return Center(
               child: Text(''),
-              // child: Text('선택된 데이터가 없습니다.'),
             );
           } else {
             final selectedClothes = clothesController.selectedClothes.first!;
@@ -210,4 +205,3 @@ class _CalendarWidgetState extends State<CalendarWidget> {
     );
   }
 }
-

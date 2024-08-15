@@ -32,6 +32,7 @@ class _PageSlideState extends State<PageSlide> {
   Future<void> _checkSelectedDayClothes(DateTime date) async {
     try {
       final response = await saveSelecteddayClothes(date);
+      print('########### $response');
 
       // 응답이 null인 경우, 즉 오류나 데이터가 없는 경우에 대한 처리
       setState(() {
