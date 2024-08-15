@@ -1,3 +1,4 @@
+import 'package:GIUTGIOT/src/utils/clothLoad.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
@@ -10,6 +11,8 @@ import '../widget/button/bt_slide.dart'; // SlideButton 임포트
 import '../widget/button/bt_voice.dart'; // VoiceIcon 임포트
 import '../widget/button/bt_motion.dart'; // 모션 버튼 임포트
 import '../utils/clothes/clothes_request_manager.dart';
+
+import 'package:GIUTGIOT/Dio/access_token_manager.dart';
 
 class PageSlide extends StatefulWidget {
   const PageSlide({super.key});
@@ -26,24 +29,47 @@ class _PageSlideState extends State<PageSlide> {
   @override
   void initState() {
     super.initState();
-    _checkSelectedDayClothes(DateTime.now()); // 초기 날짜로 데이터 확인
+    print('PageSLide()');
+    ClothLoad().testFetchClothesByMemory();
+    _fetchDailyCoordinate(DateTime.now());
+    // _checkSelectedDayClothes(DateTime.now()); // 초기 날짜로 데이터 확인
   }
 
-  Future<void> _checkSelectedDayClothes(DateTime date) async {
+  Future<void> _fetchDailyCoordinate(DateTime date) async {
     try {
-      final response = await saveSelecteddayClothes(date);
-      print('########### $response');
+      // 여기에 token을 가져오는 로직을 추가해야 할 수 있습니다.
+      String? token = await AccessTokenManager.getAccessToken();
+      final response = await fetchDailyCoordinate(date, token ?? "");
 
-      // 응답이 null인 경우, 즉 오류나 데이터가 없는 경우에 대한 처리
+      // 응답이 성공적이라면 showMotionButton 설정
       setState(() {
         showMotionButton = response == null;
       });
+      print('fetchDailyCoordinate successful: $response');
     } catch (e) {
+      print('fetchDailyCoordinate failed: $e');
       setState(() {
         showMotionButton = true; // 오류 발생 시 모션 버튼을 표시
       });
     }
   }
+
+    // Future<void> _checkSelectedDayClothes(DateTime date) async {
+  //   try {
+  //     final response = await saveSelecteddayClothes(date);
+  //     print('########### $response');
+  //
+  //     // 응답이 null인 경우, 즉 오류나 데이터가 없는 경우에 대한 처리
+  //     setState(() {
+  //       showMotionButton = response == null;
+  //     });
+  //   } catch (e) {
+  //     print('######## no response');
+  //     setState(() {
+  //       showMotionButton = true; // 오류 발생 시 모션 버튼을 표시
+  //     });
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -64,7 +90,8 @@ class _PageSlideState extends State<PageSlide> {
                 currentPageIndex = index;
               });
               if (index == 1) {
-                await _checkSelectedDayClothes(DateTime.now()); // 선택된 날짜로 데이터 확인
+                // await _checkSelectedDayClothes(DateTime.now()); // 선택된 날짜로 데이터 확인
+                await _fetchDailyCoordinate(DateTime.now()); // 선택된 날짜로 데이터 확인
               }
             },
             children: [
