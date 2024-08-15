@@ -36,7 +36,7 @@
 <img src="./assets/홈_화면.gif" alt="home"/>
 <img src="./assets/설명화면__1_.gif" alt="tutorial1"/>
 <img src="./assets/설명화면__2_.gif" alt="tutorial2"/>
-<img src="./assets/설명화면__3_.gif" alt="tutorial3"/>
+<img src="./assets/설명화면__3_.gif" alt="tutorial3"/><br>
 - 앱의 컨셉을 설명하는 튜토리얼 진행
 - 입었던 옷 기억도 조회
 - 아직 사람들의 기억에 남아있는 옷은 모래시계 상단, 잊혀진 옷은 모래시계 하단에 위치
@@ -44,18 +44,18 @@
 
 3. 코디 등록
     1) 음성으로 등록
-    <img src="./assets/음성등록.gif" alt="architecture"/>
+    <img src="./assets/음성등록.gif" alt="architecture"/><br>
     - 사용자는 음성을 통해 그날의 코디 등록 <br>
     ex: 나 오늘 빨간색 반팔 니트 입을래
     - 서비스와의 대화를 통한 등록
     
     2) 직접 등록
-    <img src="./assets/캘린더_등록.gif" alt="architecture"/>
+    <img src="./assets/캘린더_등록.gif" alt="architecture"/><br>
     - 45일간의 데이터 중 겹치는 코디의 주기를 분석해 사용자의 빠른 선택 지원
     - 상/하의, 색, 옷 종류를 직접 선택해 등록
 
 4. 코디 캘린더
-<img src="./assets/캘린더.gif" alt="architecture"/>
+<img src="./assets/캘린더.gif" alt="architecture"/><br>
 - 과거 2주일 간 코디 조회
 - 픽토그램으로 색 중심 코디 표현
 - 각 날짜의 픽토그램은 그날의 활동량에 따라 3가지 자세로 표현
