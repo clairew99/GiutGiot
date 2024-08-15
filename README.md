@@ -56,18 +56,18 @@
 
 
 ### 3. 코디 등록
-    1) 음성으로 등록
+1) 음성으로 등록
     
-    <img src="./assets/음성등록.gif" height="500" alt="architecture"/><br>
-    - 사용자는 음성을 통해 그날의 코디 등록 <br>
-    ex: 나 오늘 빨간색 반팔 니트 입을래
-    - 서비스와의 대화를 통한 등록
+<img src="./assets/음성등록.gif" height="500" alt="architecture"/><br>
+- 사용자는 음성을 통해 그날의 코디 등록 <br>
+ex: 나 오늘 빨간색 반팔 니트 입을래
+- 서비스와의 대화를 통한 등록
     
-    2) 직접 등록
+2) 직접 등록
 
-    <img src="./assets/옷_직접등록.gif" height="500" alt="tutorial3"/><br>
+<img src="./assets/옷_직접등록.gif" height="500" alt="tutorial3"/><br>
     
-    - 상/하의, 색, 옷 종류를 직접 선택해 등록
+- 상/하의, 색, 옷 종류를 직접 선택해 등록
 
 ### 4. 코디 캘린더
 <br><img src="./assets/캘린더.gif" height="500" alt="calendar"/><br>
