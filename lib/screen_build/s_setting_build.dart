@@ -130,17 +130,17 @@ class _SettingContentState extends State<SettingContent> {
                   //   title: Text('로그아웃', style: TextStyle(fontWeight: FontWeight.w500)),
                   //   onTap: () {},
                   // ),
-
-                  Divider(),
-                  ListTile(
-                    title: Text('API 테스트', style: TextStyle(fontWeight: FontWeight.w500)), // API 테스트 페이지로 이동
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ApiTestPage()),
-                      );
-                    },
-                  ),
+                  //
+                  // Divider(),
+                  // ListTile(
+                  //   title: Text('API 테스트', style: TextStyle(fontWeight: FontWeight.w500)), // API 테스트 페이지로 이동
+                  //   onTap: () {
+                  //     Navigator.push(
+                  //       context,
+                  //       MaterialPageRoute(builder: (context) => ApiTestPage()),
+                  //     );
+                  //   },
+                  // ),
                 ],
               ),
             ),

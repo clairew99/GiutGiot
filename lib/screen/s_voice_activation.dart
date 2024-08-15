@@ -109,8 +109,10 @@ class _VoiceActivationScreenState extends State<VoiceActivationScreen> {
 
       // 다음 요청이 /response로 가야 할 경우 URL을 변경
       final url = _sendToResponse
-          ? 'http://127.0.0.1:5000/response'
-          : 'http://127.0.0.1:5000/conversation';
+          // ? 'http://127.0.0.1:5000/response'
+          // : 'http://127.0.0.1:5000/conversation';
+          ? 'http://i11a409.p.ssafy.io:5000/response'
+          : 'http://i11a409.p.ssafy.io:5000/conversation';
 
       // 요청이 끝나면 다시 conversation으로 보내도록 플래그를 false로 리셋
       _sendToResponse = false;
