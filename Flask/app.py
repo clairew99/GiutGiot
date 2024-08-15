@@ -12,6 +12,7 @@ import schedule
 import time
 import threading
 
+
 app = Flask(__name__)
 app.secret_key = Config.SECRETKEY
 app.access_token = Config.access_token
@@ -64,22 +65,44 @@ def conversation():
         "category": "SLACKS",
         "pattern": "SOLID"
     }
-
-    # 사용자가 상의를 말한 경우 기본값 할당, 없으면 처리하지 않음
-    if 'top' in features:
-        top_features = {**default_top, **features['top']}  # 사용자가 말한 상의 정보에 기본값 적용
-    else:
-        top_features = None
-
-    # 사용자가 하의를 말한 경우 기본값 할당, 없으면 처리하지 않음
-    if 'bottom' in features:
-        bottom_features = {**default_bottom, **features['bottom']}  # 사용자가 말한 하의 정보에 기본값 적용
-    else:
-        bottom_features = None
-
     print(f"features: {features}")
+    # 사용자가 상의를 말한 경우, 추출된 키워드는 그대로 유지하고 누락된 값만 기본값으로 채움
+    top_features = []
+    if 'top' in features:
+        cnt_top = 0
+        for key, value in features['top'].items():
+            print(f"Key: {key}, Value: {value}")
+            if value == None:
+                features['top'][key]=default_top[key]
+                print(default_top[key])
+                cnt_top += 1
+            if cnt_top == 4:
+                features['top'] = None
+        
+    
+        top_features = features['top']
+
+    # 사용자가 하의를 말한 경우, 추출된 키워드는 그대로 유지하고 누락된 값만 기본값으로 채움
+    
+    bottom_features = []
+    if 'bottom' in features:
+        print("features1 : ", features['bottom'])
+        cnt_bottom = 0
+        for key, value in features['bottom'].items():
+            print(f"Key: {key}, Value: {value}")
+            if value == None:
+                features['bottom'][key]=default_bottom[key]
+                print(default_bottom[key])
+                cnt_bottom += 1
+            if cnt_bottom == 4:
+                features['bottom'] = None
+        
+    
+        bottom_features = features['bottom']
+
     print(f"top_features: {top_features}")
     print(f"bottom_features: {bottom_features}")
+    print("-------------------")
 
     if text_type == 'Statement':
         # Statement: 사용자가 특정 옷을 입겠다는 의지를 표현한 경우
@@ -138,7 +161,8 @@ def conversation():
 
             print("spring_data_top",spring_data_top)
             try:
-                response = requests.post(spring_url, headers=spring_headers, json=spring_data_top)
+                response = requests.post(spring_url, headers=spring_headers, json=spring_data_top, verify=False)
+                # response = requests.get('https://i11a409.p.ssafy.io:8443/clothes/check', verify=False)
                 response.raise_for_status()
                 spring_response_data = response.json()
             except requests.exceptions.RequestException as e:
@@ -176,7 +200,7 @@ def conversation():
             }
 
             try:
-                response = requests.post(spring_url, headers=spring_headers, json=spring_data_bottom)
+                response = requests.post(spring_url, headers=spring_headers, json=spring_data_bottom, verify=False)
                 response.raise_for_status()
                 spring_response_data = response.json()
             except requests.exceptions.RequestException as e:
@@ -248,7 +272,7 @@ def handle_response():
             }
 
             try:
-                response = requests.post(spring_url, headers=spring_headers, json=spring_data)
+                response = requests.post(spring_url, headers=spring_headers, json=spring_data, verify=False)
                 response.raise_for_status()
             except requests.exceptions.RequestException as e:
                 return jsonify({"error": str(e)}), 500

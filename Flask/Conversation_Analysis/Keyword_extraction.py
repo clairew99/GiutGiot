@@ -59,15 +59,15 @@ class ClothingFeatureExtractor:
         
         top_features = {
             'color': None,
-            'sleeve_type': None,
-            'top_type': None,
+            'type': None,
+            'category': None,
             'pattern': None
         }
         
         bottom_features = {
             'color': None,
-            'pants_type': None,
-            'bottom_type': None,
+            'type': None,
+            'category': None,
             'pattern': None
         }
         
@@ -96,10 +96,10 @@ class ClothingFeatureExtractor:
                 if current_part == 'top' or (current_part is None and is_top is None):
                     for sleeve_type, synonyms in sleeve_types.items():
                         if word in synonyms:
-                            top_features['sleeve_type'] = sleeve_type
+                            top_features['type'] = sleeve_type
                     for top_type, synonyms in top_types.items():
                         if word in synonyms:
-                            top_features['top_type'] = top_type
+                            top_features['category'] = top_type
                             if current_color:
                                 top_features['color'] = current_color
                                 current_color = None
@@ -107,13 +107,13 @@ class ClothingFeatureExtractor:
                 if current_part == 'bottom' or (current_part is None and is_top is None):
                     for pants_type, synonyms in pants_types.items():
                         if word in synonyms:
-                            bottom_features['pants_type'] = pants_type
+                            bottom_features['type'] = pants_type
                             if current_color:
                                 bottom_features['color'] = current_color
                                 current_color = None
                     for bottom_type, synonyms in bottom_types.items():
                         if word in synonyms:
-                            bottom_features['bottom_type'] = bottom_type
+                            bottom_features['category'] = bottom_type
                             if current_color:
                                 bottom_features['color'] = current_color
                                 current_color = None
