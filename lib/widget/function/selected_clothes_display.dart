@@ -9,7 +9,7 @@ class SelectedClothes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Transform.translate(
-      offset: Offset(20, 0), // 전체를 오른쪽으로 20만큼 이동
+      offset: Offset(30, 0), // 전체를 오른쪽으로 20만큼 이동
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center, // 세로로 중앙에 배치
         crossAxisAlignment: CrossAxisAlignment.center, // 가로로 중앙에 배치
@@ -24,10 +24,10 @@ class SelectedClothes extends StatelessWidget {
                 children: [
                   // 흰색 원을 먼저 배치하여 마블보다 뒤에 있도록 함
                   Transform.translate(
-                    offset: Offset(120, 0), // 원과 텍스트를 함께 이동
+                    offset: Offset(100, 0), // 원과 텍스트를 함께 이동
                     child: Container(
-                      width: 150, // 원의 크기
-                      height: 150,
+                      width: 120, // 원의 크기
+                      height: 120,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: Colors.white.withOpacity(0.9),
@@ -45,50 +45,50 @@ class SelectedClothes extends StatelessWidget {
                   // 마블 이미지
                   Image.asset(
                     'assets/icon/marble.png',
-                    width: 200,
-                    height: 200,
+                    width: 160,
+                    height: 160,
                   ),
                   // 상의 이미지
                   Image.asset(
                     'assets/images/clothes/TOP_${selectedClothes.topCategory}_${selectedClothes.topType}_${selectedClothes.topPattern}_${selectedClothes.topColor}.png',
-                    width: 100,
-                    height: 100,
+                    width: 80,
+                    height: 80,
                   ),
                   // 상의 상세 정보 텍스트
                   Transform.translate(
-                    offset: Offset(120, 0), // 텍스트를 흰색 원과 동일하게 이동
+                    offset: Offset(100, 0), // 텍스트를 흰색 원과 동일하게 이동
                     child: Column(
                       children: [
                         Text(
                           ' ${selectedClothes.topType}',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.bold,
-                            height: 1.7, // 줄 간격 설정
+                            height: 1.5, // 줄 간격 설정
                           ),
                         ),
                         Text(
                           ' ${selectedClothes.topCategory}',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.bold,
-                            height: 1.7,
+                            height: 1.5,
                           ),
                         ),
                         Text(
                           '${selectedClothes.topColor}',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.bold,
-                            height: 1.7,
+                            height: 1.5,
                           ),
                         ),
                         Text(
                           ' ${selectedClothes.topPattern}',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.bold,
-                            height: 1.7,
+                            height: 1.5,
                           ),
                         ),
                       ],
@@ -109,10 +109,10 @@ class SelectedClothes extends StatelessWidget {
                   children: [
                     // 흰색 원을 먼저 배치하여 마블보다 뒤에 있도록 함
                     Transform.translate(
-                      offset: Offset(120, 0), // 원과 텍스트를 함께 이동
+                      offset: Offset(100, 0), // 원과 텍스트를 함께 이동
                       child: Container(
-                        width: 150, // 원의 크기
-                        height: 150,
+                        width: 120, // 원의 크기
+                        height: 120,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.white.withOpacity(0.9),
@@ -130,50 +130,50 @@ class SelectedClothes extends StatelessWidget {
                     // 마블 이미지
                     Image.asset(
                       'assets/icon/marble.png',
-                      width: 200,
-                      height: 200,
+                      width: 160,
+                      height: 160,
                     ),
                     // 하의 이미지
                     Image.asset(
                       'assets/images/clothes/BOTTOM_${selectedClothes.bottomCategory}_${selectedClothes.bottomType}_${selectedClothes.bottomPattern}_${selectedClothes.bottomColor}.png',
-                      width: 100,
-                      height: 100,
+                      width: 80,
+                      height: 80,
                     ),
                     // 하의 상세 정보 텍스트
                     Transform.translate(
-                      offset: Offset(120, 0), // 텍스트를 흰색 원과 동일하게 이동
+                      offset: Offset(100, 0), // 텍스트를 흰색 원과 동일하게 이동
                       child: Column(
                         children: [
                           Text(
                             ' ${selectedClothes.bottomType}',
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.bold,
-                              height: 1.7,
+                              height: 1.5,
                             ),
                           ),
                           Text(
                             ' ${selectedClothes.bottomCategory}',
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.bold,
-                              height: 1.7,
+                              height: 1.5,
                             ),
                           ),
                           Text(
                             '${selectedClothes.bottomColor}',
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.bold,
-                              height: 1.7,
+                              height: 1.5,
                             ),
                           ),
                           Text(
                             ' ${selectedClothes.bottomPattern}',
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.bold,
-                              height: 1.7,
+                              height: 1.5,
                             ),
                           ),
                         ],
