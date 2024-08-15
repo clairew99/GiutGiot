@@ -157,7 +157,7 @@ class AudioRecorder {
 
         print('Attempting to send file: ${file.path}');
 
-        final request = http.MultipartRequest('POST', Uri.parse('http://127.0.0.1:5000/pyannote'));
+        final request = http.MultipartRequest('POST', Uri.parse('http://i11a409.p.ssafy.io:5000/pyannote'));
         request.files.add(await http.MultipartFile.fromPath(
           'audio',
           file.path,

@@ -21,32 +21,26 @@ class _ClothesCalendarWidgetState extends State<ClothesCalendarWidget> {
   Map<String, dynamic>? _clothes;
   final clothesController = Get.find<ClothesController>();
 
-  // 기존 json데이터 불러오기
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _clothesDataFuture = _loadClothesData();
-  //   _loadClothesForDate();
-  // }
-  //
-  // Future<Map<String, Map<String, dynamic>>> _loadClothesData() async {
-  //   final response = await rootBundle.loadString('assets/today_clothes.json');
-  //   List<Map<String, dynamic>> data = List<Map<String, dynamic>>.from(json.decode(response));
-  //   // final List<dynamic> jsonData = json.decode(response);
-  //   // print(response);
-  //   return {
-  //     for (var item in clothesController.currentClothes)
-  //     // for (var item in jsonData)
-  //       item!.date.toString(): {
-  //         'topColor': item.topColor,
-  //         'bottomColor': item.bottomColor,
-  //         'pose': item.pose,
-  //       }
-  //   };
-  // }
+  @override
+  void initState() {
+    super.initState();
+    // _clothesDataFuture 초기화
+    _clothesDataFuture = _loadClothesData();  // 이 부분을 추가합니다.
+    _loadClothesForDate();
+    print('##################');
+    print(clothesController.currentClothes);
+  }
+
+  Future<Map<String, Map<String, dynamic>>> _loadClothesData() async {
+    // 예시로 로컬 JSON 파일에서 데이터를 로드하는 방법입니다.
+    // 실제로는 원하는 데이터 소스에 맞게 수정하세요.
+    String jsonString = await rootBundle.loadString('assets/clothes_data.json');
+    Map<String, dynamic> jsonResponse = json.decode(jsonString);
+    return jsonResponse.map((key, value) => MapEntry(key, Map<String, dynamic>.from(value)));
+  }
 
   Future<void> _loadClothesForDate() async {
-    final data = await _clothesDataFuture;
+    final data = await _clothesDataFuture;  // 이 부분이 초기화되지 않으면 에러가 발생합니다.
     String dateString = DateFormat('yyyy-MM-dd').format(widget.date);
     String todayString = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
@@ -56,14 +50,12 @@ class _ClothesCalendarWidgetState extends State<ClothesCalendarWidget> {
 
     setState(() {
       if (dateString == todayString && topColor != null && bottomColor != null) {
-        // 오늘 날짜의 경우, SharedPreferences에 저장된 색상을 사용
         _clothes = {
           'topColor': topColor,
           'bottomColor': bottomColor,
-          'pose': 'SITTING', // 임의로 설정한 값
+          'pose': 'SITTING',
         };
       } else {
-        // 그 외의 날짜는 JSON 데이터를 사용
         _clothes = data[dateString];
       }
     });
@@ -75,26 +67,24 @@ class _ClothesCalendarWidgetState extends State<ClothesCalendarWidget> {
       String dateString = DateFormat('yyyy-MM-dd').format(widget.date);
       var clothes = clothesController.currentClothes.firstWhere(
             (item) => item?.date.toString() == dateString,
-        orElse: ()=> null,
+        orElse: () => null,
       );
 
       String dateText = DateFormat.d().format(widget.date);
       final now = DateTime.now();
       if (clothes != null) {
-        // print('check bottom ${clothes.bottomColor!}');
-        // print(_getColorCode(clothes.bottomColor!));
         return CustomClothesWidget(
           topColor: _getColorCode(clothes.topColor!),
           bottomColor: _getColorCode(clothes.bottomColor!),
           dateText: dateText,
-          pose: clothes.pose!, // 걷는 시간 데이터가 없다면 임의의 값 설정
+          pose: clothes.pose!,
         );
-      } else if(widget.date.year == now.year&& widget.date.month == now.month && widget.date.day == now.day && clothesController.selectedTopColor != "") {
+      } else if (widget.date.year == now.year && widget.date.month == now.month && widget.date.day == now.day && clothesController.selectedTopColor != "") {
         return CustomClothesWidget(
           topColor: _getColorCode(clothesController.selectedTopColor.value),
           bottomColor: _getColorCode(clothesController.selectedBottomColor.value),
           dateText: dateText,
-          pose: 'SITTING', // 걷는 시간 데이터가 없다면 임의의 값 설정
+          pose: 'SITTING',
         );
       } else {
         return Text(
@@ -108,47 +98,6 @@ class _ClothesCalendarWidgetState extends State<ClothesCalendarWidget> {
       }
     });
   }
-  // @override
-  // Widget build(BuildContext context) {
-  //   return FutureBuilder<Map<String, Map<String, dynamic>>>(
-  //     future: _clothesDataFuture,
-  //     builder: (context, snapshot) {
-  //       if (snapshot.connectionState == ConnectionState.waiting) {
-  //         return SizedBox.shrink();
-  //       } else if (snapshot.hasError) {
-  //         return Text('Error: ${snapshot.error}');
-  //       } else if (snapshot.hasData) {
-  //         String dateString = DateFormat('yyyy-MM-dd').format(widget.date);
-  //         Map<String, dynamic>? clothes = _clothes ?? snapshot.data?[dateString];
-  //
-  //         String dateText = DateFormat.d().format(widget.date);
-  //
-  //         if (clothes != null) {
-  //           return CustomClothesWidget(
-  //             topColor: _getColorCode(clothes['topColor']!),
-  //             bottomColor: _getColorCode(clothes['bottomColor']!),
-  //             dateText: dateText,
-  //             walkingTime: clothes['walkingTime']!,
-  //             onPress: _loadClothesData
-  //       );
-  //
-  //
-  //         } else {
-  //           return Text(
-  //             dateText,
-  //             style: TextStyle(
-  //               fontSize: 14,
-  //               color: Colors.black,
-  //               fontWeight: FontWeight.bold,
-  //             ),
-  //           );
-  //         }
-  //       } else {
-  //         return SizedBox.shrink();
-  //       }
-  //     },
-  //   );
-  // }
 
   String _getColorCode(String colorName) {
     switch (colorName.toUpperCase()) {
