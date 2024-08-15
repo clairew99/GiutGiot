@@ -27,14 +27,14 @@
 
 
 # 👕기능 소개
-1. 로그인
+### 1. 로그인
 
 <img src="./assets/로그인.gif" height="500" alt="home"/><br>
 
 - OAuth 를 활용한 Google, Naver, Kakao 로그인
 
 
-2. 메인 페이지 (모래시계)
+### 2. 메인 페이지 (모래시계)
 
 <img src="./assets/홈_화면.gif" height="500" alt="home"/>
 <img src="./assets/설명1.gif" height="500" alt="tutorial1"/>
@@ -46,7 +46,7 @@
 - 아직 사람들의 기억에 남아있는 옷은 모래시계 상단, 잊혀진 옷은 모래시계 하단에 위치
 - 설명 구슬: 클릭 시 앱 동작 원리 설명
 
-2-1. 메인 페이지 상세조회
+### 2-1. 메인 페이지 상세조회
 
 
 
@@ -55,7 +55,7 @@
 
 
 
-3. 코디 등록
+### 3. 코디 등록
     1) 음성으로 등록
     
     <img src="./assets/음성등록.gif" height="500" alt="architecture"/><br>
@@ -66,17 +66,16 @@
     2) 직접 등록
 
     <img src="./assets/옷_직접등록.gif" height="500" alt="tutorial3"/><br>
-    <img src="./assets/캘린더_등록.gif" height="500" alt="architecture"/><br>
-    - 45일간의 데이터 중 겹치는 코디의 주기를 분석해 사용자의 빠른 선택 지원
+    
     - 상/하의, 색, 옷 종류를 직접 선택해 등록
 
-4. 코디 캘린더
-<br><img src="./assets/캘린더.gif" height="500" alt="architecture"/><br>
+### 4. 코디 캘린더
+<br><img src="./assets/캘린더.gif" height="500" alt="calendar"/><br>
 - 과거 2주일 간 코디 조회
 - 픽토그램으로 색 중심 코디 표현
 - 각 날짜의 픽토그램은 그날의 활동량에 따라 3가지 자세로 표현
 
-5. 설정
+### 5. 설정
 - 음성 분석이 활성화 될 출퇴근 시간 수정
 - 회원정보(닉네임) 수정
 - 튜토리얼 다시보기 제공
