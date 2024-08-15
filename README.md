@@ -42,21 +42,30 @@
 <img src="./assets/설명3.gif" height="500" alt="tutorial3"/>
 <br>
 
-- 메인 페이지 시작 시 기억도가 낮은 구슬부터 내려옴옴
-- 설명 구슬: 클릭 시 앱 동작 원리 설명명
-- 입었던 옷 기억도 조회
+- 메인 페이지 시작 시 기억도가 낮은 구슬부터 내려옴
 - 아직 사람들의 기억에 남아있는 옷은 모래시계 상단, 잊혀진 옷은 모래시계 하단에 위치
+- 설명 구슬: 클릭 시 앱 동작 원리 설명
+
+2-1. 메인 페이지 상세조회
+
+<img src="./assets/옷_직접등록.gif" height="500" alt="tutorial3"/>
+<br>
 - 각 구슬 클릭 시 옷 정보 상세조회 가능
+- 입었던 옷 기억도 조회
+
+
 
 3. 코디 등록
     1) 음성으로 등록
-    <br><img src="./assets/음성등록.gif" height="500" alt="architecture"/><br>
+    
+    <img src="./assets/음성등록.gif" height="500" alt="architecture"/><br>
     - 사용자는 음성을 통해 그날의 코디 등록 <br>
     ex: 나 오늘 빨간색 반팔 니트 입을래
     - 서비스와의 대화를 통한 등록
     
     2) 직접 등록
-    <br><img src="./assets/캘린더_등록.gif" height="500" alt="architecture"/><br>
+    
+    <img src="./assets/캘린더_등록.gif" height="500" alt="architecture"/><br>
     - 45일간의 데이터 중 겹치는 코디의 주기를 분석해 사용자의 빠른 선택 지원
     - 상/하의, 색, 옷 종류를 직접 선택해 등록
 
