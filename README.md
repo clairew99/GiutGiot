@@ -28,13 +28,14 @@
 
 # 👕기능 소개
 1. 로그인
-<br>
+
 <img src="./assets/로그인.gif" height="500" alt="home"/><br>
+
 - OAuth 를 활용한 Google, Naver, Kakao 로그인
 
 
 2. 메인 페이지 (모래시계)
-<br>
+
 <img src="./assets/홈_화면.gif" height="500" alt="home"/>
 <img src="./assets/설명화면__1_.gif" height="500" alt="tutorial1"/>
 <img src="./assets/설명화면__2_.gif" height="500" alt="tutorial2"/>
