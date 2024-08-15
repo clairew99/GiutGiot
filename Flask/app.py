@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify
 from Conversation_Analysis.Keyword_extraction import ClothingFeatureExtractor
 from Speaker_Analysis.main import AudioProcessor
 from Conversation_Analysis.Interrogative_Plain_model import QuestionStatementClassifier
@@ -11,14 +11,14 @@ from pydub import AudioSegment
 import schedule
 import time
 import threading
+import redis
 
 
 app = Flask(__name__)
 app.secret_key = Config.SECRETKEY
-app.access_token = Config.access_token
 
-# 세션 수명을 30분으로 설정
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
+# Redis 설정
+rd = redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True)
 
 # ClothingFeatureExtractor 클래스의 인스턴스를 생성합니다.
 extractor = ClothingFeatureExtractor()
@@ -32,7 +32,6 @@ classifier = QuestionStatementClassifier()
 classifier.load_model('svc_model.pkl', 'tfidf_vectorizer.pkl')
 
 
-
 @app.route('/conversation', methods=['POST'])
 def conversation():
     request_data = request.get_json()
@@ -40,15 +39,10 @@ def conversation():
     text_type = classifier.predict(text)
     
     # access_token을 request headers에서 가져옴
-    access_token = request.headers.get('Authorization')
-    if not access_token:
-        access_token = app.access_token
+    access_token = request_data.get('token', '')
     
     print(f"Authorization header: {access_token}")
     print(f"text_type: {text_type}")
-
-    # 세션을 영구적으로 설정하여 30분간 유지
-    session.permanent = True
 
     features = extractor.extract_clothing_features(text)
     
@@ -66,84 +60,83 @@ def conversation():
         "pattern": "SOLID"
     }
     print(f"features: {features}")
-    # 사용자가 상의를 말한 경우, 추출된 키워드는 그대로 유지하고 누락된 값만 기본값으로 채움
+    
     top_features = []
     if 'top' in features:
         cnt_top = 0
         for key, value in features['top'].items():
             print(f"Key: {key}, Value: {value}")
-            if value == None:
-                features['top'][key]=default_top[key]
+            if value is None:
+                features['top'][key] = default_top[key]
                 print(default_top[key])
                 cnt_top += 1
             if cnt_top == 4:
                 features['top'] = None
         
-    
         top_features = features['top']
 
-    # 사용자가 하의를 말한 경우, 추출된 키워드는 그대로 유지하고 누락된 값만 기본값으로 채움
-    
     bottom_features = []
     if 'bottom' in features:
         print("features1 : ", features['bottom'])
         cnt_bottom = 0
         for key, value in features['bottom'].items():
             print(f"Key: {key}, Value: {value}")
-            if value == None:
-                features['bottom'][key]=default_bottom[key]
+            if value is None:
+                features['bottom'][key] = default_bottom[key]
                 print(default_bottom[key])
                 cnt_bottom += 1
             if cnt_bottom == 4:
                 features['bottom'] = None
         
-    
         bottom_features = features['bottom']
 
     print(f"top_features: {top_features}")
     print(f"bottom_features: {bottom_features}")
     print("-------------------")
 
+    user_id = request_data.get('user_id', 'default_user')  # 사용자별로 데이터를 관리하기 위한 user_id 설정
+
     if text_type == 'Statement':
         # Statement: 사용자가 특정 옷을 입겠다는 의지를 표현한 경우
         if top_features:  # 상의 정보가 있는 경우
-            session['top_features'] = top_features  # 세션에 상의 정보를 저장
-            session['top_clothesId'] = features.get('top', {}).get('clothesId', '')  # Spring에서 받아온 clothesId를 저장한다고 가정
+            for key, value in top_features.items():
+                rd.hset(f"{user_id}:top_features", key, value)  # Redis에 상의 정보를 저장
+            rd.set(f"{user_id}:top_clothesId", features.get('top', {}).get('clothesId', ''))
 
-            if 'bottom_clothesId' in session:  # 상의 정보가 이미 있는 경우       
-                session.pop('top_clothesId', None)  # 세션에서 상의 정보 삭제
-                session.pop('bottom_clothesId', None)  # 세션에서 하의 정보 삭제
+            if rd.exists(f"{user_id}:bottom_clothesId"):  # 하의 정보가 이미 있는 경우
+                rd.delete(f"{user_id}:top_clothesId", f"{user_id}:bottom_clothesId")  # Redis에서 상의 및 하의 정보 삭제
                 return jsonify({
-                    "type":"Statement",
+                    "type": "Statement",
                     "message": "코디가 완료되었습니다. 저장합니다."
                 })
             
             return jsonify({
-                "type":"Statement",
+                "type": "Statement",
                 "message": "상의가 선택되었어요. 하의도 선택해주세요."
             })
 
         elif bottom_features:  # 하의 정보가 있는 경우
-            session['bottom_features'] = bottom_features  # 세션에 하의 정보를 저장
-            session['bottom_clothesId'] = features.get('bottom', {}).get('clothesId', '')  # Spring에서 받아온 clothesId를 저장한다고 가정
+            for key, value in bottom_features.items():
+                rd.hset(f"{user_id}:bottom_features", key, value)  # Redis에 하의 정보를 저장
+            rd.set(f"{user_id}:bottom_clothesId", features.get('bottom', {}).get('clothesId', ''))
 
-            if 'top_clothesId' in session:  # 상의 정보가 이미 있는 경우       
-                session.pop('top_clothesId', None)  # 세션에서 상의 정보 삭제
-                session.pop('bottom_clothesId', None)  # 세션에서 하의 정보 삭제
+            if rd.exists(f"{user_id}:top_clothesId"):  # 상의 정보가 이미 있는 경우
+                rd.delete(f"{user_id}:top_clothesId", f"{user_id}:bottom_clothesId")  # Redis에서 상의 및 하의 정보 삭제
                 return jsonify({
-                    "type":"Statement",
+                    "type": "Statement",
                     "message": "코디가 완료되었습니다. 저장합니다."
                 })
             else:
                 return jsonify({
-                    "type":"Statement",
+                    "type": "Statement",
                     "message": "하의가 선택되었어요. 상의도 선택해주세요."
                 })
 
     elif text_type == 'Question':
         # Question: 사용자가 조언을 묻는 경우
         if top_features:  # 상의 정보가 있는 경우
-            session['top_features'] = top_features  # 세션에 상의 정보를 저장
+            for key, value in top_features.items():
+                rd.hset(f"{user_id}:top_features", key, value)  # Redis에 상의 정보를 저장
             
             spring_url = "https://i11a409.p.ssafy.io:8443/clothes/check"
             spring_headers = {
@@ -159,10 +152,9 @@ def conversation():
                 "pattern": top_features.get('pattern', '')
             }
 
-            print("spring_data_top",spring_data_top)
+            print("spring_data_top", spring_data_top)
             try:
                 response = requests.post(spring_url, headers=spring_headers, json=spring_data_top, verify=False)
-                # response = requests.get('https://i11a409.p.ssafy.io:8443/clothes/check', verify=False)
                 response.raise_for_status()
                 spring_response_data = response.json()
             except requests.exceptions.RequestException as e:
@@ -170,20 +162,22 @@ def conversation():
             
             # Spring에서 받아온 응답에 따라 처리
             isAvailable = spring_response_data.get('isAvailable', False)
-            session['top_clothesId'] = spring_response_data.get('clothesId', '')
+            rd.set(f"{user_id}:top_clothesId", spring_response_data.get('clothesId', ''))
 
             if isAvailable:
                 return jsonify({
-                    "type":"Question",
+                    "type": "Question",
                     "message": "입어도 됩니다. 입으시겠어요?"
-                    })
+                })
             else:
                 return jsonify({
-                    "type":"Question",
-                    "message": "다른 걸 입는 걸 추천드려요. 그래도 입으시겠어요?"})
+                    "type": "Question",
+                    "message": "다른 걸 입는 걸 추천드려요. 그래도 입으시겠어요?"
+                })
 
         if bottom_features:  # 하의 정보가 있는 경우
-            session['bottom_features'] = bottom_features  # 세션에 하의 정보를 저장
+            for key, value in bottom_features.items():
+                rd.hset(f"{user_id}:bottom_features", key, value)  # Redis에 하의 정보를 저장
             
             spring_url = "https://i11a409.p.ssafy.io:8443/clothes/check"
             spring_headers = {
@@ -208,20 +202,20 @@ def conversation():
             
             # Spring에서 받아온 응답에 따라 처리
             isAvailable = spring_response_data.get('isAvailable', False)
-            session['bottom_clothesId'] = spring_response_data.get('clothesId', '')
+            rd.set(f"{user_id}:bottom_clothesId", spring_response_data.get('clothesId', ''))
 
             if isAvailable:
                 return jsonify({
-                    "type":"Question",
-                    "message": "입어도 됩니다. 입으시겠어요?"})
+                    "type": "Question",
+                    "message": "입어도 됩니다. 입으시겠어요?"
+                })
             else:
                 return jsonify({
-                    "type":"Question",
-                    "message": "다른 걸 입는 걸 추천드려요. 그래도 입으시겠어요?"})
+                    "type": "Question",
+                    "message": "다른 걸 입는 걸 추천드려요. 그래도 입으시겠어요?"
+                })
 
     return jsonify({"error": "잘못된 요청입니다."}), 400
-
-
 
 
 @app.route('/response', methods=['POST'])
@@ -229,33 +223,28 @@ def handle_response():
     data = request.json
     response = data.get('text', '')
     print(response)
-    access_token = request.headers.get('Authorization')
-    if not access_token:
-        access_token = app.access_token
-    
+    access_token = data.get('token', '')
 
+    
     sentiment = predict_sentiment(response)
     print(f"Sentiment: {sentiment}")
 
-    # last_question = session.get('last_question')
-    # if not last_question:
-    #     return jsonify({'error': 'No question asked previously.'}), 400
+    user_id = data.get('user_id', 'default_user')
 
     if sentiment == '긍정':
-        if 'top_clothesId' in session and 'bottom_clothesId' not in session:
+        if rd.exists(f"{user_id}:top_clothesId") and not rd.exists(f"{user_id}:bottom_clothesId"):
             return jsonify({
                 "message": "상의가 선택되었어요. 하의도 선택해주세요."
             })
 
-        elif 'top_clothesId' not in session and 'bottom_clothesId' in session:
+        elif not rd.exists(f"{user_id}:top_clothesId") and rd.exists(f"{user_id}:bottom_clothesId"):
             return jsonify({
                 "message": "하의가 선택되었어요. 상의도 선택해주세요."
             })
 
-        elif 'top_clothesId' in session and 'bottom_clothesId' in session:
-            print(session)
-            topId = session['top_clothesId']
-            bottomId = session['bottom_clothesId']
+        elif rd.exists(f"{user_id}:top_clothesId") and rd.exists(f"{user_id}:bottom_clothesId"):
+            topId = rd.get(f"{user_id}:top_clothesId")
+            bottomId = rd.get(f"{user_id}:bottom_clothesId")
             date = datetime.now().strftime("%Y-%m-%d")
 
             spring_data = {
@@ -277,26 +266,28 @@ def handle_response():
             except requests.exceptions.RequestException as e:
                 return jsonify({"error": str(e)}), 500
             
-            session.pop('top_clothesId', None)  # 세션에서 상의 정보 삭제
-            session.pop('bottom_clothesId', None)  # 세션에서 하의 정보 삭제
+            rd.delete(f"{user_id}:top_clothesId", f"{user_id}:bottom_clothesId")  # Redis에서 상의 및 하의 정보 삭제
 
             return jsonify({"message": "코디가 저장되었습니다."})
 
     elif sentiment == '부정':
-        session.pop('top_clothesId', None)
-        session.pop('bottom_clothesId', None)
+        rd.delete(f"{user_id}:top_clothesId", f"{user_id}:bottom_clothesId")
         return jsonify({"message": "상의와 하의 정보가 초기화되었습니다. 새로운 옷을 선택해주세요."})
 
     return jsonify({"message": "다른 옷을 추천합니다."})
 
 
-
-
 ## 화자분석
+# 전역 변수 선언
+access_token = ""
+
 @app.route('/pyannote', methods=['POST'])
 def pyannote():
     global audio_files  # 전역 변수 사용 선언
+    global access_token  # 토큰 값을 저장할 전역 변수 사용 선언
 
+    data = request.json
+    access_token = data.get('token', '')  # 토큰 값을 전역 변수에 저장
     print(request.files)
     if 'audio' not in request.files:
         return jsonify({"error": "파일이 필요합니다."}), 400
@@ -316,11 +307,12 @@ def pyannote():
     return jsonify({"message": "음성 파일이 저장되었습니다."})
 
 
-def send_voice_data(voice_list, date):
+
+def send_voice_data(voice_list, date,access_token):
     url = "https://i11a409.p.ssafy.io:8443/voice"
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': app.access_token,
+        'Authorization': access_token,
     }
     data = {
         "voiceList": voice_list,
@@ -337,6 +329,7 @@ def send_voice_data(voice_list, date):
 
 def process_audio_files():
     global audio_files  # 전역 변수 사용 선언
+    global access_token  # 전역 변수 사용 선언
 
     if audio_files:
         combined_audio = AudioSegment.empty()
@@ -356,7 +349,7 @@ def process_audio_files():
         # 결과를 /voice 엔드포인트로 전송
         voice_list = result  # 여기서 result는 대화 시간 리스트라고 가정합니다
         date = datetime.now().strftime("%Y-%m-%d")
-        send_voice_data(voice_list, date)
+        send_voice_data(voice_list, date, access_token)  # 전역 변수에 저장된 토큰 값 사용
         
         # 처리 후 파일 삭제
         for file in audio_files:
@@ -370,6 +363,7 @@ def process_audio_files():
 
         # 합친 파일도 삭제
         os.remove(combined_filepath)
+
 
 # 스케줄 설정: 매일 오후 11시에 파일 처리
 schedule.every().day.at("23:00").do(process_audio_files)
