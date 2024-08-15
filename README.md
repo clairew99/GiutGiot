@@ -116,6 +116,7 @@ ex: 나 오늘 빨간색 반팔 니트 입을래
 Figma
 
 ERD
+<a href="https://www.erdcloud.com/d/6Mdr9dTKsJc6Lijvw"><img src="./assets/ERD.gif" alt="home"/></a><br>
 
 API 명세서
 
