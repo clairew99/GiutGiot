@@ -33,13 +33,15 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _initializeApp();
+    _initializeModelAndSensors();
   }
 
   Future<void> _initializeApp() async {
     try {
       print('앱 초기화 시작');
       await _requestPermissions();
-
+      // 센서 녹음 초기화
+      await setupSensorManagement();
       print('로그인 상태 확인 중...');
       _isLoggedIn = await AccessTokenManager.hasValidToken();
       print('로그인 상태: $_isLoggedIn');

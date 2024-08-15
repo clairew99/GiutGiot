@@ -102,6 +102,10 @@ void addToSensorData() {
 
 // 움직임 감지 및 녹음 시작
 void startMovementDetection(Interpreter interpreter, Function(List<List<double>>, Interpreter, int, Function(int, int)) predict, Function(int) onPrediction, Function onUpdate) {
+  if (!recorder.isInitialized) {
+    initialize();
+  }
+
   List<int> predictionHistory = [];
   MovementDurationTracker durationTracker = MovementDurationTracker();
 
