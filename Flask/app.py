@@ -18,7 +18,7 @@ app = Flask(__name__)
 app.secret_key = Config.SECRETKEY
 
 # Redis 설정
-rd = redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True)
+rd = redis.StrictRedis(host='43.203.122.185', port=6379, db=0, decode_responses=True)
 
 # ClothingFeatureExtractor 클래스의 인스턴스를 생성합니다.
 extractor = ClothingFeatureExtractor()
