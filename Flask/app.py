@@ -290,15 +290,15 @@ def pyannote():
     global audio_files  # 전역 변수 사용 선언
     global access_token  # 토큰 값을 저장할 전역 변수 사용 선언
 
-    data = request.json
-    access_token = data.get('token', '')  # 토큰 값을 전역 변수에 저장
-    print(request.files)
     if 'audio' not in request.files:
         return jsonify({"error": "파일이 필요합니다."}), 400
     
     file = request.files['audio']
     if file.filename == '':
         return jsonify({"error": "파일이 필요합니다."}), 400
+    
+    access_token = request.form.get('token', '')  # 폼 데이터에서 토큰 추출
+    print(f"Received access token: {access_token}")
     
     # 파일을 고유한 이름으로 저장
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
