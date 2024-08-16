@@ -20,7 +20,7 @@ void main() async {
 
   // 디버그 모드에서 토큰을 초기화
   if (kDebugMode) {
-    await AccessTokenManager.deleteTokens();  // clearTokens 대신 deleteTokens 메서드를 사용합니다.
+    //await AccessTokenManager.deleteTokens();  // clearTokens 대신 deleteTokens 메서드를 사용합니다.
   }
 
   runApp(MyApp());

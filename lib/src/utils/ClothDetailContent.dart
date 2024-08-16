@@ -292,7 +292,7 @@ class _ClothDetailContentState extends State<ClothDetailContent> {
 
 
   Widget _buildThirdCard() {
-    final int walkingTime = widget.data['walkingTime'] ?? 0;
+    final int walkingTime = (widget.data['walkingTime'] ?? 0) ~/ 60000;
     final String walkingLevel = getWalkingLevel(walkingTime);
     final String lastWorn = widget.data['lastWorn'] ?? 'Unknown';
 

@@ -104,9 +104,6 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
     spawnSmallBalls();
 
 
-    // 구슬을 생성하는 비동기 작업을 시작
-    startDroppingBalls();
-
     // intro 출력 구현중
     // 정진영 (24.08.13)
     bool shouldShowIntro = HomeClothPaths['forgotten']!.length + HomeClothPaths['remembered']!.length < 5;
@@ -117,6 +114,9 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
     // 구슬을 생성하는 비동기 작업을 시작
     startDroppingBalls();
 
+
+    // 구슬을 생성하는 비동기 작업을 시작
+    // await dropNewBalls();
 
   }
   // 설명 구슬 시간 차이 주기
@@ -154,7 +154,6 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
       await ASYNC.Future.delayed(const Duration(milliseconds: 1000)); // 공 생성 후 0.6초 지연
     }
   }
-
 
   Future<void> dropBalls() async {
     double InitialRadius_L = 80;
@@ -227,8 +226,6 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
       dropBalls();
     }
   }
-
-
 
 
   void stopDroppingBalls() {
