@@ -118,6 +118,9 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
     startDroppingBalls();
 
 
+    // 구슬을 생성하는 비동기 작업을 시작
+    // await dropNewBalls();
+
   }
   // 설명 구슬 시간 차이 주기
   // 정진영 (24.08.15)
@@ -154,6 +157,154 @@ class MyGame extends Forge2DGame with HasCollisionDetection {
       await ASYNC.Future.delayed(const Duration(milliseconds: 1000)); // 공 생성 후 0.6초 지연
     }
   }
+
+  Future<void> dropBalls() async {
+    double InitialRadius_L = 80;
+    double InitailRadius_S = 60;
+    double radiusIncrement = 10;
+    for (var key in HomeClothPaths.keys) {
+      if (!isDropping) break; // isDropping이 false이면 루프 중단
+
+      var paths = HomeClothPaths[key];
+      if (paths == null) {
+        isDropping = false; // paths가 null인 경우 중단
+        break;
+      }
+
+      for (var i = 0; i < paths.length ; i++) {
+        if (!isDropping) break; // isDropping이 false이면 루프 중단
+        int clothID = paths[i][0] ;
+        double memory = paths[i][1] ;
+        String clothURL = paths[i][2] ;
+
+        // int initialPosition_X = Random().nextInt(screenSize.x.toInt());
+        int initialPosition_X = (screenSize.x / 2).toInt() -30+ Random().nextInt(50);
+        // 메모리 field 값 기준으로 사이즈 조정
+        if (memory >= 0.2) {
+          InitialRadius_L += radiusIncrement * ((memory - 0.2) / 0.8);
+        } else {
+          // InitailRadius_S +=  ((0.2 - field) / 0.2);
+        }
+
+        // i++; // field 값을 읽은 후 인덱스 증가
+
+        // GlowEffect를 정의합니다.
+        final effect = GlowEffect(
+          10.0, // Glow intensity
+          EffectController(duration: 3), // 효과의 지속 시간
+        );
+
+
+        final ball = key == 'remembered'
+            ? GlassBall(
+          marbleURL: 'marble.png',
+          clothID : clothID.toDouble(),
+          clothURL: clothURL,
+          position: Vector2( screenSize.x/2, 0),
+          radius: InitialRadius_L,
+        )
+            : GlassBall(
+          marbleURL: 'marble.png',
+          clothID : clothID.toDouble(),
+          clothURL: clothURL,
+          position : Vector2(initialPosition_X.toDouble(), 0),
+          // position: i%2 == 0
+          //     ? Vector2(-100, screenSize.y * 0.34)
+          //     : Vector2(screenSize.x + 100, screenSize.y * 0.34),
+          radius: InitailRadius_S,
+        );
+
+        await add(ball);
+
+        await ASYNC.Future.delayed(const Duration(milliseconds: 600)); // 공 생성 후 0.6초 지연
+      }
+      await ASYNC.Future.delayed(const Duration(milliseconds: 1000)); // 공 생성 후 1초 지연
+    }
+
+    isDropping = false; // 모든 공이 생성된 후 중단
+  }
+  void startDroppingBalls() {
+    if (!isDropping) {
+      isDropping = true;
+      dropBalls();
+    }
+  }
+
+
+
+
+  // Future<void> dropBalls() async {
+  //   double InitialRadius_L = 80;
+  //   double InitailRadius_S = 60;
+  //   double radiusIncrement = 10;
+  //   for (var key in HomeClothPaths.keys) {
+  //     if (!isDropping) break; // isDropping이 false이면 루프 중단
+  //
+  //     var paths = HomeClothPaths[key];
+  //     if (paths == null) {
+  //       isDropping = false; // paths가 null인 경우 중단
+  //       break;
+  //     }
+  //
+  //     for (var i = 0; i < paths.length ; i++) {
+  //       if (!isDropping) break; // isDropping이 false이면 루프 중단
+  //       int clothID = paths[i][0] ;
+  //       double memory = paths[i][1] ;
+  //       String clothURL = paths[i][2] ;
+  //
+  //       // int initialPosition_X = Random().nextInt(screenSize.x.toInt());
+  //       int initialPosition_X = (screenSize.x / 2).toInt() -30+ Random().nextInt(50);
+  //       // 메모리 field 값 기준으로 사이즈 조정
+  //       if (memory >= 0.2) {
+  //         InitialRadius_L += radiusIncrement * ((memory - 0.2) / 0.8);
+  //       } else {
+  //         // InitailRadius_S +=  ((0.2 - field) / 0.2);
+  //       }
+  //
+  //       // i++; // field 값을 읽은 후 인덱스 증가
+  //
+  //       // GlowEffect를 정의합니다.
+  //       final effect = GlowEffect(
+  //         10.0, // Glow intensity
+  //         EffectController(duration: 3), // 효과의 지속 시간
+  //       );
+  //
+  //
+  //       final ball = key == 'remembered'
+  //           ? GlassBall(
+  //         marbleURL: 'marble.png',
+  //         clothID : clothID.toDouble(),
+  //         clothURL: clothURL,
+  //         position: Vector2( screenSize.x/2, 0),
+  //         radius: InitialRadius_L,
+  //       )
+  //           : GlassBall(
+  //         marbleURL: 'marble.png',
+  //         clothID : clothID.toDouble(),
+  //         clothURL: clothURL,
+  //         position : Vector2(initialPosition_X.toDouble(), 0),
+  //         // position: i%2 == 0
+  //         //     ? Vector2(-100, screenSize.y * 0.34)
+  //         //     : Vector2(screenSize.x + 100, screenSize.y * 0.34),
+  //         radius: InitailRadius_S,
+  //       );
+  //
+  //       await add(ball);
+  //
+  //       await ASYNC.Future.delayed(const Duration(milliseconds: 600)); // 공 생성 후 0.6초 지연
+  //     }
+  //     await ASYNC.Future.delayed(const Duration(milliseconds: 1000)); // 공 생성 후 1초 지연
+  //   }
+  //
+  //   isDropping = false; // 모든 공이 생성된 후 중단
+  // }
+  // void startDroppingBalls() {
+  //   if (!isDropping) {
+  //     isDropping = true;
+  //     dropBalls();
+  //   }
+  // }
+
 
 
   Future<void> dropBalls() async {
