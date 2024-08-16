@@ -45,10 +45,9 @@
 - 아직 사람들의 기억에 남아있는 옷은 구슬의 크기가 커 모래시계 상단에 위치
 - 남아있는 시간이 작아 잊혀진 옷은 모래시계 하단에 위치
 - 자이로센서를 활용한 기울임 감지 동작
-    - 휴대폰 기울기에 따라 구슬이 따라 움직임<br>
-
+    - 휴대폰 기울기에 따라 구슬이 따라 움직임
 - 설명 구슬: 클릭 시 앱 동작 원리 설명
-
+<br>
 <img src="./assets/설명1.gif" height="500" alt="tutorial1"/>
 <img src="./assets/설명2.gif" height="500" alt="tutorial2"/>
 <img src="./assets/설명3.gif" height="500" alt="tutorial3"/>
