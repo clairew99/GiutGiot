@@ -13,6 +13,9 @@ import '../widget/button/bt_motion.dart'; // 모션 버튼 임포트
 import '../utils/clothes/clothes_request_manager.dart';
 
 import 'package:GIUTGIOT/Dio/access_token_manager.dart';
+import 'package:GIUTGIOT/src/utils/clothLoad.dart';
+
+
 
 class PageSlide extends StatefulWidget {
   const PageSlide({super.key});
@@ -30,10 +33,7 @@ class _PageSlideState extends State<PageSlide> {
   @override
   void initState() {
     super.initState();
-    print('PageSLide()');
-    // 홈 화면 기억 관련 데이터 불러오기
     ClothLoad().testFetchClothesByMemory();
-    // 캘린더 화면 데이터 불러오기
     _fetchDailyCoordinate(DateTime.now());
 
   }
@@ -83,7 +83,6 @@ class _PageSlideState extends State<PageSlide> {
                 currentPageIndex = index;
               });
               if (index == 1) {
-                // await _checkSelectedDayClothes(DateTime.now()); // 선택된 날짜로 데이터 확인
                 await _fetchDailyCoordinate(DateTime.now()); // 선택된 날짜로 데이터 확인
               }
             },
@@ -108,7 +107,7 @@ class _PageSlideState extends State<PageSlide> {
           ),
           const VoiceIcon(),
           // 조건에 따라 MotionButton 표시
-          if (currentPageIndex == 1 && showMotionButton)
+          if (currentPageIndex == 1 && showMotionButton != null)
             Positioned(
               bottom: 20,
               right: 45,
